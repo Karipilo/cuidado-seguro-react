@@ -7,7 +7,6 @@ const Registro = () => {
 
   const navigate = useNavigate();
 
-  // estado del formulario
   const [formData, setFormData] = useState({
     username: "",
     password: "",
@@ -22,6 +21,8 @@ const Registro = () => {
     direccion: "",
     tipoUsuario: "PACIENTE",
 
+    rutPaciente: "",
+
     grupoSanguineo: "",
     factorRh: "",
     alergias: "",
@@ -35,7 +36,6 @@ const Registro = () => {
     aceptaTerminos: false
   });
 
-  // manejar cambios
   const handleChange = (e) => {
     const { name, value } = e.target;
 
@@ -45,13 +45,11 @@ const Registro = () => {
     });
   };
 
-  // validar contraseña
   const validarPassword = (password) => {
     const regex = /^(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&#]).{6,}$/;
     return regex.test(password);
   };
 
-  // enviar formulario
   const handleRegistro = (e) => {
     e.preventDefault();
 
@@ -65,12 +63,7 @@ const Registro = () => {
       "fechaNacimiento",
       "genero",
       "telefono",
-      "direccion",
-      "grupoSanguineo",
-      "factorRh",
-      "contactoEmergencia",
-      "telefonoEmergencia",
-      "seguroMedico"
+      "direccion"
     ];
 
     for (let campo of camposObligatorios) {
@@ -78,6 +71,11 @@ const Registro = () => {
         alert("Todos los campos obligatorios deben completarse");
         return;
       }
+    }
+
+    if (formData.tipoUsuario === "TUTOR" && !formData.rutPaciente) {
+      alert("Debe ingresar el RUT del paciente");
+      return;
     }
 
     const fecha = new Date(formData.fechaNacimiento);
@@ -108,19 +106,23 @@ const Registro = () => {
     const usuarioFinal = {
       ...formData,
       roles: [`ROLE_${formData.tipoUsuario}`],
-      versionTerminos: 1
+      versionTerminos: 1,
+
+      pacientesRuts:
+        formData.tipoUsuario === "TUTOR"
+          ? [formData.rutPaciente]
+          : []
     };
 
     console.log("Usuario listo para backend:", usuarioFinal);
 
     localStorage.setItem("usuario", JSON.stringify(usuarioFinal));
 
-    // redirección correcta
     if (formData.tipoUsuario === "PACIENTE") {
       navigate("/dashboardPaciente");
     } else if (formData.tipoUsuario === "TUTOR") {
       navigate("/dashboardTutor");
-    } else if (formData.tipoUsuario === "MEDICO") {
+    } else {
       navigate("/dashboardProfesional");
     }
   };
@@ -207,84 +209,98 @@ const Registro = () => {
         >
           <option value="PACIENTE">Paciente</option>
           <option value="TUTOR">Tutor</option>
-          <option value="MEDICO">Profesional</option>
+          <option value="PROFESIONAL">Profesional</option>
         </Form.Select>
       </Form.Group>
 
-      <Form.Group className="mb-3">
-        <Form.Label>Grupo sanguíneo</Form.Label>
-        <Form.Select name="grupoSanguineo" onChange={handleChange}>
-          <option value="">Seleccione</option>
-          <option>O</option>
-          <option>A</option>
-          <option>B</option>
-          <option>AB</option>
-          <option>No lo sé</option>
-        </Form.Select>
-      </Form.Group>
-
-      <Form.Group className="mb-3">
-        <Form.Label>Factor RH</Form.Label>
-        <Form.Select name="factorRh" onChange={handleChange}>
-          <option value="">Seleccione</option>
-          <option>+</option>
-          <option>-</option>
-          <option>No lo sé</option>
-        </Form.Select>
-      </Form.Group>
-
-      <Form.Group className="mb-3">
-        <Form.Label>Alergias</Form.Label>
-        <Form.Control name="alergias" onChange={handleChange} />
-      </Form.Group>
-
-      <Form.Group className="mb-3">
-        <Form.Label>Enfermedades crónicas</Form.Label>
-        <Form.Control name="enfermedadesCronicas" onChange={handleChange} />
-      </Form.Group>
-
-      <Form.Group className="mb-3">
-        <Form.Label>Medicamentos actuales</Form.Label>
-        <Form.Control name="medicamentosActuales" onChange={handleChange} />
-      </Form.Group>
-
-      <Form.Group className="mb-3">
-        <Form.Label>Contacto de emergencia</Form.Label>
-        <Form.Control name="contactoEmergencia" onChange={handleChange} />
-      </Form.Group>
-
-      <Form.Group className="mb-3">
-        <Form.Label>Teléfono de emergencia</Form.Label>
-        <div className="d-flex">
-          <span className="form-control" style={{ width: "80px", background: "#eee" }}>+569</span>
+      {formData.tipoUsuario === "TUTOR" && (
+        <Form.Group className="mb-3">
+          <Form.Label>RUT del paciente</Form.Label>
           <Form.Control
             type="text"
-            placeholder="12345678"
-            onChange={(e) =>
-              setFormData({
-                ...formData,
-                telefonoEmergencia: "+569" + e.target.value
-              })
-            }
+            name="rutPaciente"
+            placeholder="Ingrese RUT del paciente"
+            onChange={handleChange}
           />
-        </div>
-      </Form.Group>
+        </Form.Group>
+      )}
 
-      <Form.Group className="mb-3">
-        <Form.Label>Tipo de previsión</Form.Label>
-        <Form.Select name="seguroMedico" onChange={handleChange}>
-          <option value="">Seleccione</option>
-          <option>Fonasa</option>
-          <option>Isapre</option>
-          <option>Particular</option>
-        </Form.Select>
-      </Form.Group>
+      {formData.tipoUsuario !== "TUTOR" && (
+        <>
+          <Form.Group className="mb-3">
+            <Form.Label>Grupo sanguíneo</Form.Label>
+            <Form.Select name="grupoSanguineo" onChange={handleChange}>
+              <option value="">Seleccione</option>
+              <option>O</option>
+              <option>A</option>
+              <option>B</option>
+              <option>AB</option>
+              <option>No lo sé</option>
+            </Form.Select>
+          </Form.Group>
+
+          <Form.Group className="mb-3">
+            <Form.Label>Factor RH</Form.Label>
+            <Form.Select name="factorRh" onChange={handleChange}>
+              <option value="">Seleccione</option>
+              <option>+</option>
+              <option>-</option>
+              <option>No lo sé</option>
+            </Form.Select>
+          </Form.Group>
+
+          <Form.Group className="mb-3">
+            <Form.Label>Alergias</Form.Label>
+            <Form.Control name="alergias" onChange={handleChange} />
+          </Form.Group>
+
+          <Form.Group className="mb-3">
+            <Form.Label>Enfermedades crónicas</Form.Label>
+            <Form.Control name="enfermedadesCronicas" onChange={handleChange} />
+          </Form.Group>
+
+          <Form.Group className="mb-3">
+            <Form.Label>Medicamentos actuales</Form.Label>
+            <Form.Control name="medicamentosActuales" onChange={handleChange} />
+          </Form.Group>
+
+          <Form.Group className="mb-3">
+            <Form.Label>Contacto de emergencia</Form.Label>
+            <Form.Control name="contactoEmergencia" onChange={handleChange} />
+          </Form.Group>
+
+          <Form.Group className="mb-3">
+            <Form.Label>Teléfono de emergencia</Form.Label>
+            <div className="d-flex">
+              <span className="form-control" style={{ width: "80px", background: "#eee" }}>+569</span>
+              <Form.Control
+                type="text"
+                placeholder="12345678"
+                onChange={(e) =>
+                  setFormData({
+                    ...formData,
+                    telefonoEmergencia: "+569" + e.target.value
+                  })
+                }
+              />
+            </div>
+          </Form.Group>
+
+          <Form.Group className="mb-3">
+            <Form.Label>Tipo de previsión</Form.Label>
+            <Form.Select name="seguroMedico" onChange={handleChange}>
+              <option value="">Seleccione</option>
+              <option>Fonasa</option>
+              <option>Isapre</option>
+              <option>Particular</option>
+            </Form.Select>
+          </Form.Group>
+        </>
+      )}
 
       <Form.Group className="mb-3">
         <div style={{ fontSize: "14px", background: "#f8f9fa", padding: "10px", borderRadius: "10px" }}>
           Al registrarse, usted acepta que sus datos personales y clínicos serán utilizados exclusivamente para la gestión de su atención de salud dentro de la plataforma Cuidado Seguro.
-          Esta información será tratada conforme a la legislación chilena vigente y normativas internacionales (ISO).
-          Además, declara ser mayor de 18 años. Si es menor, el registro debe realizarlo un tutor legal.
         </div>
 
         <Form.Check
