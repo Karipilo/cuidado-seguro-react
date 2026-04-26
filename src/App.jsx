@@ -4,9 +4,9 @@ import Navbar from './components/layout/Navbar';
 import Home from './pages/Home';
 import Login from './pages/Login';
 import Registro from './pages/Registro';
-import DashboardTutor from './pages/DashboardTutor';
-import DashboardProfesional from './pages/DashboardProfesional';
-import DashboardPaciente from './pages/DashboardPaciente';
+import DashboardPaciente from "./pages/DashboardPaciente";
+import DashboardTutor from "./pages/DashboardTutor";
+import DashboardProfesional from "./pages/DashboardProfesional";
 import "./styles/variables.css";
 import "./styles/base.css";
 import "./styles/navbar.css";
@@ -28,16 +28,16 @@ function App() {
           <Routes>
             {/* Ruta principal - página de inicio */}
             <Route path="/" element={<Home />} />
-            
+
             {/* Rutas de autenticación */}
             <Route path="/login" element={<Login />} />
             <Route path="/registro" element={<Registro />} />
-            
+
             {/* Rutas de dashboards según rol */}
-            <Route path="/dashboard-tutor" element={<DashboardTutor />} />
-            <Route path="/dashboard-profesional" element={<DashboardProfesional />} />
-            <Route path="/dashboard-paciente" element={<DashboardPaciente />} />
-            
+            <Route path="/dashboardPaciente" element={<DashboardPaciente />} />
+            <Route path="/dashboardTutor" element={<DashboardTutor />} />
+            <Route path="/dashboardProfesional" element={<DashboardProfesional />} />
+
             {/* Ruta por defecto - redirige a home */}
             <Route path="*" element={<Navigate to="/" replace />} />
           </Routes>

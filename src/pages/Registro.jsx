@@ -1,385 +1,305 @@
-import React, { useState } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
-import Input from '../components/ui/Input';
-import Button from '../components/ui/Button';
-import Card from '../components/ui/Card';
+import React, { useState } from "react";
+import { Form } from "react-bootstrap";
+import { useNavigate } from "react-router-dom";
+import Formulario from "../components/ui/Formulario";
 
-/**
- * Página de Registro con campos condicionales según tipo de usuario
- * Maneja validación completa y almacenamiento en localStorage
- */
 const Registro = () => {
-  const [formData, setFormData] = useState({
-    nombre: '',
-    email: '',
-    password: '',
-    confirmPassword: '',
-    tipoUsuario: 'tutor', // 'tutor' o 'profesional'
-    // Campos para profesional
-    tipoProfesional: '',
-    institucion: '',
-    rnpi: '',
-    // Campos para tutor
-    parentesco: '',
-    idPaciente: '',
-    codigoCentro: ''
-  });
-  const [errors, setErrors] = useState({});
-  const [loading, setLoading] = useState(false);
-  const [registroError, setRegistroError] = useState('');
-  const [registroSuccess, setRegistroSuccess] = useState('');
-  
+
   const navigate = useNavigate();
 
-  // Validar formato de email
-  const validateEmail = (email) => {
-    const re = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    return re.test(email);
-  };
+  // estado del formulario
+  const [formData, setFormData] = useState({
+    username: "",
+    password: "",
+    email: "",
+    nombres: "",
+    apellidos: "",
+    tipoDocumento: "DNI",
+    numeroDocumento: "",
+    fechaNacimiento: "",
+    genero: "",
+    telefono: "+569",
+    direccion: "",
+    tipoUsuario: "PACIENTE",
 
-  // Validar formulario completo
-  const validateForm = () => {
-    const newErrors = {};
+    grupoSanguineo: "",
+    factorRh: "",
+    alergias: "",
+    enfermedadesCronicas: "",
+    medicamentosActuales: "",
+    contactoEmergencia: "",
+    telefonoEmergencia: "+569",
+    seguroMedico: "",
+    numeroPoliza: "",
 
-    // Validaciones básicas
-    if (!formData.nombre.trim()) {
-      newErrors.nombre = 'El nombre es requerido';
-    }
+    aceptaTerminos: false
+  });
 
-    if (!formData.email) {
-      newErrors.email = 'El email es requerido';
-    } else if (!validateEmail(formData.email)) {
-      newErrors.email = 'El email no es válido';
-    }
-
-    if (!formData.password) {
-      newErrors.password = 'La contraseña es requerida';
-    } else if (formData.password.length < 6) {
-      newErrors.password = 'La contraseña debe tener al menos 6 caracteres';
-    }
-
-    if (!formData.confirmPassword) {
-      newErrors.confirmPassword = 'Debe confirmar la contraseña';
-    } else if (formData.password !== formData.confirmPassword) {
-      newErrors.confirmPassword = 'Las contraseñas no coinciden';
-    }
-
-    // Validaciones específicas según tipo de usuario
-    if (formData.tipoUsuario === 'profesional') {
-      if (!formData.tipoProfesional) {
-        newErrors.tipoProfesional = 'El tipo profesional es requerido';
-      }
-      if (!formData.institucion.trim()) {
-        newErrors.institucion = 'La institución es requerida';
-      }
-      if (!formData.rnpi.trim()) {
-        newErrors.rnpi = 'El RNPI es requerido';
-      }
-    } else if (formData.tipoUsuario === 'tutor') {
-      if (!formData.parentesco) {
-        newErrors.parentesco = 'El parentesco es requerido';
-      }
-      if (!formData.idPaciente.trim()) {
-        newErrors.idPaciente = 'El ID del paciente es requerido';
-      }
-      if (!formData.codigoCentro.trim()) {
-        newErrors.codigoCentro = 'El código del centro es requerido';
-      }
-    }
-
-    setErrors(newErrors);
-    return Object.keys(newErrors).length === 0;
-  };
-
-  // Manejar cambios en los inputs
+  // manejar cambios
   const handleChange = (e) => {
     const { name, value } = e.target;
-    setFormData(prev => ({
-      ...prev,
+
+    setFormData({
+      ...formData,
       [name]: value
-    }));
-    
-    // Limpiar error del campo cuando el usuario empieza a escribir
-    if (errors[name]) {
-      setErrors(prev => ({
-        ...prev,
-        [name]: ''
-      }));
-    }
+    });
   };
 
-  // Manejar submit del formulario
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    setRegistroError('');
-    setRegistroSuccess('');
+  // validar contraseña
+  const validarPassword = (password) => {
+    const regex = /^(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&#]).{6,}$/;
+    return regex.test(password);
+  };
 
-    if (!validateForm()) {
+  // enviar formulario
+  const handleRegistro = (e) => {
+    e.preventDefault();
+
+    const camposObligatorios = [
+      "username",
+      "password",
+      "email",
+      "nombres",
+      "apellidos",
+      "numeroDocumento",
+      "fechaNacimiento",
+      "genero",
+      "telefono",
+      "direccion",
+      "grupoSanguineo",
+      "factorRh",
+      "contactoEmergencia",
+      "telefonoEmergencia",
+      "seguroMedico"
+    ];
+
+    for (let campo of camposObligatorios) {
+      if (!formData[campo] || formData[campo] === "+569") {
+        alert("Todos los campos obligatorios deben completarse");
+        return;
+      }
+    }
+
+    const fecha = new Date(formData.fechaNacimiento);
+    const hoy = new Date();
+
+    let edad = hoy.getFullYear() - fecha.getFullYear();
+    const mes = hoy.getMonth() - fecha.getMonth();
+
+    if (mes < 0 || (mes === 0 && hoy.getDate() < fecha.getDate())) {
+      edad--;
+    }
+
+    if (edad < 18) {
+      alert("Solo mayores de 18 años pueden registrarse. Si es menor, debe hacerlo un tutor.");
       return;
     }
 
-    setLoading(true);
+    if (!validarPassword(formData.password)) {
+      alert("La contraseña debe tener mínimo 6 caracteres, una mayúscula, un número y un símbolo");
+      return;
+    }
 
-    try {
-      // Simular llamada a API
-      await new Promise(resolve => setTimeout(resolve, 1000));
+    if (!formData.aceptaTerminos) {
+      alert("Debe aceptar los términos y condiciones");
+      return;
+    }
 
-      // Obtener usuarios existentes
-      const users = JSON.parse(localStorage.getItem('users') || '[]');
-      
-      // Verificar si el email ya está registrado
-      if (users.some(user => user.email === formData.email)) {
-        setRegistroError('Este email ya está registrado');
-        return;
-      }
+    const usuarioFinal = {
+      ...formData,
+      roles: [`ROLE_${formData.tipoUsuario}`],
+      versionTerminos: 1
+    };
 
-      // Crear nuevo usuario
-      const newUser = {
-        id: Date.now().toString(),
-        nombre: formData.nombre,
-        email: formData.email,
-        password: formData.password, // En producción, esto debería estar hasheado
-        tipoUsuario: formData.tipoUsuario,
-        ...(formData.tipoUsuario === 'profesional' && {
-          tipoProfesional: formData.tipoProfesional,
-          institucion: formData.institucion,
-          rnpi: formData.rnpi
-        }),
-        ...(formData.tipoUsuario === 'tutor' && {
-          parentesco: formData.parentesco,
-          idPaciente: formData.idPaciente,
-          codigoCentro: formData.codigoCentro
-        }),
-        createdAt: new Date().toISOString()
-      };
+    console.log("Usuario listo para backend:", usuarioFinal);
 
-      // Guardar usuario en localStorage
-      users.push(newUser);
-      localStorage.setItem('users', JSON.stringify(users));
+    localStorage.setItem("usuario", JSON.stringify(usuarioFinal));
 
-      setRegistroSuccess('¡Registro exitoso! Redirigiendo al login...');
-      
-      // Redirigir al login después de 2 segundos
-      setTimeout(() => {
-        navigate('/login');
-      }, 2000);
-
-    } catch (error) {
-      setRegistroError('Error al registrarse. Intente nuevamente.');
-    } finally {
-      setLoading(false);
+    // redirección correcta
+    if (formData.tipoUsuario === "PACIENTE") {
+      navigate("/dashboardPaciente");
+    } else if (formData.tipoUsuario === "TUTOR") {
+      navigate("/dashboardTutor");
+    } else if (formData.tipoUsuario === "MEDICO") {
+      navigate("/dashboardProfesional");
     }
   };
 
   return (
-    <div className="min-vh-100 d-flex align-items-center justify-content-center bg-light">
-      <div className="container">
-        <div className="row justify-content-center">
-          <div className="col-md-8 col-lg-6">
-            <Card title="Registrarse" className="shadow">
-              <form onSubmit={handleSubmit}>
-                {registroError && (
-                  <div className="alert alert-danger" role="alert">
-                    {registroError}
-                  </div>
-                )}
+    <Formulario
+      title="Registro"
+      buttonText="Crear cuenta"
+      onSubmit={handleRegistro}
+    >
 
-                {registroSuccess && (
-                  <div className="alert alert-success" role="alert">
-                    {registroSuccess}
-                  </div>
-                )}
+      <Form.Group className="mb-3">
+        <Form.Label>Usuario</Form.Label>
+        <Form.Control name="username" onChange={handleChange} />
+      </Form.Group>
 
-                {/* Campos básicos */}
-                <Input
-                  label="Nombre Completo"
-                  type="text"
-                  placeholder="Ingrese su nombre completo"
-                  name="nombre"
-                  value={formData.nombre}
-                  onChange={handleChange}
-                  error={errors.nombre}
-                  required
-                />
+      <Form.Group className="mb-3">
+        <Form.Label>Nombres</Form.Label>
+        <Form.Control name="nombres" onChange={handleChange} />
+      </Form.Group>
 
-                <Input
-                  label="Email"
-                  type="email"
-                  placeholder="Ingrese su email"
-                  name="email"
-                  value={formData.email}
-                  onChange={handleChange}
-                  error={errors.email}
-                  required
-                />
+      <Form.Group className="mb-3">
+        <Form.Label>Apellidos</Form.Label>
+        <Form.Control name="apellidos" onChange={handleChange} />
+      </Form.Group>
 
-                <Input
-                  label="Contraseña"
-                  type="password"
-                  placeholder="Ingrese su contraseña (mínimo 6 caracteres)"
-                  name="password"
-                  value={formData.password}
-                  onChange={handleChange}
-                  error={errors.password}
-                  required
-                />
+      <Form.Group className="mb-3">
+        <Form.Label>Correo</Form.Label>
+        <Form.Control type="email" name="email" onChange={handleChange} />
+      </Form.Group>
 
-                <Input
-                  label="Confirmar Contraseña"
-                  type="password"
-                  placeholder="Confirme su contraseña"
-                  name="confirmPassword"
-                  value={formData.confirmPassword}
-                  onChange={handleChange}
-                  error={errors.confirmPassword}
-                  required
-                />
+      <Form.Group className="mb-3">
+        <Form.Label>Contraseña</Form.Label>
+        <Form.Control type="password" name="password" onChange={handleChange} />
+      </Form.Group>
 
-                {/* Tipo de usuario */}
-                <div className="mb-3">
-                  <label className="form-label">Tipo de Usuario *</label>
-                  <select
-                    className={`form-select form-control-custom ${errors.tipoUsuario ? 'is-invalid' : ''}`}
-                    name="tipoUsuario"
-                    value={formData.tipoUsuario}
-                    onChange={handleChange}
-                    required
-                  >
-                    <option value="tutor">Tutor</option>
-                    <option value="profesional">Profesional de la Salud</option>
-                  </select>
-                  {errors.tipoUsuario && (
-                    <div className="invalid-feedback error-message">
-                      {errors.tipoUsuario}
-                    </div>
-                  )}
-                </div>
+      <Form.Group className="mb-3">
+        <Form.Label>Número de documento</Form.Label>
+        <Form.Control name="numeroDocumento" onChange={handleChange} />
+      </Form.Group>
 
-                {/* Campos condicionales para Profesional */}
-                {formData.tipoUsuario === 'profesional' && (
-                  <>
-                    <div className="mb-3">
-                      <label className="form-label">Tipo Profesional *</label>
-                      <select
-                        className={`form-select form-control-custom ${errors.tipoProfesional ? 'is-invalid' : ''}`}
-                        name="tipoProfesional"
-                        value={formData.tipoProfesional}
-                        onChange={handleChange}
-                        required
-                      >
-                        <option value="">Seleccione...</option>
-                        <option value="medico">Médico</option>
-                        <option value="enfermero">Enfermero/a</option>
-                        <option value="kinesiologo">Kinesiólogo/a</option>
-                        <option value="nutricionista">Nutricionista</option>
-                        <option value="psicologo">Psicólogo/a</option>
-                        <option value="otro">Otro</option>
-                      </select>
-                      {errors.tipoProfesional && (
-                        <div className="invalid-feedback error-message">
-                          {errors.tipoProfesional}
-                        </div>
-                      )}
-                    </div>
+      <Form.Group className="mb-3">
+        <Form.Label>Fecha de nacimiento</Form.Label>
+        <Form.Control type="date" name="fechaNacimiento" onChange={handleChange} />
+      </Form.Group>
 
-                    <Input
-                      label="Institución"
-                      type="text"
-                      placeholder="Nombre de la institución donde trabaja"
-                      name="institucion"
-                      value={formData.institucion}
-                      onChange={handleChange}
-                      error={errors.institucion}
-                      required
-                    />
+      <Form.Group className="mb-3">
+        <Form.Label>Género</Form.Label>
+        <Form.Select name="genero" onChange={handleChange}>
+          <option value="">Seleccione</option>
+          <option value="M">Masculino</option>
+          <option value="F">Femenino</option>
+        </Form.Select>
+      </Form.Group>
 
-                    <Input
-                      label="RNPI (Registro Nacional de Prestadores Individuales)"
-                      type="text"
-                      placeholder="Ingrese su RNPI"
-                      name="rnpi"
-                      value={formData.rnpi}
-                      onChange={handleChange}
-                      error={errors.rnpi}
-                      required
-                    />
-                  </>
-                )}
-
-                {/* Campos condicionales para Tutor */}
-                {formData.tipoUsuario === 'tutor' && (
-                  <>
-                    <div className="mb-3">
-                      <label className="form-label">Parentesco *</label>
-                      <select
-                        className={`form-select form-control-custom ${errors.parentesco ? 'is-invalid' : ''}`}
-                        name="parentesco"
-                        value={formData.parentesco}
-                        onChange={handleChange}
-                        required
-                      >
-                        <option value="">Seleccione...</option>
-                        <option value="padre">Padre</option>
-                        <option value="madre">Madre</option>
-                        <option value="tutor_legal">Tutor Legal</option>
-                        <option value="abuelo">Abuelo/a</option>
-                        <option value="otro">Otro</option>
-                      </select>
-                      {errors.parentesco && (
-                        <div className="invalid-feedback error-message">
-                          {errors.parentesco}
-                        </div>
-                      )}
-                    </div>
-
-                    <Input
-                      label="ID del Paciente"
-                      type="text"
-                      placeholder="Ingrese el ID del paciente a su cargo"
-                      name="idPaciente"
-                      value={formData.idPaciente}
-                      onChange={handleChange}
-                      error={errors.idPaciente}
-                      required
-                    />
-
-                    <Input
-                      label="Código del Centro"
-                      type="text"
-                      placeholder="Código del centro de salud"
-                      name="codigoCentro"
-                      value={formData.codigoCentro}
-                      onChange={handleChange}
-                      error={errors.codigoCentro}
-                      required
-                    />
-                  </>
-                )}
-
-                <Button
-                  type="submit"
-                  variant="primary"
-                  fullWidth
-                  loading={loading}
-                  disabled={loading}
-                >
-                  {loading ? 'Registrando...' : 'Registrarse'}
-                </Button>
-
-                <div className="text-center mt-3">
-                  <p className="mb-0">
-                    ¿Ya tienes cuenta?{' '}
-                    <Link to="/login" className="text-decoration-none">
-                      Inicia sesión aquí
-                    </Link>
-                  </p>
-                </div>
-              </form>
-            </Card>
-          </div>
+      <Form.Group className="mb-3">
+        <Form.Label>Teléfono</Form.Label>
+        <div className="d-flex">
+          <span className="form-control" style={{ width: "80px", background: "#eee" }}>+569</span>
+          <Form.Control
+            type="text"
+            placeholder="12345678"
+            onChange={(e) =>
+              setFormData({
+                ...formData,
+                telefono: "+569" + e.target.value
+              })
+            }
+          />
         </div>
-      </div>
-    </div>
+      </Form.Group>
+
+      <Form.Group className="mb-3">
+        <Form.Label>Dirección</Form.Label>
+        <Form.Control name="direccion" onChange={handleChange} />
+      </Form.Group>
+
+      <Form.Group className="mb-3">
+        <Form.Label>Tipo de usuario</Form.Label>
+        <Form.Select
+          name="tipoUsuario"
+          value={formData.tipoUsuario}
+          onChange={handleChange}
+        >
+          <option value="PACIENTE">Paciente</option>
+          <option value="TUTOR">Tutor</option>
+          <option value="MEDICO">Profesional</option>
+        </Form.Select>
+      </Form.Group>
+
+      <Form.Group className="mb-3">
+        <Form.Label>Grupo sanguíneo</Form.Label>
+        <Form.Select name="grupoSanguineo" onChange={handleChange}>
+          <option value="">Seleccione</option>
+          <option>O</option>
+          <option>A</option>
+          <option>B</option>
+          <option>AB</option>
+          <option>No lo sé</option>
+        </Form.Select>
+      </Form.Group>
+
+      <Form.Group className="mb-3">
+        <Form.Label>Factor RH</Form.Label>
+        <Form.Select name="factorRh" onChange={handleChange}>
+          <option value="">Seleccione</option>
+          <option>+</option>
+          <option>-</option>
+          <option>No lo sé</option>
+        </Form.Select>
+      </Form.Group>
+
+      <Form.Group className="mb-3">
+        <Form.Label>Alergias</Form.Label>
+        <Form.Control name="alergias" onChange={handleChange} />
+      </Form.Group>
+
+      <Form.Group className="mb-3">
+        <Form.Label>Enfermedades crónicas</Form.Label>
+        <Form.Control name="enfermedadesCronicas" onChange={handleChange} />
+      </Form.Group>
+
+      <Form.Group className="mb-3">
+        <Form.Label>Medicamentos actuales</Form.Label>
+        <Form.Control name="medicamentosActuales" onChange={handleChange} />
+      </Form.Group>
+
+      <Form.Group className="mb-3">
+        <Form.Label>Contacto de emergencia</Form.Label>
+        <Form.Control name="contactoEmergencia" onChange={handleChange} />
+      </Form.Group>
+
+      <Form.Group className="mb-3">
+        <Form.Label>Teléfono de emergencia</Form.Label>
+        <div className="d-flex">
+          <span className="form-control" style={{ width: "80px", background: "#eee" }}>+569</span>
+          <Form.Control
+            type="text"
+            placeholder="12345678"
+            onChange={(e) =>
+              setFormData({
+                ...formData,
+                telefonoEmergencia: "+569" + e.target.value
+              })
+            }
+          />
+        </div>
+      </Form.Group>
+
+      <Form.Group className="mb-3">
+        <Form.Label>Tipo de previsión</Form.Label>
+        <Form.Select name="seguroMedico" onChange={handleChange}>
+          <option value="">Seleccione</option>
+          <option>Fonasa</option>
+          <option>Isapre</option>
+          <option>Particular</option>
+        </Form.Select>
+      </Form.Group>
+
+      <Form.Group className="mb-3">
+        <div style={{ fontSize: "14px", background: "#f8f9fa", padding: "10px", borderRadius: "10px" }}>
+          Al registrarse, usted acepta que sus datos personales y clínicos serán utilizados exclusivamente para la gestión de su atención de salud dentro de la plataforma Cuidado Seguro.
+          Esta información será tratada conforme a la legislación chilena vigente y normativas internacionales (ISO).
+          Además, declara ser mayor de 18 años. Si es menor, el registro debe realizarlo un tutor legal.
+        </div>
+
+        <Form.Check
+          type="checkbox"
+          label="Acepto los términos y condiciones"
+          onChange={(e) =>
+            setFormData({
+              ...formData,
+              aceptaTerminos: e.target.checked
+            })
+          }
+        />
+      </Form.Group>
+
+    </Formulario>
   );
 };
 

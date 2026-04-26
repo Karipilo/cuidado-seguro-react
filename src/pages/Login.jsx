@@ -1,180 +1,82 @@
-import React, { useState } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
-import Input from '../components/ui/Input';
-import Button from '../components/ui/Button';
-import Card from '../components/ui/Card';
+import React, { useState } from "react";
+import { Form, Alert } from "react-bootstrap";
+import { useNavigate } from "react-router-dom";
+import Formulario from "../components/ui/Formulario";
 
-/**
- * Página de Login con validación de campos
- * Maneja autenticación simulada usando localStorage
- */
 const Login = () => {
-  const [formData, setFormData] = useState({
-    email: '',
-    password: ''
-  });
-  const [errors, setErrors] = useState({});
-  const [loading, setLoading] = useState(false);
-  const [loginError, setLoginError] = useState('');
-  
+
   const navigate = useNavigate();
 
-  // Validar formato de email
-  const validateEmail = (email) => {
-    const re = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    return re.test(email);
-  };
+  const [username, setUsername] = useState("");
+  const [password, setPassword] = useState("");
+  const [error, setError] = useState("");
 
-  // Validar formulario
-  const validateForm = () => {
-    const newErrors = {};
-
-    if (!formData.email) {
-      newErrors.email = 'El email es requerido';
-    } else if (!validateEmail(formData.email)) {
-      newErrors.email = 'El email no es válido';
-    }
-
-    if (!formData.password) {
-      newErrors.password = 'La contraseña es requerida';
-    } else if (formData.password.length < 6) {
-      newErrors.password = 'La contraseña debe tener al menos 6 caracteres';
-    }
-
-    setErrors(newErrors);
-    return Object.keys(newErrors).length === 0;
-  };
-
-  // Manejar cambios en los inputs
-  const handleChange = (e) => {
-    const { name, value } = e.target;
-    setFormData(prev => ({
-      ...prev,
-      [name]: value
-    }));
-    
-    // Limpiar error del campo cuando el usuario empieza a escribir
-    if (errors[name]) {
-      setErrors(prev => ({
-        ...prev,
-        [name]: ''
-      }));
-    }
-  };
-
-  // Manejar submit del formulario
-  const handleSubmit = async (e) => {
+  const handleLogin = (e) => {
     e.preventDefault();
-    setLoginError('');
 
-    if (!validateForm()) {
+    const usuarioGuardado = JSON.parse(localStorage.getItem("usuario"));
+
+    console.log("Usuario guardado:", usuarioGuardado);
+    console.log("Ingresado:", username, password);
+
+    if (!usuarioGuardado) {
+      setError("No existe un usuario registrado");
       return;
     }
 
-    setLoading(true);
+    if (
+      usuarioGuardado.username?.trim() === username.trim() &&
+      usuarioGuardado.password === password
+    ) {
 
-    try {
-      // Simular llamada a API
-      await new Promise(resolve => setTimeout(resolve, 1000));
+      console.log("LOGIN CORRECTO");
 
-      // Buscar usuario en localStorage (simulación de base de datos)
-      const users = JSON.parse(localStorage.getItem('users') || '[]');
-      const user = users.find(u => u.email === formData.email && u.password === formData.password);
+      localStorage.setItem("sesion", JSON.stringify(usuarioGuardado));
 
-      if (user) {
-        // Guardar sesión en localStorage
-        localStorage.setItem('user', JSON.stringify({
-          id: user.id,
-          nombre: user.nombre,
-          email: user.email,
-          tipoUsuario: user.tipoUsuario
-        }));
-
-        // Redirigir según el tipo de usuario
-        switch (user.tipoUsuario) {
-          case 'tutor':
-            navigate('/dashboard-tutor');
-            break;
-          case 'profesional':
-            navigate('/dashboard-profesional');
-            break;
-          case 'paciente':
-            navigate('/dashboard-paciente');
-            break;
-          default:
-            navigate('/login');
-        }
-      } else {
-        setLoginError('Email o contraseña incorrectos');
+      // redirección estable
+      if (usuarioGuardado.tipoUsuario === "PACIENTE") {
+        navigate("/dashboardPaciente", { replace: true });
+      } else if (usuarioGuardado.tipoUsuario === "TUTOR") {
+        navigate("/dashboardTutor", { replace: true });
+      } else if (usuarioGuardado.tipoUsuario === "MEDICO") {
+        navigate("/dashboardProfesional", { replace: true });
       }
-    } catch (error) {
-      setLoginError('Error al iniciar sesión. Intente nuevamente.');
-    } finally {
-      setLoading(false);
+
+    } else {
+      setError("Usuario o contraseña incorrectos");
     }
   };
 
   return (
-    <div className="min-vh-100 d-flex align-items-center justify-content-center bg-light">
-      <div className="container">
-        <div className="row justify-content-center">
-          <div className="col-md-6 col-lg-5">
-            <Card title="Iniciar Sesión" className="shadow">
-              <form onSubmit={handleSubmit}>
-                {loginError && (
-                  <div className="alert alert-danger" role="alert">
-                    {loginError}
-                  </div>
-                )}
+    <Formulario
+      title="Iniciar Sesión"
+      buttonText="Iniciar Sesión"
+      onSubmit={handleLogin}
+    >
 
-                <Input
-                  label="Email"
-                  type="email"
-                  placeholder="Ingrese su email"
-                  name="email"
-                  value={formData.email}
-                  onChange={handleChange}
-                  error={errors.email}
-                  required
-                  autoComplete="email"
-                />
+      {error && <Alert variant="danger">{error}</Alert>}
 
-                <Input
-                  label="Contraseña"
-                  type="password"
-                  placeholder="Ingrese su contraseña"
-                  name="password"
-                  value={formData.password}
-                  onChange={handleChange}
-                  error={errors.password}
-                  required
-                  autoComplete="current-password"
-                />
+      <Form.Group className="mb-3">
+        <Form.Label>Usuario</Form.Label>
+        <Form.Control
+          type="text"
+          placeholder="Ingrese su usuario"
+          value={username}
+          onChange={(e) => setUsername(e.target.value)}
+        />
+      </Form.Group>
 
-                <Button
-                  type="submit"
-                  variant="primary"
-                  fullWidth
-                  loading={loading}
-                  disabled={loading}
-                >
-                  {loading ? 'Iniciando sesión...' : 'Iniciar Sesión'}
-                </Button>
+      <Form.Group className="mb-3">
+        <Form.Label>Contraseña</Form.Label>
+        <Form.Control
+          type="password"
+          placeholder="Ingrese su contraseña"
+          value={password}
+          onChange={(e) => setPassword(e.target.value)}
+        />
+      </Form.Group>
 
-                <div className="text-center mt-3">
-                  <p className="mb-0">
-                    ¿No tienes cuenta?{' '}
-                    <Link to="/registro" className="text-decoration-none">
-                      Regístrate aquí
-                    </Link>
-                  </p>
-                </div>
-              </form>
-            </Card>
-          </div>
-        </div>
-      </div>
-    </div>
+    </Formulario>
   );
 };
 
