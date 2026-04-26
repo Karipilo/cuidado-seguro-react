@@ -1,0 +1,8 @@
+.form-control-custom {
+  border: 2px solid #ECEFF1;
+  border-radius: 8px;
+}
+
+.form-control-custom:focus {
+  border-color: var(--primary-color);
+}

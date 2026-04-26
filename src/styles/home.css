@@ -1,0 +1,80 @@
+.hero-imagen {
+  background-color: #e48b8b;
+  border-radius: 20px;
+  padding: 20px;
+  height: 420px;
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+  position: relative;
+}
+
+/* imagen más natural */
+.hero-imagen img {
+  max-height: 110%;
+  object-fit: contain;
+}
+
+/* tarjetas */
+.card-info {
+  position: absolute;
+  background: white;
+  padding: 3px 14px; 
+  border-radius: 12px;
+  box-shadow: 0 4px 10px rgba(0,0,0,0.08);
+  width: 120px;
+}
+
+/* posiciones */
+.card-top {
+  top: 15px;
+  right: 15px;
+}
+
+.card-bottom {
+  bottom: 15px;
+  right: 15px;
+}
+
+/* iconos (deja solo uno) */
+.icono-home {
+  width: 26px;
+  height: 26px;
+  object-fit: contain;
+}
+
+/* contenedor features */
+.features-box {
+  background-color: #eef1f4;
+  border-radius: 15px;
+  padding: 18px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+/* items */
+.feature-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  width: 32%;
+  font-size: 13px; /* más pequeño */
+}
+
+/* textos tarjetas */
+.numero {
+  font-size: 16px;
+  font-weight: 700;
+}
+
+.titulo-card {
+  font-size: 14px;
+  font-weight: 600;
+}
+
+.texto-card {
+  font-size: 12px;
+  margin: 0;
+  color: #666;
+}

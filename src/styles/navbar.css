@@ -1,0 +1,13 @@
+.navbar-custom {
+  background: linear-gradient(135deg, var(--white-color), #FAFAFA);
+  border-bottom: 3px solid var(--primary-color);
+}
+
+.navbar-brand-custom {
+  color: var(--primary-color) !important;
+  font-weight: 700;
+}
+
+.nav-link:hover {
+  background-color: var(--accent-color);
+}

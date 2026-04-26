@@ -1,0 +1,5 @@
+.btn-primary-custom {
+  background: linear-gradient(135deg, var(--primary-color), var(--medical-blue));
+  border: none;
+  color: white;
+}

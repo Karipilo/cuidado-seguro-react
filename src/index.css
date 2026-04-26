@@ -1,0 +1,10 @@
+/* estilos base globales del proyecto */
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  padding: 0;
+}
