@@ -1,20 +1,33 @@
 import React, { useEffect, useState } from "react";
 import { Navbar, Nav, Container, Button } from "react-bootstrap";
-import { useNavigate } from "react-router-dom";
-import logo from "../../images/log.png";
+import { useNavigate, useLocation } from "react-router-dom";
+import logo from "../../images/log.png"; // 👈 IMPORTANTE (ajusta ruta si cambia)
 
 const NavbarComponent = () => {
 
   const navigate = useNavigate();
+  const location = useLocation();
+
   const [usuario, setUsuario] = useState(null);
 
   // cargar sesión
   useEffect(() => {
     const sesion = JSON.parse(localStorage.getItem("sesion"));
-    if (sesion) {
-      setUsuario(sesion);
+    setUsuario(sesion);
+  }, [location]);
+
+  // ir al dashboard según rol
+  const irAlPanel = () => {
+    if (!usuario) return;
+
+    if (usuario.tipoUsuario === "PACIENTE") {
+      navigate("/dashboardPaciente");
+    } else if (usuario.tipoUsuario === "TUTOR") {
+      navigate("/dashboardTutor");
+    } else if (usuario.tipoUsuario === "PROFESIONAL") {
+      navigate("/dashboardProfesional");
     }
-  }, []);
+  };
 
   // cerrar sesión
   const cerrarSesion = () => {
@@ -24,88 +37,79 @@ const NavbarComponent = () => {
   };
 
   return (
-    <Navbar bg="light" expand="lg" className="shadow-sm">
-      <Container>
+    <Navbar bg="light" expand="lg">
+      <Container className="d-flex justify-content-between align-items-center">
 
-        {/* logo + nombre */}
+        {/* IZQUIERDA: LOGO + NOMBRE */}
         <Navbar.Brand
-          style={{ cursor: "pointer" }}
-          onClick={() => navigate("/")}
+          style={{ cursor: "pointer", display: "flex", alignItems: "center", gap: "10px" }}
+          onClick={() => {
+            if (usuario) {
+              irAlPanel();
+            } else {
+              navigate("/");
+            }
+          }}
         >
           <img
             src={logo}
             alt="logo"
-            width="30"
-            className="me-2"
+            style={{ width: "30px", height: "30px" }}
           />
           Cuidado Seguro
         </Navbar.Brand>
 
-        <Navbar.Toggle />
-        <Navbar.Collapse>
+        {/* CENTRO: MENÚ */}
+        <Nav className="mx-auto">
+          <Nav.Link onClick={() => navigate("/")}>Inicio</Nav.Link>
+          <Nav.Link onClick={() => navigate("/contacto")}>Contacto</Nav.Link>
+          <Nav.Link onClick={() => navigate("/nosotros")}>Sobre Nosotros</Nav.Link>
+        </Nav>
 
-          {/* CENTRO */}
-          <Nav className="mx-auto">
-            <Nav.Link onClick={() => navigate("/")}>Inicio</Nav.Link>
-            <Nav.Link onClick={() => navigate("/contacto")}>Contacto</Nav.Link>
-            <Nav.Link onClick={() => navigate("/nosotros")}>Sobre Nosotros</Nav.Link>
-          </Nav>
+        {/* DERECHA: USUARIO */}
+        <Nav className="align-items-center">
 
-          {/* DERECHA */}
-          <Nav>
+          {!usuario ? (
+            <>
+              <Button
+                variant="outline-primary"
+                onClick={() => navigate("/login")}
+                className="me-2"
+              >
+                Login
+              </Button>
 
-            {usuario ? (
-              <>
-                {/* nombre usuario */}
-                <Nav.Link disabled>
-                  Hola, {usuario.username}
-                </Nav.Link>
+              <Button
+                variant="primary"
+                onClick={() => navigate("/registro")}
+              >
+                Registro
+              </Button>
+            </>
+          ) : (
+            <>
+              <span className="me-3">
+                Hola, {usuario.nombres || usuario.username}
+              </span>
 
+              {!location.pathname.includes("dashboard") && (
                 <Button
-                  variant="outline-success"
+                  variant="success"
+                  onClick={irAlPanel}
                   className="me-2"
-                  onClick={() => {
-                    if (usuario.tipoUsuario === "PACIENTE") {
-                      navigate("/dashboardPaciente");
-                    } else if (usuario.tipoUsuario === "TUTOR") {
-                      navigate("/dashboardTutor");
-                    } else if (usuario.tipoUsuario === "MEDICO") {
-                      navigate("/dashboardProfesional");
-                    }
-                  }}
                 >
                   Mi Panel
                 </Button>
-                {/* cerrar sesión */}
-                <Button
-                  variant="outline-danger"
-                  onClick={cerrarSesion}
-                >
-                  Cerrar sesión
-                </Button>
-              </>
-            ) : (
-              <>
-                <Button
-                  variant="outline-primary"
-                  className="me-2"
-                  onClick={() => navigate("/login")}
-                >
-                  Login
-                </Button>
+              )}
 
-                <Button
-                  variant="primary"
-                  onClick={() => navigate("/registro")}
-                >
-                  Registro
-                </Button>
-              </>
-            )}
+              <Button variant="danger" onClick={cerrarSesion}>
+                Cerrar sesión
+              </Button>
+            </>
+          )}
 
-          </Nav>
+        </Nav>
 
-        </Navbar.Collapse>
       </Container>
     </Navbar>
   );
