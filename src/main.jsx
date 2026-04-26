@@ -11,6 +11,7 @@ import "./styles/cards.css";
 import "./styles/dashboard.css";
 import "./styles/home.css";
 import "./index.css";
+import "./styles/formulario.css";
 
 ReactDOM.createRoot(document.getElementById('root')).render(
   <React.StrictMode>
