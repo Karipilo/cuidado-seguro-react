@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { Navbar, Nav, Container, Button } from "react-bootstrap";
 import { useNavigate, useLocation } from "react-router-dom";
+import logo from "../../images/log.png";
 
 const NavbarComponent = () => {
 
@@ -9,13 +10,14 @@ const NavbarComponent = () => {
 
   const [usuario, setUsuario] = useState(null);
 
-  // cargar sesión SIEMPRE
+  // cargar sesión 
   useEffect(() => {
     const sesion = JSON.parse(localStorage.getItem("sesion"));
     if (sesion) {
       setUsuario(sesion);
     }
   }, [location]);
+
 
   // ir al panel según rol
   const irAlPanel = () => {
@@ -38,71 +40,66 @@ const NavbarComponent = () => {
   };
 
   return (
-    <Navbar bg="light" expand="lg">
+    <Navbar expand="lg" className="custom-navbar shadow-sm">
       <Container>
 
-        {/* IZQUIERDA */}
-        <Navbar.Brand
-          style={{ cursor: "pointer" }}
-          onClick={() => navigate("/")}
-        >
-          Cuidado Seguro
+        {/* LOGO */}
+        <Navbar.Brand onClick={() => navigate("/")} className="brand">
+          <img src={logo} alt="logo" className="logo" />
+          <span className="brand-text">Cuidado Seguro</span>
         </Navbar.Brand>
 
-        {/* CENTRO */}
-        <Nav className="mx-auto">
-          <Nav.Link onClick={() => navigate("/")}>Inicio</Nav.Link>
-          <Nav.Link onClick={() => navigate("/contacto")}>Contacto</Nav.Link>
-          <Nav.Link onClick={() => navigate("/nosotros")}>Sobre Nosotros</Nav.Link>
-        </Nav>
+        <Navbar.Toggle />
 
-        {/* DERECHA */}
-        <Nav className="ms-auto align-items-center">
+        <Navbar.Collapse>
 
-          {!usuario ? (
-            <>
-              <Button
-                variant="outline-primary"
-                onClick={() => navigate("/login")}
-                className="me-2"
-              >
-                Login
-              </Button>
+          {/* MENU CENTRO */}
+          <Nav className="mx-auto nav-center">
+            <Nav.Link onClick={() => navigate("/")}>Inicio</Nav.Link>
+            <Nav.Link>Contacto</Nav.Link>
+            <Nav.Link>Sobre Nosotros</Nav.Link>
+          </Nav>
 
-              <Button
-                variant="primary"
-                onClick={() => navigate("/registro")}
-              >
-                Registro
-              </Button>
-            </>
-          ) : (
-            <>
-              <span className="me-3">
-                Hola, {usuario.nombres || usuario.username}
-              </span>
+          {/* DERECHA */}
+          <Nav className="ms-auto nav-right">
 
-              {!location.pathname.includes("dashboard") && (
-                <Button
-                  variant="success"
-                  onClick={irAlPanel}
-                  className="me-2"
-                >
+            {usuario ? (
+              <>
+                <span className="user-text">
+                  Hola, {usuario.nombres || usuario.username}
+                </span>
+
+                <Button className="btn-panel" onClick={irAlPanel}>
                   Mi Panel
                 </Button>
-              )}
 
-              <Button
-                variant="danger"
-                onClick={cerrarSesion}
-              >
-                Cerrar sesión
-              </Button>
-            </>
-          )}
+                <Button className="btn-logout" onClick={cerrarSesion}>
+                  Cerrar sesión
+                </Button>
+              </>
+            ) : (
+              <>
+                <Button
+                  variant="outline-primary"
+                  onClick={() => navigate("/login")}
+                >
+                  Iniciar sesión
+                </Button>
 
-        </Nav>
+                <Button
+                  variant="primary"
+                  onClick={() => navigate("/registro")}
+                >
+                  Registrarse
+                </Button>
+              </>
 
+
+            )}
+
+          </Nav>
+
+        </Navbar.Collapse>
       </Container>
     </Navbar>
   );
