@@ -22,6 +22,8 @@ const Registro = () => {
     direccion: "",
     tipoUsuario: "PACIENTE",
 
+    rutPaciente: "",
+
     grupoSanguineo: "",
     factorRh: "",
     alergias: "",
@@ -112,7 +114,12 @@ const Registro = () => {
     const usuarioFinal = {
       ...formData,
       roles: [`ROLE_${formData.tipoUsuario}`],
-      versionTerminos: 1
+      versionTerminos: 1,
+
+      pacientesRuts:
+        formData.tipoUsuario === "TUTOR"
+          ? [formData.rutPaciente]
+          : []
     };
 
     localStorage.setItem("usuario", JSON.stringify(usuarioFinal));
@@ -121,7 +128,7 @@ const Registro = () => {
       navigate("/dashboardPaciente");
     } else if (formData.tipoUsuario === "TUTOR") {
       navigate("/dashboardTutor");
-    } else if (formData.tipoUsuario === "MEDICO") {
+    } else {
       navigate("/dashboardProfesional");
     }
   };
@@ -204,7 +211,7 @@ const Registro = () => {
         >
           <option value="PACIENTE">Paciente</option>
           <option value="TUTOR">Tutor</option>
-          <option value="MEDICO">Profesional</option>
+          <option value="PROFESIONAL">Profesional</option>
         </Form.Select>
       </Form.Group>
 
