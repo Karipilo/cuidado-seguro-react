@@ -3,6 +3,7 @@ import { Form } from "react-bootstrap";
 import { useNavigate } from "react-router-dom";
 import Formulario from "../components/ui/Formulario";
 import { usuarios } from "../data/usuario";
+import "../styles/auth.css";
 
 const Registro = () => {
 
@@ -122,7 +123,11 @@ const Registro = () => {
           : []
     };
 
-    localStorage.setItem("usuario", JSON.stringify(usuarioFinal));
+    const usuariosGuardados = JSON.parse(localStorage.getItem("usuarios")) || [];
+
+    usuariosGuardados.push(usuarioFinal);
+
+    localStorage.setItem("usuarios", JSON.stringify(usuariosGuardados));
 
     if (formData.tipoUsuario === "PACIENTE") {
       navigate("/dashboardPaciente");
@@ -134,265 +139,267 @@ const Registro = () => {
   };
 
   return (
-    <Formulario title="Registro" buttonText="Crear cuenta" onSubmit={handleRegistro}>
+    <div className="auth-container">
+      <Formulario title="Registro" buttonText="Crear cuenta" onSubmit={handleRegistro}>
 
-      <Form.Group className="mb-3">
-        <Form.Label>Usuario</Form.Label>
-        <Form.Control name="username" onChange={handleChange} />
-      </Form.Group>
+        <Form.Group className="mb-3">
+          <Form.Label>Usuario</Form.Label>
+          <Form.Control name="username" onChange={handleChange} />
+        </Form.Group>
 
-      <Form.Group className="mb-3">
-        <Form.Label>Nombres</Form.Label>
-        <Form.Control name="nombres" onChange={handleChange} />
-      </Form.Group>
+        <Form.Group className="mb-3">
+          <Form.Label>Nombres</Form.Label>
+          <Form.Control name="nombres" onChange={handleChange} />
+        </Form.Group>
 
-      <Form.Group className="mb-3">
-        <Form.Label>Apellidos</Form.Label>
-        <Form.Control name="apellidos" onChange={handleChange} />
-      </Form.Group>
+        <Form.Group className="mb-3">
+          <Form.Label>Apellidos</Form.Label>
+          <Form.Control name="apellidos" onChange={handleChange} />
+        </Form.Group>
 
-      <Form.Group className="mb-3">
-        <Form.Label>Correo</Form.Label>
-        <Form.Control type="email" name="email" onChange={handleChange} />
-      </Form.Group>
+        <Form.Group className="mb-3">
+          <Form.Label>Correo</Form.Label>
+          <Form.Control type="email" name="email" onChange={handleChange} />
+        </Form.Group>
 
-      <Form.Group className="mb-3">
-        <Form.Label>Contraseña</Form.Label>
-        <Form.Control type="password" name="password" onChange={handleChange} />
-      </Form.Group>
+        <Form.Group className="mb-3">
+          <Form.Label>Contraseña</Form.Label>
+          <Form.Control type="password" name="password" onChange={handleChange} />
+        </Form.Group>
 
-      <Form.Group className="mb-3">
-        <Form.Label>Número de documento</Form.Label>
-        <Form.Control name="numeroDocumento" onChange={handleChange} />
-      </Form.Group>
+        <Form.Group className="mb-3">
+          <Form.Label>Número de documento</Form.Label>
+          <Form.Control name="numeroDocumento" onChange={handleChange} />
+        </Form.Group>
 
-      <Form.Group className="mb-3">
-        <Form.Label>Fecha de nacimiento</Form.Label>
-        <Form.Control type="date" name="fechaNacimiento" onChange={handleChange} />
-      </Form.Group>
+        <Form.Group className="mb-3">
+          <Form.Label>Fecha de nacimiento</Form.Label>
+          <Form.Control type="date" name="fechaNacimiento" onChange={handleChange} />
+        </Form.Group>
 
-      <Form.Group className="mb-3">
-        <Form.Label>Género</Form.Label>
-        <Form.Select name="genero" onChange={handleChange}>
-          <option value="">Seleccione</option>
-          <option value="M">Masculino</option>
-          <option value="F">Femenino</option>
-        </Form.Select>
-      </Form.Group>
+        <Form.Group className="mb-3">
+          <Form.Label>Género</Form.Label>
+          <Form.Select name="genero" onChange={handleChange}>
+            <option value="">Seleccione</option>
+            <option value="M">Masculino</option>
+            <option value="F">Femenino</option>
+          </Form.Select>
+        </Form.Group>
 
-      <Form.Group className="mb-3">
-        <Form.Label>Teléfono</Form.Label>
-        <div className="d-flex">
-          <span className="form-control" style={{ width: "80px", background: "#eee" }}>+569</span>
-          <Form.Control
-            type="text"
-            placeholder="12345678"
-            onChange={(e) =>
-              setFormData({
-                ...formData,
-                telefono: "+569" + e.target.value
-              })
-            }
-          />
-        </div>
-      </Form.Group>
-
-      <Form.Group className="mb-3">
-        <Form.Label>Dirección</Form.Label>
-        <Form.Control name="direccion" onChange={handleChange} />
-      </Form.Group>
-
-      <Form.Group className="mb-3">
-        <Form.Label>Tipo de usuario</Form.Label>
-        <Form.Select
-          name="tipoUsuario"
-          value={formData.tipoUsuario}
-          onChange={handleChange}
-        >
-          <option value="PACIENTE">Paciente</option>
-          <option value="TUTOR">Tutor</option>
-          <option value="PROFESIONAL">Profesional</option>
-        </Form.Select>
-      </Form.Group>
-
-      {/* TUTOR */}
-      {formData.tipoUsuario === "TUTOR" && (
-        <>
-          <Form.Group className="mb-3">
-            <Form.Label>RUT del paciente</Form.Label>
+        <Form.Group className="mb-3">
+          <Form.Label>Teléfono</Form.Label>
+          <div className="d-flex">
+            <span className="form-control" style={{ width: "80px", background: "#eee" }}>+569</span>
             <Form.Control
-              name="rutPaciente"
-              onChange={handleChange}
-            />
-          </Form.Group>
-        </>
-      )}
-
-      {/* PACIENTE */}
-      {formData.tipoUsuario === "PACIENTE" && (
-        <>
-          <Form.Group className="mb-3">
-            <Form.Label>Grupo sanguíneo</Form.Label>
-            <Form.Select name="grupoSanguineo" onChange={handleChange}>
-              <option value="">Seleccione</option>
-              <option>O</option>
-              <option>A</option>
-              <option>B</option>
-              <option>AB</option>
-              <option>No lo sé</option>
-            </Form.Select>
-          </Form.Group>
-
-          <Form.Group className="mb-3">
-            <Form.Label>Factor RH</Form.Label>
-            <Form.Select name="factorRh" onChange={handleChange}>
-              <option value="">Seleccione</option>
-              <option>+</option>
-              <option>-</option>
-              <option>No lo sé</option>
-            </Form.Select>
-          </Form.Group>
-
-          <Form.Group className="mb-3">
-            <Form.Label>Alergias</Form.Label>
-            <Form.Control name="alergias" onChange={handleChange} />
-          </Form.Group>
-
-          <Form.Group className="mb-3">
-            <Form.Label>Enfermedades crónicas</Form.Label>
-            <Form.Control name="enfermedadesCronicas" onChange={handleChange} />
-          </Form.Group>
-
-          <Form.Group className="mb-3">
-            <Form.Label>Medicamentos actuales</Form.Label>
-            <Form.Control name="medicamentosActuales" onChange={handleChange} />
-          </Form.Group>
-
-          <Form.Group className="mb-3">
-            <Form.Label>Contacto de emergencia</Form.Label>
-            <Form.Control name="contactoEmergencia" onChange={handleChange} />
-          </Form.Group>
-
-          <Form.Group className="mb-3">
-            <Form.Label>Teléfono de emergencia</Form.Label>
-            <Form.Control
-              placeholder="+56912345678"
+              type="text"
+              placeholder="12345678"
               onChange={(e) =>
                 setFormData({
                   ...formData,
-                  telefonoEmergencia: e.target.value
+                  telefono: "+569" + e.target.value
                 })
               }
             />
-          </Form.Group>
+          </div>
+        </Form.Group>
 
-          <Form.Group className="mb-3">
-            <Form.Label>Tipo de previsión</Form.Label>
-            <Form.Select name="seguroMedico" onChange={handleChange}>
-              <option value="">Seleccione</option>
-              <option>Fonasa</option>
-              <option>Isapre</option>
-              <option>Particular</option>
-            </Form.Select>
-          </Form.Group>
-        </>
-      )}
+        <Form.Group className="mb-3">
+          <Form.Label>Dirección</Form.Label>
+          <Form.Control name="direccion" onChange={handleChange} />
+        </Form.Group>
 
-      {formData.tipoUsuario === "PROFESIONAL" && (
-        <>
-          <Form.Group className="mb-3">
-            <Form.Label>Número de licencia</Form.Label>
-            <Form.Control name="numeroLicencia" onChange={handleChange} />
-          </Form.Group>
+        <Form.Group className="mb-3">
+          <Form.Label>Tipo de usuario</Form.Label>
+          <Form.Select
+            name="tipoUsuario"
+            value={formData.tipoUsuario}
+            onChange={handleChange}
+          >
+            <option value="PACIENTE">Paciente</option>
+            <option value="TUTOR">Tutor</option>
+            <option value="PROFESIONAL">Profesional</option>
+          </Form.Select>
+        </Form.Group>
 
-          <Form.Group className="mb-3">
-            <Form.Label>Profesión</Form.Label>
-            <Form.Select name="profesion" onChange={handleChange}>
-              <option value="">Seleccione</option>
-              <option>Médico</option>
-              <option>Enfermero/a</option>
-              <option>Kinesiólogo/a</option>
-              <option>Nutricionista</option>
-              <option>Psicólogo/a</option>
-              <option>Fonoaudiólogo/a</option>
-              <option>Terapeuta ocupacional</option>
-              <option>Paramédico</option>
-              <option>Otro</option>
-            </Form.Select>
-          </Form.Group>
+        {/* TUTOR */}
+        {formData.tipoUsuario === "TUTOR" && (
+          <>
+            <Form.Group className="mb-3">
+              <Form.Label>RUT del paciente</Form.Label>
+              <Form.Control
+                name="rutPaciente"
+                onChange={handleChange}
+              />
+            </Form.Group>
+          </>
+        )}
 
-          <Form.Group className="mb-3">
-            <Form.Label>Especialidad</Form.Label>
-            <Form.Control name="especialidad" onChange={handleChange} />
-          </Form.Group>
+        {/* PACIENTE */}
+        {formData.tipoUsuario === "PACIENTE" && (
+          <>
+            <Form.Group className="mb-3">
+              <Form.Label>Grupo sanguíneo</Form.Label>
+              <Form.Select name="grupoSanguineo" onChange={handleChange}>
+                <option value="">Seleccione</option>
+                <option>O</option>
+                <option>A</option>
+                <option>B</option>
+                <option>AB</option>
+                <option>No lo sé</option>
+              </Form.Select>
+            </Form.Group>
 
-          <Form.Group className="mb-3">
-            <Form.Label>Subespecialidad</Form.Label>
-            <Form.Control name="subespecialidad" onChange={handleChange} />
-          </Form.Group>
+            <Form.Group className="mb-3">
+              <Form.Label>Factor RH</Form.Label>
+              <Form.Select name="factorRh" onChange={handleChange}>
+                <option value="">Seleccione</option>
+                <option>+</option>
+                <option>-</option>
+                <option>No lo sé</option>
+              </Form.Select>
+            </Form.Group>
 
-          <Form.Group className="mb-3">
-            <Form.Label>Universidad</Form.Label>
-            <Form.Control name="universidad" onChange={handleChange} />
-          </Form.Group>
+            <Form.Group className="mb-3">
+              <Form.Label>Alergias</Form.Label>
+              <Form.Control name="alergias" onChange={handleChange} />
+            </Form.Group>
 
-          <Form.Group className="mb-3">
-            <Form.Label>Año de graduación</Form.Label>
-            <Form.Select name="añoGraduacion" onChange={handleChange}>
-              <option value="">Seleccione</option>
-              {Array.from({ length: 50 }, (_, i) => {
-                const year = new Date().getFullYear() - i;
-                return <option key={year}>{year}</option>;
-              })}
-            </Form.Select>
-          </Form.Group>
+            <Form.Group className="mb-3">
+              <Form.Label>Enfermedades crónicas</Form.Label>
+              <Form.Control name="enfermedadesCronicas" onChange={handleChange} />
+            </Form.Group>
 
-          <Form.Group className="mb-3">
-            <Form.Label>Años de experiencia</Form.Label>
-            <Form.Select name="experienciaAños" onChange={handleChange}>
-              <option value="">Seleccione</option>
-              {[...Array(41).keys()].map((n) => (
-                <option key={n}>{n}</option>
-              ))}
-            </Form.Select>
-          </Form.Group>
+            <Form.Group className="mb-3">
+              <Form.Label>Medicamentos actuales</Form.Label>
+              <Form.Control name="medicamentosActuales" onChange={handleChange} />
+            </Form.Group>
 
-          <Form.Group className="mb-3">
-            <Form.Label>Institución</Form.Label>
-            <Form.Control name="institucion" onChange={handleChange} />
-          </Form.Group>
+            <Form.Group className="mb-3">
+              <Form.Label>Contacto de emergencia</Form.Label>
+              <Form.Control name="contactoEmergencia" onChange={handleChange} />
+            </Form.Group>
 
-          <Form.Group className="mb-3">
-            <Form.Label>Horas semanales</Form.Label>
-            <Form.Select name="horasSemanales" onChange={handleChange}>
-              <option value="">Seleccione</option>
-              {[10, 20, 30, 40, 44, 45].map((h) => (
-                <option key={h}>{h}</option>
-              ))}
-            </Form.Select>
-          </Form.Group>
+            <Form.Group className="mb-3">
+              <Form.Label>Teléfono de emergencia</Form.Label>
+              <Form.Control
+                placeholder="+56912345678"
+                onChange={(e) =>
+                  setFormData({
+                    ...formData,
+                    telefonoEmergencia: e.target.value
+                  })
+                }
+              />
+            </Form.Group>
 
-          
+            <Form.Group className="mb-3">
+              <Form.Label>Tipo de previsión</Form.Label>
+              <Form.Select name="seguroMedico" onChange={handleChange}>
+                <option value="">Seleccione</option>
+                <option>Fonasa</option>
+                <option>Isapre</option>
+                <option>Particular</option>
+              </Form.Select>
+            </Form.Group>
+          </>
+        )}
 
-          
-        </>
-      )}
+        {formData.tipoUsuario === "PROFESIONAL" && (
+          <>
+            <Form.Group className="mb-3">
+              <Form.Label>Número de licencia</Form.Label>
+              <Form.Control name="numeroLicencia" onChange={handleChange} />
+            </Form.Group>
 
-      <Form.Group className="mb-3">
-        <Form.Check
-          type="checkbox"
-          label="Acepto los términos y condiciones"
-          onChange={(e) =>
-            setFormData({
-              ...formData,
-              aceptaTerminos: e.target.checked
-            })
-          }
-        />
-      </Form.Group>
+            <Form.Group className="mb-3">
+              <Form.Label>Profesión</Form.Label>
+              <Form.Select name="profesion" onChange={handleChange}>
+                <option value="">Seleccione</option>
+                <option>Médico</option>
+                <option>Enfermero/a</option>
+                <option>Kinesiólogo/a</option>
+                <option>Nutricionista</option>
+                <option>Psicólogo/a</option>
+                <option>Fonoaudiólogo/a</option>
+                <option>Terapeuta ocupacional</option>
+                <option>Paramédico</option>
+                <option>Otro</option>
+              </Form.Select>
+            </Form.Group>
 
-    </Formulario>
-  );
+            <Form.Group className="mb-3">
+              <Form.Label>Especialidad</Form.Label>
+              <Form.Control name="especialidad" onChange={handleChange} />
+            </Form.Group>
+
+            <Form.Group className="mb-3">
+              <Form.Label>Subespecialidad</Form.Label>
+              <Form.Control name="subespecialidad" onChange={handleChange} />
+            </Form.Group>
+
+            <Form.Group className="mb-3">
+              <Form.Label>Universidad</Form.Label>
+              <Form.Control name="universidad" onChange={handleChange} />
+            </Form.Group>
+
+            <Form.Group className="mb-3">
+              <Form.Label>Año de graduación</Form.Label>
+              <Form.Select name="añoGraduacion" onChange={handleChange}>
+                <option value="">Seleccione</option>
+                {Array.from({ length: 50 }, (_, i) => {
+                  const year = new Date().getFullYear() - i;
+                  return <option key={year}>{year}</option>;
+                })}
+              </Form.Select>
+            </Form.Group>
+
+            <Form.Group className="mb-3">
+              <Form.Label>Años de experiencia</Form.Label>
+              <Form.Select name="experienciaAños" onChange={handleChange}>
+                <option value="">Seleccione</option>
+                {[...Array(41).keys()].map((n) => (
+                  <option key={n}>{n}</option>
+                ))}
+              </Form.Select>
+            </Form.Group>
+
+            <Form.Group className="mb-3">
+              <Form.Label>Institución</Form.Label>
+              <Form.Control name="institucion" onChange={handleChange} />
+            </Form.Group>
+
+            <Form.Group className="mb-3">
+              <Form.Label>Horas semanales</Form.Label>
+              <Form.Select name="horasSemanales" onChange={handleChange}>
+                <option value="">Seleccione</option>
+                {[10, 20, 30, 40, 44, 45].map((h) => (
+                  <option key={h}>{h}</option>
+                ))}
+              </Form.Select>
+            </Form.Group>
+
+
+
+
+          </>
+        )}
+
+        <Form.Group className="mb-3">
+          <Form.Check
+            type="checkbox"
+            label="Acepto los términos y condiciones"
+            onChange={(e) =>
+              setFormData({
+                ...formData,
+                aceptaTerminos: e.target.checked
+              })
+            }
+          />
+        </Form.Group>
+
+      </Formulario>
+    </div>
+      );
 };
 
-export default Registro;
+      export default Registro;

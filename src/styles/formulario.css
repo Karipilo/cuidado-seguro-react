@@ -1,5 +1,47 @@
 .formulario-card {
-  width: 400px;
-  border-radius: 15px;
+  width: 100%;
+  max-width: 400px;
+  margin: auto;
+  padding: 25px;
+
+  border-radius: 14px;
+
+  background: rgba(255, 248, 220, 0.92) !important;
+
+  border: 1px solid rgba(95, 158, 160, 0.3);
+
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+}
+
+.formulario-card,
+.formulario-card * {
+  background-color: transparent;
+}
+
+.formulario-card {
+  background: rgba(255, 248, 220, 0.92) !important;
+}
+
+.formulario-card .btn {
+  background-color: #2563eb; /* azul */
   border: none;
+  color: white;
+}
+
+/* cuando pasas el mouse */
+.formulario-card .btn:hover {
+  background-color: #2563eb;
+  color: white;
+}
+
+/* cuando haces click */
+.formulario-card .btn:active {
+  background-color: #2563eb !important;
+  color: white !important;
+}
+
+/* cuando está enfocado */
+.formulario-card .btn:focus {
+  background-color: #2563eb;
+  box-shadow: none;
 }

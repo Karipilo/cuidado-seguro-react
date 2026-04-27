@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import Card from '../components/ui/Card';
 import Button from '../components/ui/Button';
+import "../styles/dashboard.css";
 
 const DashboardPaciente = () => {
 
@@ -30,47 +31,54 @@ const DashboardPaciente = () => {
   }
 
   return (
-    <div className="container mt-4">
+    <div className="dashboard-container">
 
-      <h1>Dashboard Paciente</h1>
-      
+      {/* HEADER */}
+      <div className="dashboard-header">
+        <h2>Panel del Paciente</h2>
+        <p>Bienvenido, {user?.nombre}</p>
+      </div>
 
-      <div className="row mt-4">
+      <div className="row">
 
-        {/* Datos personales */}
+        {/* COLUMNA IZQUIERDA */}
         <div className="col-md-6">
-          <Card title="Información Personal">
-            <p><strong>Nombre:</strong> {user.nombres} {user.apellidos}</p>
-            <p><strong>RUT:</strong> {user.numeroDocumento}</p>
-            <p><strong>Email:</strong> {user.email}</p>
-            <p><strong>Teléfono:</strong> {user.telefono}</p>
-            <p><strong>Dirección:</strong> {user.direccion}</p>
-          </Card>
+          <div className="dashboard-card p-3 mb-4">
+            <h5>Información Personal</h5>
+
+            <p><strong>Nombre:</strong> {user?.nombre}</p>
+            <p><strong>RUT:</strong> {user?.rut}</p>
+            <p><strong>Email:</strong> {user?.email}</p>
+            <p><strong>Teléfono:</strong> {user?.telefono}</p>
+            <p><strong>Dirección:</strong> {user?.direccion}</p>
+          </div>
         </div>
 
-        {/* Datos médicos */}
+        {/* COLUMNA DERECHA */}
         <div className="col-md-6">
-          <Card title="Información Médica">
-            <p><strong>Grupo sanguíneo:</strong> {user.grupoSanguineo}</p>
-            <p><strong>Factor RH:</strong> {user.factorRh}</p>
+          <div className="dashboard-card p-3 mb-4">
+            <h5>Información Médica</h5>
+
+            <p><strong>Grupo sanguíneo:</strong> {user?.grupoSanguineo}</p>
+            <p><strong>Factor RH:</strong> {user.factorRH}</p>
             <p><strong>Alergias:</strong> {user.alergias}</p>
             <p><strong>Enfermedades:</strong> {user.enfermedadesCronicas}</p>
-            <p><strong>Medicamentos:</strong> {user.medicamentosActuales}</p>
-          </Card>
+            <p><strong>Medicamentos:</strong> {user.medicamentos}</p>
+          </div>
         </div>
 
       </div>
 
-      <div className="mt-4">
-        <Button
-          onClick={() => {
-            localStorage.removeItem("sesion");
-            navigate("/login");
-          }}
-        >
-          Cerrar Sesión
-        </Button>
-      </div>
+      {/* BOTÓN */}
+      <button
+        className="btn btn-primary mt-3"
+        onClick={() => {
+          localStorage.removeItem("sesion");
+          navigate("/login");
+        }}
+      >
+        Cerrar sesión
+      </button>
 
     </div>
   );

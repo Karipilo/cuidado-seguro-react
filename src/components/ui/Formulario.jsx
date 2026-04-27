@@ -4,7 +4,7 @@ const Formulario = ({ title, children, buttonText, onSubmit }) => {
 
   return (
     <Container className="d-flex justify-content-center mt-5">
-      <Card style={{ width: "400px", padding: "20px" }}>
+      <Card className="formulario-card">
 
         <h3 className="mb-3">{title}</h3>
 
