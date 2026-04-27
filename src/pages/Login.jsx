@@ -35,13 +35,17 @@ const Login = () => {
       localStorage.setItem("sesion", JSON.stringify(usuarioGuardado));
 
       // redirección estable
-      if (usuarioGuardado.tipoUsuario === "PACIENTE") {
+      const tipo = usuarioGuardado.tipoUsuario?.toUpperCase();
+
+      if (tipo === "PACIENTE") {
         navigate("/dashboardPaciente", { replace: true });
-      } else if (usuarioGuardado.tipoUsuario === "TUTOR") {
+      } else if (tipo === "TUTOR") {
         navigate("/dashboardTutor", { replace: true });
-      } else if (usuarioGuardado.tipoUsuario === "MEDICO") {
+      } else if (tipo === "PROFESIONAL") {
         navigate("/dashboardProfesional", { replace: true });
       }
+
+      return;
 
     } else {
       setError("Usuario o contraseña incorrectos");

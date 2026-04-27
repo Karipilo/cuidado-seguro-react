@@ -1,132 +1,121 @@
-import React, { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
-import Card from '../components/ui/Card';
-import Button from '../components/ui/Button';
-import Input from '../components/ui/Input';
-import PatientSearch from '../components/dashboard/PatientSearch';
-import PatientDetails from '../components/dashboard/PatientDetails';
-import ClinicalNotes from '../components/dashboard/ClinicalNotes';
+import React, { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
+import { Form, Button, Card } from "react-bootstrap";
+import { usuarios } from "../data/usuario";
 
-/**
- * Dashboard para Profesionales de la Salud
- * Permite buscar pacientes y gestionar notas clínicas
- */
 const DashboardProfesional = () => {
-  const [user, setUser] = useState(null);
-  const [selectedPatient, setSelectedPatient] = useState(null);
-  const [loading, setLoading] = useState(true);
+
   const navigate = useNavigate();
 
-  // Obtener datos del usuario al montar el componente
+  const [profesional, setProfesional] = useState(null);
+  const [rutBusqueda, setRutBusqueda] = useState("");
+  const [paciente, setPaciente] = useState(null);
+  const [evolucion, setEvolucion] = useState("");
+
   useEffect(() => {
-    const userData = localStorage.getItem('user');
-    if (!userData) {
-      navigate('/login');
+    const sesion = JSON.parse(localStorage.getItem("sesion"));
+
+    if (!sesion) {
+      navigate("/login");
       return;
     }
 
-    const parsedUser = JSON.parse(userData);
-    setUser(parsedUser);
-    setLoading(false);
+    setProfesional(sesion);
   }, [navigate]);
 
-  // Manejar selección de paciente
-  const handlePatientSelect = (patient) => {
-    setSelectedPatient(patient);
+  const buscarPaciente = () => {
+    const encontrado = usuarios.find(
+      (u) =>
+        u.tipoUsuario === "PACIENTE" &&
+        u.numeroDocumento === rutBusqueda
+    );
+
+    if (!encontrado) {
+      alert("Paciente no encontrado");
+      setPaciente(null);
+      return;
+    }
+
+    setPaciente(encontrado);
   };
 
-  if (loading) {
-    return (
-      <div className="dashboard-container">
-        <div className="text-center">
-          <div className="spinner-border text-primary" role="status">
-            <span className="visually-hidden">Cargando...</span>
-          </div>
-          <p className="mt-3">Cargando información...</p>
-        </div>
-      </div>
-    );
-  }
+  const guardarEvolucion = () => {
+    if (!evolucion) {
+      alert("Debe escribir una evolución");
+      return;
+    }
+
+    const evoluciones = JSON.parse(localStorage.getItem("evoluciones")) || [];
+
+    evoluciones.push({
+      rutPaciente: paciente.numeroDocumento,
+      texto: evolucion,
+      fecha: new Date().toLocaleString(),
+      profesional: profesional.nombres
+    });
+
+    localStorage.setItem("evoluciones", JSON.stringify(evoluciones));
+
+    alert("Evolución guardada");
+    setEvolucion("");
+  };
 
   return (
-    <div className="dashboard-container">
-      <div className="dashboard-header">
-        <div className="row align-items-center">
-          <div className="col-md-6">
-            <h1 className="mb-2">Dashboard Profesional</h1>
-            <p className="mb-0">Bienvenido, Dr(a). {user?.nombre}</p>
-          </div>
-          <div className="col-md-6 text-md-end">
-            <div className="badge bg-white text-primary fs-6">
-              <i className="bi bi-hospital me-2"></i>
-              {user?.institucion}
-            </div>
-            <div className="badge bg-white text-secondary fs-6 ms-2">
-              <i className="bi bi-award me-2"></i>
-              {user?.tipoProfesional}
-            </div>
-          </div>
-        </div>
-      </div>
+    <div className="container mt-4">
 
-      <div className="row">
-        {/* Búsqueda de Pacientes */}
-        <div className="col-lg-4">
-          <PatientSearch onPatientSelect={handlePatientSelect} />
-          
-          {/* Estadísticas Rápidas */}
-          <Card title="Mi Actividad" className="mt-4">
-            <div className="text-center">
-              <div className="row">
-                <div className="col-6 mb-3">
-                  <i className="bi bi-people-fill text-primary fs-2"></i>
-                  <h5 className="mt-2">24</h5>
-                  <small className="text-muted">Pacientes activos</small>
-                </div>
-                <div className="col-6 mb-3">
-                  <i className="bi bi-clipboard-check text-success fs-2"></i>
-                  <h5 className="mt-2">8</h5>
-                  <small className="text-muted">Notas esta semana</small>
-                </div>
-              </div>
-              <div className="row">
-                <div className="col-6">
-                  <i className="bi bi-calendar-event text-info fs-2"></i>
-                  <h5 className="mt-2">5</h5>
-                  <small className="text-muted">Citas hoy</small>
-                </div>
-                <div className="col-6">
-                  <i className="bi bi-clock-history text-warning fs-2"></i>
-                  <h5 className="mt-2">3</h5>
-                  <small className="text-muted">Pendientes</small>
-                </div>
-              </div>
-            </div>
-          </Card>
-        </div>
+      <h1>Dashboard Profesional</h1>
+      <p>Bienvenido {profesional?.nombres}</p>
 
-        {/* Detalles del Paciente y Notas Clínicas */}
-        <div className="col-lg-8">
-          {selectedPatient ? (
-            <>
-              <PatientDetails patient={selectedPatient} />
-              <ClinicalNotes 
-                patient={selectedPatient} 
-                professional={user}
-                className="mt-4"
-              />
-            </>
-          ) : (
-            <Card>
-              <div className="text-center text-muted py-5">
-                <i className="bi bi-search fs-1 mb-3"></i>
-                <h4>Seleccione un Paciente</h4>
-                <p>Busque un paciente por RUT para ver su información clínica</p>
-              </div>
-            </Card>
-          )}
+      {/* BUSCADOR */}
+      <Card className="p-3 mb-4">
+        <h5>Buscar paciente por RUT</h5>
+
+        <div className="d-flex">
+          <Form.Control
+            placeholder="Ingrese RUT (sin puntos ni guion)"
+            value={rutBusqueda}
+            onChange={(e) => setRutBusqueda(e.target.value)}
+          />
+
+          <Button className="ms-2" onClick={buscarPaciente}>
+            Buscar
+          </Button>
         </div>
-      </div>
+      </Card>
+
+      {/* DATOS PACIENTE */}
+      {paciente && (
+        <Card className="p-3 mb-4">
+          <h5>Datos del paciente</h5>
+
+          <p><strong>Nombre:</strong> {paciente.nombres} {paciente.apellidos}</p>
+          <p><strong>RUT:</strong> {paciente.numeroDocumento}</p>
+          <p><strong>Grupo sanguíneo:</strong> {paciente.grupoSanguineo}</p>
+          <p><strong>Alergias:</strong> {paciente.alergias}</p>
+          <p><strong>Enfermedades:</strong> {paciente.enfermedadesCronicas}</p>
+          <p><strong>Medicamentos:</strong> {paciente.medicamentosActuales}</p>
+        </Card>
+      )}
+
+      {/* EVOLUCIÓN */}
+      {paciente && (
+        <Card className="p-3">
+          <h5>Registrar evolución</h5>
+
+          <Form.Control
+            as="textarea"
+            rows={4}
+            placeholder="Escriba evolución médica..."
+            value={evolucion}
+            onChange={(e) => setEvolucion(e.target.value)}
+          />
+
+          <Button className="mt-3" onClick={guardarEvolucion}>
+            Guardar evolución
+          </Button>
+        </Card>
+      )}
+
     </div>
   );
 };

@@ -298,6 +298,86 @@ const Registro = () => {
         </>
       )}
 
+      {formData.tipoUsuario === "PROFESIONAL" && (
+        <>
+          <Form.Group className="mb-3">
+            <Form.Label>Número de licencia</Form.Label>
+            <Form.Control name="numeroLicencia" onChange={handleChange} />
+          </Form.Group>
+
+          <Form.Group className="mb-3">
+            <Form.Label>Profesión</Form.Label>
+            <Form.Select name="profesion" onChange={handleChange}>
+              <option value="">Seleccione</option>
+              <option>Médico</option>
+              <option>Enfermero/a</option>
+              <option>Kinesiólogo/a</option>
+              <option>Nutricionista</option>
+              <option>Psicólogo/a</option>
+              <option>Fonoaudiólogo/a</option>
+              <option>Terapeuta ocupacional</option>
+              <option>Paramédico</option>
+              <option>Otro</option>
+            </Form.Select>
+          </Form.Group>
+
+          <Form.Group className="mb-3">
+            <Form.Label>Especialidad</Form.Label>
+            <Form.Control name="especialidad" onChange={handleChange} />
+          </Form.Group>
+
+          <Form.Group className="mb-3">
+            <Form.Label>Subespecialidad</Form.Label>
+            <Form.Control name="subespecialidad" onChange={handleChange} />
+          </Form.Group>
+
+          <Form.Group className="mb-3">
+            <Form.Label>Universidad</Form.Label>
+            <Form.Control name="universidad" onChange={handleChange} />
+          </Form.Group>
+
+          <Form.Group className="mb-3">
+            <Form.Label>Año de graduación</Form.Label>
+            <Form.Select name="añoGraduacion" onChange={handleChange}>
+              <option value="">Seleccione</option>
+              {Array.from({ length: 50 }, (_, i) => {
+                const year = new Date().getFullYear() - i;
+                return <option key={year}>{year}</option>;
+              })}
+            </Form.Select>
+          </Form.Group>
+
+          <Form.Group className="mb-3">
+            <Form.Label>Años de experiencia</Form.Label>
+            <Form.Select name="experienciaAños" onChange={handleChange}>
+              <option value="">Seleccione</option>
+              {[...Array(41).keys()].map((n) => (
+                <option key={n}>{n}</option>
+              ))}
+            </Form.Select>
+          </Form.Group>
+
+          <Form.Group className="mb-3">
+            <Form.Label>Institución</Form.Label>
+            <Form.Control name="institucion" onChange={handleChange} />
+          </Form.Group>
+
+          <Form.Group className="mb-3">
+            <Form.Label>Horas semanales</Form.Label>
+            <Form.Select name="horasSemanales" onChange={handleChange}>
+              <option value="">Seleccione</option>
+              {[10, 20, 30, 40, 44, 45].map((h) => (
+                <option key={h}>{h}</option>
+              ))}
+            </Form.Select>
+          </Form.Group>
+
+          
+
+          
+        </>
+      )}
+
       <Form.Group className="mb-3">
         <Form.Check
           type="checkbox"
