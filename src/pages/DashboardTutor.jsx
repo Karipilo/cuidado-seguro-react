@@ -1,7 +1,7 @@
-import React, { useEffect, useState } from "react";
-import { useNavigate } from "react-router-dom";
-import { Card } from "react-bootstrap";
-import { usuarios } from "../data/usuarios";
+import React, { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
+import Card from '../components/ui/Card';
+import { usuarios } from '../data/usuario';
 
 const DashboardTutor = () => {
 
@@ -12,47 +12,57 @@ const DashboardTutor = () => {
 
   useEffect(() => {
 
-  const sesion = JSON.parse(localStorage.getItem("sesion"));
+    const sesion = JSON.parse(localStorage.getItem("sesion"));
 
-  if (!sesion) {
-    navigate("/login");
-    return;
+    if (!sesion) {
+      navigate('/login');
+      return;
+    }
+
+    setTutor(sesion);
+
+    // buscar pacientes asociados
+    if (sesion.rutPaciente) {
+
+      const paciente = usuarios.find(
+        (u) =>
+          u.tipoUsuario === "PACIENTE" &&
+          u.numeroDocumento === sesion.rutPaciente
+      );
+
+      if (paciente) {
+        setPacientes([paciente]);
+      }
+    }
+
+  }, [navigate]);
+
+  if (!tutor) {
+    return <p>Cargando...</p>;
   }
-
-  setTutor(sesion);
-
-  // buscar pacientes asociados
-  if (sesion.pacientesRuts && sesion.pacientesRuts.length > 0) {
-
-    const pacientesAsociados = usuarios.filter(
-      (u) =>
-        u.tipoUsuario === "PACIENTE" &&
-        sesion.pacientesRuts.includes(u.numeroDocumento)
-    );
-
-    setPacientes(pacientesAsociados);
-  }
-
-}, []);
 
   return (
     <div className="container mt-4">
 
       <h1>Dashboard Tutor</h1>
 
-      <p>Bienvenido {tutor?.nombres || tutor?.username}</p>
+      <p>Bienvenido {tutor.nombres}</p>
 
-      <hr />
-
-      <h3>Pacientes asociados</h3>
+      <h4 className="mt-4">Paciente asociado</h4>
 
       {pacientes.length === 0 ? (
-        <p>No tiene pacientes asociados</p>
+        <p>No hay paciente asociado</p>
       ) : (
         pacientes.map((p, index) => (
-          <Card key={index} className="mb-3 p-3">
-            <h5>{p.nombres} {p.apellidos}</h5>
+          <Card key={index} className="p-3 mb-3">
+
+            <p><strong>Nombre:</strong> {p.nombres} {p.apellidos}</p>
             <p><strong>RUT:</strong> {p.numeroDocumento}</p>
+            <p><strong>Grupo sanguíneo:</strong> {p.grupoSanguineo}</p>
+            <p><strong>Alergias:</strong> {p.alergias}</p>
+            <p><strong>Enfermedades:</strong> {p.enfermedadesCronicas}</p>
+            <p><strong>Medicamentos:</strong> {p.medicamentosActuales}</p>
+
           </Card>
         ))
       )}

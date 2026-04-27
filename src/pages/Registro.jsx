@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import { Form } from "react-bootstrap";
 import { useNavigate } from "react-router-dom";
 import Formulario from "../components/ui/Formulario";
+import { usuarios } from "../data/usuario";
 
 const Registro = () => {
 
@@ -33,7 +34,9 @@ const Registro = () => {
     seguroMedico: "",
     numeroPoliza: "",
 
-    aceptaTerminos: false
+    aceptaTerminos: false,
+
+    rutPaciente: ""
   });
 
   const handleChange = (e) => {
@@ -50,10 +53,16 @@ const Registro = () => {
     return regex.test(password);
   };
 
+  const pacienteAsociado = usuarios.find(
+    (u) =>
+      u.tipoUsuario === "PACIENTE" &&
+      u.numeroDocumento === formData.rutPaciente
+  );
+
   const handleRegistro = (e) => {
     e.preventDefault();
 
-    const camposObligatorios = [
+    let camposObligatorios = [
       "username",
       "password",
       "email",
@@ -66,6 +75,20 @@ const Registro = () => {
       "direccion"
     ];
 
+    if (formData.tipoUsuario === "PACIENTE") {
+      camposObligatorios.push(
+        "grupoSanguineo",
+        "factorRh",
+        "contactoEmergencia",
+        "telefonoEmergencia",
+        "seguroMedico"
+      );
+    }
+
+    if (formData.tipoUsuario === "TUTOR") {
+      camposObligatorios.push("rutPaciente");
+    }
+
     for (let campo of camposObligatorios) {
       if (!formData[campo] || formData[campo] === "+569") {
         alert("Todos los campos obligatorios deben completarse");
@@ -73,28 +96,13 @@ const Registro = () => {
       }
     }
 
-    if (formData.tipoUsuario === "TUTOR" && !formData.rutPaciente) {
-      alert("Debe ingresar el RUT del paciente");
-      return;
-    }
-
-    const fecha = new Date(formData.fechaNacimiento);
-    const hoy = new Date();
-
-    let edad = hoy.getFullYear() - fecha.getFullYear();
-    const mes = hoy.getMonth() - fecha.getMonth();
-
-    if (mes < 0 || (mes === 0 && hoy.getDate() < fecha.getDate())) {
-      edad--;
-    }
-
-    if (edad < 18) {
-      alert("Solo mayores de 18 años pueden registrarse. Si es menor, debe hacerlo un tutor.");
-      return;
-    }
-
     if (!validarPassword(formData.password)) {
       alert("La contraseña debe tener mínimo 6 caracteres, una mayúscula, un número y un símbolo");
+      return;
+    }
+
+    if (formData.tipoUsuario === "TUTOR" && !pacienteAsociado) {
+      alert("El RUT del paciente no existe");
       return;
     }
 
@@ -114,8 +122,6 @@ const Registro = () => {
           : []
     };
 
-    console.log("Usuario listo para backend:", usuarioFinal);
-
     localStorage.setItem("usuario", JSON.stringify(usuarioFinal));
 
     if (formData.tipoUsuario === "PACIENTE") {
@@ -128,11 +134,7 @@ const Registro = () => {
   };
 
   return (
-    <Formulario
-      title="Registro"
-      buttonText="Crear cuenta"
-      onSubmit={handleRegistro}
-    >
+    <Formulario title="Registro" buttonText="Crear cuenta" onSubmit={handleRegistro}>
 
       <Form.Group className="mb-3">
         <Form.Label>Usuario</Form.Label>
@@ -213,19 +215,21 @@ const Registro = () => {
         </Form.Select>
       </Form.Group>
 
+      {/* TUTOR */}
       {formData.tipoUsuario === "TUTOR" && (
-        <Form.Group className="mb-3">
-          <Form.Label>RUT del paciente</Form.Label>
-          <Form.Control
-            type="text"
-            name="rutPaciente"
-            placeholder="Ingrese RUT del paciente"
-            onChange={handleChange}
-          />
-        </Form.Group>
+        <>
+          <Form.Group className="mb-3">
+            <Form.Label>RUT del paciente</Form.Label>
+            <Form.Control
+              name="rutPaciente"
+              onChange={handleChange}
+            />
+          </Form.Group>
+        </>
       )}
 
-      {formData.tipoUsuario !== "TUTOR" && (
+      {/* PACIENTE */}
+      {formData.tipoUsuario === "PACIENTE" && (
         <>
           <Form.Group className="mb-3">
             <Form.Label>Grupo sanguíneo</Form.Label>
@@ -271,19 +275,15 @@ const Registro = () => {
 
           <Form.Group className="mb-3">
             <Form.Label>Teléfono de emergencia</Form.Label>
-            <div className="d-flex">
-              <span className="form-control" style={{ width: "80px", background: "#eee" }}>+569</span>
-              <Form.Control
-                type="text"
-                placeholder="12345678"
-                onChange={(e) =>
-                  setFormData({
-                    ...formData,
-                    telefonoEmergencia: "+569" + e.target.value
-                  })
-                }
-              />
-            </div>
+            <Form.Control
+              placeholder="+56912345678"
+              onChange={(e) =>
+                setFormData({
+                  ...formData,
+                  telefonoEmergencia: e.target.value
+                })
+              }
+            />
           </Form.Group>
 
           <Form.Group className="mb-3">
@@ -299,10 +299,6 @@ const Registro = () => {
       )}
 
       <Form.Group className="mb-3">
-        <div style={{ fontSize: "14px", background: "#f8f9fa", padding: "10px", borderRadius: "10px" }}>
-          Al registrarse, usted acepta que sus datos personales y clínicos serán utilizados exclusivamente para la gestión de su atención de salud dentro de la plataforma Cuidado Seguro.
-        </div>
-
         <Form.Check
           type="checkbox"
           label="Acepto los términos y condiciones"

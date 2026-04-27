@@ -1,7 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { Navbar, Nav, Container, Button } from "react-bootstrap";
 import { useNavigate, useLocation } from "react-router-dom";
-import logo from "../../images/log.png"; // 👈 IMPORTANTE (ajusta ruta si cambia)
 
 const NavbarComponent = () => {
 
@@ -10,13 +9,15 @@ const NavbarComponent = () => {
 
   const [usuario, setUsuario] = useState(null);
 
-  // cargar sesión
+  // cargar sesión SIEMPRE
   useEffect(() => {
     const sesion = JSON.parse(localStorage.getItem("sesion"));
-    setUsuario(sesion);
+    if (sesion) {
+      setUsuario(sesion);
+    }
   }, [location]);
 
-  // ir al dashboard según rol
+  // ir al panel según rol
   const irAlPanel = () => {
     if (!usuario) return;
 
@@ -24,7 +25,7 @@ const NavbarComponent = () => {
       navigate("/dashboardPaciente");
     } else if (usuario.tipoUsuario === "TUTOR") {
       navigate("/dashboardTutor");
-    } else if (usuario.tipoUsuario === "PROFESIONAL") {
+    } else {
       navigate("/dashboardProfesional");
     }
   };
@@ -38,36 +39,25 @@ const NavbarComponent = () => {
 
   return (
     <Navbar bg="light" expand="lg">
-      <Container className="d-flex justify-content-between align-items-center">
+      <Container>
 
-        {/* IZQUIERDA: LOGO + NOMBRE */}
+        {/* IZQUIERDA */}
         <Navbar.Brand
-          style={{ cursor: "pointer", display: "flex", alignItems: "center", gap: "10px" }}
-          onClick={() => {
-            if (usuario) {
-              irAlPanel();
-            } else {
-              navigate("/");
-            }
-          }}
+          style={{ cursor: "pointer" }}
+          onClick={() => navigate("/")}
         >
-          <img
-            src={logo}
-            alt="logo"
-            style={{ width: "30px", height: "30px" }}
-          />
           Cuidado Seguro
         </Navbar.Brand>
 
-        {/* CENTRO: MENÚ */}
+        {/* CENTRO */}
         <Nav className="mx-auto">
           <Nav.Link onClick={() => navigate("/")}>Inicio</Nav.Link>
           <Nav.Link onClick={() => navigate("/contacto")}>Contacto</Nav.Link>
           <Nav.Link onClick={() => navigate("/nosotros")}>Sobre Nosotros</Nav.Link>
         </Nav>
 
-        {/* DERECHA: USUARIO */}
-        <Nav className="align-items-center">
+        {/* DERECHA */}
+        <Nav className="ms-auto align-items-center">
 
           {!usuario ? (
             <>
@@ -102,7 +92,10 @@ const NavbarComponent = () => {
                 </Button>
               )}
 
-              <Button variant="danger" onClick={cerrarSesion}>
+              <Button
+                variant="danger"
+                onClick={cerrarSesion}
+              >
                 Cerrar sesión
               </Button>
             </>

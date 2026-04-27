@@ -24,31 +24,12 @@ const MessageSection = ({ user }) => {
 
   // Cargar mensajes desde localStorage
   const loadMessages = () => {
-    const storedMessages = localStorage.getItem(`messages_${user?.id}`);
+    const storedMessages = localStorage.getItem(`messages_${user?.numeroDocumento}`)
+
     if (storedMessages) {
       setMessages(JSON.parse(storedMessages));
     } else {
-      // Mensajes de ejemplo
-      const exampleMessages = [
-        {
-          id: 1,
-          asunto: 'Consulta sobre medicación',
-          contenido: 'Quisiera saber si es normal que mi hijo presente somnolencia después de tomar la risperidona.',
-          destinatario: 'centro',
-          fecha: '2024-01-10T10:30:00',
-          estado: 'respondido',
-          respuesta: 'Es un efecto secundario común. Consultar con el médico si persiste.'
-        },
-        {
-          id: 2,
-          asunto: 'Cambio de terapia',
-          contenido: 'Nos mudamos a otra comuna, ¿podemos continuar la terapia ocupacional en el nuevo centro?',
-          destinatario: 'centro',
-          fecha: '2024-01-15T14:20:00',
-          estado: 'pendiente'
-        }
-      ];
-      setMessages(exampleMessages);
+      setMessages([]); // ← vacío, sin datos falsos
     }
   };
 
@@ -112,7 +93,7 @@ const MessageSection = ({ user }) => {
       // Guardar en localStorage
       const updatedMessages = [message, ...messages];
       setMessages(updatedMessages);
-      localStorage.setItem(`messages_${user?.id}`, JSON.stringify(updatedMessages));
+      localStorage.setItem(`messages_${user?.numeroDocumento}`, JSON.stringify(updatedMessages));
 
       // Limpiar formulario
       setNewMessage({
@@ -197,11 +178,10 @@ const MessageSection = ({ user }) => {
               <div key={message.id} className="info-card mb-3">
                 <div className="d-flex justify-content-between align-items-start mb-2">
                   <h6 className="text-primary mb-0">{message.asunto}</h6>
-                  <span className={`badge ${
-                    message.estado === 'respondido' 
-                      ? 'bg-success' 
+                  <span className={`badge ${message.estado === 'respondido'
+                      ? 'bg-success'
                       : 'bg-warning'
-                  }`}>
+                    }`}>
                     {message.estado === 'respondido' ? 'Respondido' : 'Pendiente'}
                   </span>
                 </div>
