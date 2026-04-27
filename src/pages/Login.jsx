@@ -18,6 +18,7 @@ const Login = () => {
 
     console.log("Usuario guardado:", usuarioGuardado);
     console.log("Ingresado:", username, password);
+    console.log("Tipo usuario:", usuarioGuardado.tipoUsuario);
 
     if (!usuarioGuardado) {
       setError("No existe un usuario registrado");

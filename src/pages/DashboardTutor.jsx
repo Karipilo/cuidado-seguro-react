@@ -5,7 +5,7 @@ import Button from '../components/ui/Button';
 import Input from '../components/ui/Input';
 import PatientInfo from '../components/dashboard/PatientInfo';
 import MessageSection from '../components/dashboard/MessageSection';
-
+import { usuarios } from '../data/usuario';
 /**
  * Dashboard para Tutores
  * Muestra información del paciente y sección de mensajes
@@ -18,7 +18,7 @@ const DashboardTutor = () => {
 
   // Obtener datos del usuario y paciente al montar el componente
   useEffect(() => {
-    const userData = localStorage.getItem('user');
+    const userData = localStorage.getItem('sesion');
     if (!userData) {
       navigate('/login');
       return;
@@ -31,55 +31,24 @@ const DashboardTutor = () => {
     loadPatientData(parsedUser);
   }, [navigate]);
 
-  // Cargar datos del paciente (simulación)
   const loadPatientData = (userData) => {
-    setTimeout(() => {
-      // Datos mock del paciente
-      const mockPatientData = {
-        id: userData.idPaciente || 'P001',
-        nombre: 'Ana María González',
-        edad: 8,
-        diagnostico: 'Trastorno del Espectro Autista - Nivel 2',
-        fechaDiagnostico: '2022-03-15',
-        medicoTratante: 'Dra. Carla Rodríguez',
-        medicamentos: [
-          {
-            nombre: 'Risperidona',
-            dosis: '0.5 mg',
-            frecuencia: 'Cada 12 horas',
-            via: 'Oral',
-            inicio: '2022-04-01'
-          },
-          {
-            nombre: 'Melatonina',
-            dosis: '3 mg',
-            frecuencia: 'Antes de dormir',
-            via: 'Oral',
-            inicio: '2022-05-15'
-          }
-        ],
-        controles: [
-          {
-            tipo: 'Evaluación Neurológica',
-            fecha: '2024-01-15',
-            profesional: 'Dra. Carla Rodríguez',
-            estado: 'Completado',
-            observaciones: 'Buena respuesta al tratamiento'
-          },
-          {
-            tipo: 'Terapia Ocupacional',
-            fecha: '2024-02-20',
-            profesional: 'Lic. María López',
-            estado: 'Pendiente',
-            observaciones: 'Evaluación de habilidades motoras finas'
-          }
-        ]
-      };
 
-      setPatientData(mockPatientData);
-      setLoading(false);
-    }, 1000);
+    const paciente = usuarios.find(
+      (u) =>
+        u.tipoUsuario === "PACIENTE" &&
+        u.numeroDocumento === userData.rutPaciente
+    );
+
+    if (!paciente) {
+      setPatientData(null);
+    } else {
+      setPatientData(paciente);
+    }
+
+    setLoading(false);
   };
+
+
 
   if (loading) {
     return (
@@ -100,7 +69,7 @@ const DashboardTutor = () => {
         <div className="row align-items-center">
           <div className="col-md-6">
             <h1 className="mb-2">Dashboard del Tutor</h1>
-            <p className="mb-0">Bienvenido, {user?.nombre}</p>
+            
           </div>
           <div className="col-md-6 text-md-end">
             <div className="badge bg-white text-primary fs-6">
@@ -131,7 +100,7 @@ const DashboardTutor = () => {
               <i className="bi bi-capsule text-primary fs-1 mb-3"></i>
               <h5 className="card-title">Medicamentos</h5>
               <p className="card-text fs-2 fw-bold text-primary">
-                {patientData?.medicamentos?.length || 0}
+                {patientData?.medicamentosActuales ? 1 : 0}
               </p>
               <p className="text-muted">Medicamentos activos</p>
             </div>
@@ -143,8 +112,8 @@ const DashboardTutor = () => {
               <i className="bi bi-calendar-check text-success fs-1 mb-3"></i>
               <h5 className="card-title">Próximo Control</h5>
               <p className="card-text">
-                {patientData?.controles?.filter(c => c.estado === 'Pendiente')[0]?.fecha || 
-                 'No hay controles pendientes'}
+                {patientData?.controles?.filter(c => c.estado === 'Pendiente')[0]?.fecha ||
+                  'No hay controles pendientes'}
               </p>
               <p className="text-muted">
                 {patientData?.controles?.filter(c => c.estado === 'Pendiente')[0]?.tipo || ''}
