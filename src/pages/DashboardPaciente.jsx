@@ -1,7 +1,8 @@
-import React, { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
-import Card from '../components/ui/Card';
-import Button from '../components/ui/Button';
+import React, { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
+import { Container, Row, Col, Card, Badge } from "react-bootstrap";
+import DashboardLayout from "../components/dashboard/DashboardLayout";
+import MessageSection from "../components/dashboard/MessageSection";
 import "../styles/dashboard.css";
 
 const DashboardPaciente = () => {
@@ -31,56 +32,220 @@ const DashboardPaciente = () => {
   }
 
   return (
-    <div className="dashboard-container">
 
-      {/* HEADER */}
-      <div className="dashboard-header">
-        <h2>Panel del Paciente</h2>
-        <p>Bienvenido, {user?.nombre}</p>
-      </div>
+    <DashboardLayout usuario={user}>
 
-      <div className="row">
+      <Container fluid>
 
-        {/* COLUMNA IZQUIERDA */}
-        <div className="col-md-6">
-          <div className="dashboard-card p-3 mb-4">
-            <h5>Información Personal</h5>
+        {/* HEADER */}
 
-            <p><strong>Nombre:</strong> {user?.nombre}</p>
-            <p><strong>RUT:</strong> {user?.rut}</p>
-            <p><strong>Email:</strong> {user?.email}</p>
-            <p><strong>Teléfono:</strong> {user?.telefono}</p>
-            <p><strong>Dirección:</strong> {user?.direccion}</p>
+        <div className="dashboard-top mb-4">
+
+          <div>
+
+            <h2 className="dashboard-title">
+              Panel del Paciente
+            </h2>
+
+            <p className="dashboard-subtitle">
+              Bienvenido,
+              {" "}
+              {user?.nombres}
+              {" "}
+              {user?.apellidos}
+            </p>
+
           </div>
+
+          <Badge bg="success" className="status-badge">
+            Sesión activa
+          </Badge>
+
         </div>
 
-        {/* COLUMNA DERECHA */}
-        <div className="col-md-6">
-          <div className="dashboard-card p-3 mb-4">
-            <h5>Información Médica</h5>
+        <Row>
 
-            <p><strong>Grupo sanguíneo:</strong> {user?.grupoSanguineo}</p>
-            <p><strong>Factor RH:</strong> {user.factorRH}</p>
-            <p><strong>Alergias:</strong> {user.alergias}</p>
-            <p><strong>Enfermedades:</strong> {user.enfermedadesCronicas}</p>
-            <p><strong>Medicamentos:</strong> {user.medicamentos}</p>
-          </div>
+          {/* INFORMACION PERSONAL */}
+
+          <Col lg={6} className="mb-4">
+
+            <Card
+              id="perfil"
+              className="dashboard-modern-card h-100"
+            >
+
+              <Card.Body>
+
+                <Card.Title className="dashboard-card-title">
+                  Información personal
+                </Card.Title>
+
+                <div className="dashboard-info-group">
+
+                  <p>
+                    <strong>Nombre:</strong>
+                    {" "}
+                    {user?.nombres}
+                    {" "}
+                    {user?.apellidos}
+                  </p>
+
+                  <p>
+                    <strong>Documento:</strong>
+                    {" "}
+                    {user?.numeroDocumento}
+                  </p>
+
+                  <p>
+                    <strong>Correo:</strong>
+                    {" "}
+                    {user?.email}
+                  </p>
+
+                  <p>
+                    <strong>Teléfono:</strong>
+                    {" "}
+                    +569 {user?.telefono}
+                  </p>
+
+                  <p>
+                    <strong>Dirección:</strong>
+                    {" "}
+                    {user?.direccion}
+                  </p>
+
+                  <p>
+                    <strong>Género:</strong>
+                    {" "}
+                    {user?.genero}
+                  </p>
+
+                  <p>
+                    <strong>Fecha nacimiento:</strong>
+                    {" "}
+                    {user?.fechaNacimiento}
+                  </p>
+
+                </div>
+
+              </Card.Body>
+
+            </Card>
+
+          </Col>
+
+          {/* INFORMACION CLINICA */}
+
+          <Col lg={6} className="mb-4">
+
+            <Card className="dashboard-modern-card h-100">
+
+              <Card.Body>
+
+                <Card.Title className="dashboard-card-title">
+                  Información clínica
+                </Card.Title>
+
+                <div className="dashboard-info-group">
+
+                  <p>
+                    <strong>Grupo sanguíneo:</strong>
+                    {" "}
+                    {user?.grupoSanguineo}
+                  </p>
+
+                  <p>
+                    <strong>Factor RH:</strong>
+                    {" "}
+                    {user?.factorRh}
+                  </p>
+
+                  <p>
+                    <strong>Alergias:</strong>
+                    {" "}
+                    {user?.alergias}
+                  </p>
+
+                  <p>
+                    <strong>Enfermedades crónicas:</strong>
+                    {" "}
+                    {user?.enfermedadesCronicas}
+                  </p>
+
+                  <p>
+                    <strong>Medicamentos:</strong>
+                    {" "}
+                    {user?.medicamentosActuales}
+                  </p>
+
+                  <p>
+                    <strong>Previsión:</strong>
+                    {" "}
+                    {user?.seguroMedico}
+                  </p>
+
+                </div>
+
+              </Card.Body>
+
+            </Card>
+
+          </Col>
+
+        </Row>
+
+
+
+        {/* CONTACTO EMERGENCIA */}
+
+        <Row>
+
+          <Col lg={12}>
+
+            <Card className="dashboard-modern-card">
+
+              <Card.Body>
+
+                <Card.Title className="dashboard-card-title">
+                  Contacto de emergencia
+                </Card.Title>
+
+                <div className="dashboard-info-group">
+
+                  <p>
+                    <strong>Contacto:</strong>
+                    {" "}
+                    {user?.contactoEmergencia}
+                  </p>
+
+                  <p>
+                    <strong>Teléfono:</strong>
+                    {" "}
+                    +569 {user?.telefonoEmergencia}
+                  </p>
+
+                </div>
+
+              </Card.Body>
+
+            </Card>
+
+          </Col>
+
+        </Row>
+
+        {/* MENSAJES */}
+
+        <div id="mensajes">
+
+          <MessageSection />
+
         </div>
 
-      </div>
+      </Container>
 
-      {/* BOTÓN */}
-      <button
-        className="btn btn-primary mt-3"
-        onClick={() => {
-          localStorage.removeItem("sesion");
-          navigate("/login");
-        }}
-      >
-        Cerrar sesión
-      </button>
+    </DashboardLayout>
 
-    </div>
   );
 };
 

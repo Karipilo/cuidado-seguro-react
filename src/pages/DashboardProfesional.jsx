@@ -1,52 +1,105 @@
-import React, { useState, useEffect } from "react";
-import { useNavigate } from "react-router-dom";
-import { Form, Button, Card } from "react-bootstrap";
-import { usuarios } from "../data/usuario";
+import React, {
+  useState,
+  useEffect
+} from "react";
+
+import {
+  useNavigate
+} from "react-router-dom";
+
+import {
+  Container,
+  Row,
+  Col,
+  Form,
+  Button,
+  Card,
+  Badge
+} from "react-bootstrap";
+
+import DashboardLayout from
+  "../components/dashboard/DashboardLayout";
+
+import MessageSection from
+  "../components/dashboard/MessageSection";
+
+import { usuarios }
+  from "../data/usuario";
+
 import "../styles/dashboard.css";
 
 const DashboardProfesional = () => {
 
   const navigate = useNavigate();
 
-  const [profesional, setProfesional] = useState(null);
-  const [rutBusqueda, setRutBusqueda] = useState("");
-  const [paciente, setPaciente] = useState(null);
-  const [evolucion, setEvolucion] = useState("");
+  const [profesional, setProfesional] =
+    useState(null);
+
+  const [rutBusqueda, setRutBusqueda] =
+    useState("");
+
+  const [paciente, setPaciente] =
+    useState(null);
+
+  const [evolucion, setEvolucion] =
+    useState("");
 
   useEffect(() => {
-    const sesion = JSON.parse(localStorage.getItem("sesion"));
+
+    const sesion =
+      JSON.parse(
+        localStorage.getItem("sesion")
+      );
 
     if (!sesion) {
+
       navigate("/login");
+
       return;
     }
 
     setProfesional(sesion);
+
   }, [navigate]);
 
+  /* BUSCAR PACIENTE */
+
   const buscarPaciente = () => {
-    const encontrado = usuarios.find(
-      (u) =>
-        u.tipoUsuario === "PACIENTE" &&
-        u.numeroDocumento === rutBusqueda
-    );
+
+    const encontrado =
+      usuarios.find(
+        (u) =>
+          u.tipoUsuario === "PACIENTE" &&
+          u.numeroDocumento === rutBusqueda
+      );
 
     if (!encontrado) {
+
       alert("Paciente no encontrado");
+
       setPaciente(null);
+
       return;
     }
 
     setPaciente(encontrado);
   };
 
+  /* GUARDAR EVOLUCION */
+
   const guardarEvolucion = () => {
+
     if (!evolucion) {
+
       alert("Debe escribir una evolución");
+
       return;
     }
 
-    const evoluciones = JSON.parse(localStorage.getItem("evoluciones")) || [];
+    const evoluciones =
+      JSON.parse(
+        localStorage.getItem("evoluciones")
+      ) || [];
 
     evoluciones.push({
       rutPaciente: paciente.numeroDocumento,
@@ -55,91 +108,372 @@ const DashboardProfesional = () => {
       profesional: profesional.nombres
     });
 
-    localStorage.setItem("evoluciones", JSON.stringify(evoluciones));
+    localStorage.setItem(
+      "evoluciones",
+      JSON.stringify(evoluciones)
+    );
 
     alert("Evolución guardada");
+
     setEvolucion("");
   };
 
+  if (!profesional) {
+
+    return (
+      <p className="text-center mt-5">
+        Cargando...
+      </p>
+    );
+  }
+
   return (
-    <div className="dashboard-container">
 
-      {/* HEADER */}
-      <div className="dashboard-header">
-        <h2>Panel Profesional</h2>
-        <p>{profesional?.nombres} - {profesional?.profesion}</p>
-      </div>
+    <DashboardLayout usuario={profesional}>
 
-      <div className="row">
+      <Container fluid>
 
-        {/* BUSCADOR */}
-        <div className="col-md-4">
-          <div className="dashboard-card p-3 mb-4">
-            <h5>Buscar paciente</h5>
+        {/* HEADER */}
 
-            <Form.Control
-              placeholder="Ingrese RUT del paciente"
-              value={rutBusqueda}
-              onChange={(e) => setRutBusqueda(e.target.value)}
-            />
+        <div className="dashboard-top mb-4">
 
-            <Button className="mt-3 w-100" onClick={buscarPaciente}>
-              Buscar
-            </Button>
+          <div>
+
+            <h2 className="dashboard-title">
+              Panel Profesional
+            </h2>
+
+            <p className="dashboard-subtitle">
+
+              {profesional?.nombres}
+              {" "}
+              {profesional?.apellidos}
+              {" "}
+              -
+              {" "}
+              {profesional?.profesion}
+
+            </p>
+
           </div>
 
-          {/* INFO PROFESIONAL */}
-          <div className="dashboard-card p-3">
-            <h6>Información profesional</h6>
-            <p><strong>Institución:</strong> {profesional?.institucion}</p>
-            <p><strong>Especialidad:</strong> {profesional?.especialidad}</p>
-          </div>
+          <Badge bg="info">
+
+            Profesional activo
+
+          </Badge>
+
         </div>
 
-        {/* CONTENIDO PRINCIPAL */}
-        <div className="col-md-8">
+        <Row>
 
-          {!paciente ? (
-            <div className="dashboard-card p-4 text-center">
-              <h5>Seleccione un paciente</h5>
-              <p>Ingrese un RUT para comenzar</p>
-            </div>
-          ) : (
-            <>
-              {/* DATOS PACIENTE */}
-              <div className="dashboard-card p-3 mb-4">
-                <h5>Paciente</h5>
+          {/* COLUMNA IZQUIERDA */}
 
-                <p><strong>Nombre:</strong> {paciente.nombres}</p>
-                <p><strong>RUT:</strong> {paciente.numeroDocumento}</p>
-                <p><strong>Alergias:</strong> {paciente.alergias}</p>
-                <p><strong>Enfermedades:</strong> {paciente.enfermedadesCronicas}</p>
-              </div>
+          <Col lg={4}>
 
-              {/* EVOLUCIÓN */}
-              <div className="dashboard-card p-3">
-                <h5>Registrar evolución</h5>
+            {/* BUSCADOR */}
+
+            <Card
+              id="buscar-paciente"
+              className="dashboard-modern-card mb-4"
+            >
+
+              <Card.Body>
+
+                <Card.Title
+                  className="dashboard-card-title"
+                >
+                  Buscar paciente
+                </Card.Title>
 
                 <Form.Control
-                  as="textarea"
-                  rows={4}
-                  placeholder="Escriba evolución clínica..."
-                  value={evolucion}
-                  onChange={(e) => setEvolucion(e.target.value)}
+                  placeholder="Ingrese RUT del paciente"
+                  value={rutBusqueda}
+                  onChange={(e) =>
+                    setRutBusqueda(e.target.value)
+                  }
                 />
 
-                <Button className="mt-3" onClick={guardarEvolucion}>
-                  Guardar evolución
+                <Button
+                  className="mt-3 w-100 btn-dashboard-primary"
+                  onClick={buscarPaciente}
+                >
+                  Buscar
                 </Button>
-              </div>
-            </>
-          )}
+
+              </Card.Body>
+
+            </Card>
+
+            {/* PERFIL */}
+
+            <Card
+              id="perfil"
+              className="dashboard-modern-card"
+            >
+
+              <Card.Body>
+
+                <Card.Title
+                  className="dashboard-card-title"
+                >
+                  Información profesional
+                </Card.Title>
+
+                <div className="dashboard-info-group">
+
+                  <p>
+                    <strong>Profesión:</strong>
+                    {" "}
+                    {profesional?.profesion}
+                  </p>
+
+                  <p>
+                    <strong>Especialidad:</strong>
+                    {" "}
+                    {profesional?.especialidad}
+                  </p>
+
+                  <p>
+                    <strong>Subespecialidad:</strong>
+                    {" "}
+                    {profesional?.subespecialidad}
+                  </p>
+
+                  <p>
+                    <strong>Institución:</strong>
+                    {" "}
+                    {profesional?.institucion}
+                  </p>
+
+                  <p>
+                    <strong>Universidad:</strong>
+                    {" "}
+                    {profesional?.universidad}
+                  </p>
+
+                  <p>
+                    <strong>Experiencia:</strong>
+                    {" "}
+                    {profesional?.experienciaAños}
+                    {" "}
+                    años
+                  </p>
+
+                  <p>
+                    <strong>Licencia:</strong>
+                    {" "}
+                    {profesional?.numeroLicencia}
+                  </p>
+
+                </div>
+
+              </Card.Body>
+
+            </Card>
+
+          </Col>
+
+          {/* COLUMNA DERECHA */}
+
+          <Col lg={8}>
+
+            {!paciente ? (
+
+              <Card className="dashboard-modern-card">
+
+                <Card.Body className="text-center p-5">
+
+                  <h5>
+                    Seleccione un paciente
+                  </h5>
+
+                  <p className="text-muted mb-0">
+                    Ingrese un RUT para comenzar
+                  </p>
+
+                </Card.Body>
+
+              </Card>
+
+            ) : (
+
+              <>
+
+                {/* DATOS PACIENTE */}
+
+                <Card className="dashboard-modern-card mb-4">
+
+                  <Card.Body>
+
+                    <Card.Title
+                      className="dashboard-card-title"
+                    >
+                      Información del paciente
+                    </Card.Title>
+
+                    <div className="dashboard-info-group">
+
+                      <p>
+                        <strong>Nombre:</strong>
+                        {" "}
+                        {paciente?.nombres}
+                        {" "}
+                        {paciente?.apellidos}
+                      </p>
+
+                      <p>
+                        <strong>Documento:</strong>
+                        {" "}
+                        {paciente?.numeroDocumento}
+                      </p>
+
+                      <p>
+                        <strong>Grupo sanguíneo:</strong>
+                        {" "}
+                        {paciente?.grupoSanguineo}
+                      </p>
+
+                      <p>
+                        <strong>Alergias:</strong>
+                        {" "}
+                        {paciente?.alergias}
+                      </p>
+
+                      <p>
+                        <strong>Enfermedades:</strong>
+                        {" "}
+                        {paciente?.enfermedadesCronicas}
+                      </p>
+
+                      <p>
+                        <strong>Medicamentos:</strong>
+                        {" "}
+                        {paciente?.medicamentosActuales}
+                      </p>
+
+                    </div>
+
+                  </Card.Body>
+
+                </Card>
+
+                {/* EVOLUCION */}
+
+                <Card
+                  id="evolucion"
+                  className="dashboard-modern-card"
+                >
+
+                  <Card.Body>
+
+                    <Card.Title
+                      className="dashboard-card-title"
+                    >
+                      Registrar evolución clínica
+                    </Card.Title>
+
+                    <Form.Control
+                      as="textarea"
+                      rows={5}
+                      placeholder="Escriba evolución clínica..."
+                      value={evolucion}
+                      onChange={(e) =>
+                        setEvolucion(e.target.value)
+                      }
+                    />
+
+                    <Button
+                      className="mt-3 btn-dashboard-primary"
+                      onClick={guardarEvolucion}
+                    >
+                      Guardar evolución
+                    </Button>
+
+                  </Card.Body>
+
+                </Card>
+
+                <Card
+                  id="controles"
+                  className="dashboard-modern-card mt-4"
+                >
+
+                  <Card.Body>
+
+                    <Card.Title
+                      className="dashboard-card-title"
+                    >
+                      Historial de evoluciones
+                    </Card.Title>
+
+                    {(JSON.parse(
+                      localStorage.getItem("evoluciones")
+                    ) || []).length === 0 ? (
+
+                      <p className="mb-0">
+                        No existen evoluciones registradas
+                      </p>
+
+                    ) : (
+
+                      (JSON.parse(
+                        localStorage.getItem("evoluciones")
+                      ) || []).map((ev, index) => (
+
+                        <div
+                          key={index}
+                          className="evolucion-item"
+                        >
+
+                          <p>
+                            <strong>Profesional:</strong>
+                            {" "}
+                            {ev.profesional}
+                          </p>
+
+                          <p>
+                            <strong>Fecha:</strong>
+                            {" "}
+                            {ev.fecha}
+                          </p>
+
+                          <p>
+                            <strong>Evolución:</strong>
+                            {" "}
+                            {ev.texto}
+                          </p>
+
+                        </div>
+
+                      ))
+
+                    )}
+
+                  </Card.Body>
+
+                </Card>
+
+              </>
+
+            )}
+
+          </Col>
+
+        </Row>
+
+        {/* MENSAJES */}
+
+        <div id="mensajes">
+
+          <MessageSection />
 
         </div>
 
-      </div>
+      </Container>
 
-    </div>
+    </DashboardLayout>
+
   );
 };
 
