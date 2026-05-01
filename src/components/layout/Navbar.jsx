@@ -55,9 +55,15 @@ const NavbarComponent = () => {
 
           {/* MENU CENTRO */}
           <Nav className="mx-auto nav-center">
-            <Nav.Link onClick={() => navigate("/")}>Inicio</Nav.Link>
-            <Nav.Link>Contacto</Nav.Link>
-            <Nav.Link>Sobre Nosotros</Nav.Link>
+            <Nav.Link onClick={() => navigate("/")}>
+              Inicio
+            </Nav.Link>
+            <Nav.Link onClick={() => navigate("/contacto")}>
+              Contacto
+            </Nav.Link>
+            <Nav.Link onClick={() => navigate("/nosotros")}>
+              Nosotros
+            </Nav.Link>
           </Nav>
 
           {/* DERECHA */}

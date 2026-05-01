@@ -1,0 +1,100 @@
+.nosotros-container {
+  min-height: 100vh;
+
+  background:
+    linear-gradient(
+      rgba(0, 0, 0, 0.55),
+      rgba(0, 0, 0, 0.55)
+    ),
+    url("https://images.unsplash.com/photo-1576091160550-2173dba999ef?q=80&w=1920");
+
+  background-size: cover;
+  background-position: center;
+
+  padding: 60px 20px;
+}
+
+.nosotros-card {
+  background-color: rgba(255, 255, 255, 0.96);
+
+  border-radius: 20px;
+
+  padding: 50px;
+
+  box-shadow:
+    0 10px 30px rgba(0, 0, 0, 0.25);
+}
+
+.nosotros-hero {
+  text-align: center;
+
+  margin-bottom: 50px;
+}
+
+.nosotros-hero h1 {
+  font-size: 3rem;
+
+  font-weight: 700;
+
+  color: #5F9EA0;
+
+  margin-bottom: 20px;
+}
+
+.nosotros-hero p {
+  max-width: 800px;
+
+  margin: auto;
+
+  line-height: 1.8;
+
+  font-size: 1.1rem;
+}
+
+.nosotros-section {
+  margin-bottom: 50px;
+}
+
+.nosotros-section h2 {
+  color: #5F9EA0;
+
+  font-weight: 700;
+
+  margin-bottom: 20px;
+}
+
+.nosotros-section p {
+  line-height: 1.8;
+}
+
+.valor-card {
+  border: none;
+
+  border-radius: 15px;
+
+  transition: 0.3s ease;
+
+  box-shadow:
+    0 4px 15px rgba(0, 0, 0, 0.08);
+}
+
+.valor-card:hover {
+  transform: translateY(-5px);
+}
+
+.valor-card .card-title {
+  color: #5F9EA0;
+
+  font-weight: 700;
+}
+
+@media (max-width: 768px) {
+
+  .nosotros-card {
+    padding: 30px 20px;
+  }
+
+  .nosotros-hero h1 {
+    font-size: 2.3rem;
+  }
+}
