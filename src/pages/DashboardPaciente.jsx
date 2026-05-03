@@ -4,10 +4,21 @@ import { Container, Row, Col, Card, Badge } from "react-bootstrap";
 import DashboardLayout from "../components/dashboard/DashboardLayout";
 import MessageSection from "../components/dashboard/MessageSection";
 import "../styles/dashboard.css";
+import SignosVitales from "../components/profesional/SignosVitales";
+import HistorialEvoluciones from "../components/profesional/HistorialEvoluciones";
+import HistorialIndicaciones from "../components/profesional/HistorialIndicaciones";
+import ExamenesClinicos from "../components/profesional/ExamenesClinicos";
+import ResumenClinico from "../components/profesional/ResumenClinico";
 
 const DashboardPaciente = () => {
 
   const [user, setUser] = useState(null);
+
+  const [
+    pacienteActivo,
+    setPacienteActivo
+  ] = useState(null);
+
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -20,6 +31,23 @@ const DashboardPaciente = () => {
 
     const parsedUser = JSON.parse(userData);
     setUser(parsedUser);
+
+    const datosPaciente =
+      localStorage.getItem(
+        `paciente-${parsedUser.numeroDocumento}`
+      );
+
+    if (datosPaciente) {
+
+      setPacienteActivo(
+        JSON.parse(datosPaciente)
+      );
+
+    } else {
+
+      setPacienteActivo(parsedUser);
+
+    }
 
   }, [navigate]);
 
@@ -225,6 +253,62 @@ const DashboardPaciente = () => {
                   </p>
 
                 </div>
+
+                <Row>
+
+                  <Col lg={12} className="mb-4">
+
+                    <ResumenClinico
+                      paciente={pacienteActivo}
+                    />
+
+                  </Col>
+
+                </Row>
+
+                <Row>
+
+                  <Col lg={6} className="mb-4">
+
+                    <HistorialEvoluciones
+                      paciente={pacienteActivo}
+                    />
+
+                  </Col>
+
+                  <Col lg={6} className="mb-4">
+
+                    <HistorialIndicaciones
+                      paciente={pacienteActivo}
+                    />
+
+                  </Col>
+
+                </Row>
+
+                <Row>
+
+                  <Col lg={12} className="mb-4">
+
+                    <SignosVitales
+                      paciente={pacienteActivo}
+                    />
+
+                  </Col>
+
+                </Row>
+
+                <Row>
+
+                  <Col lg={12} className="mb-4">
+
+                    <ExamenesClinicos
+                      paciente={pacienteActivo}
+                    />
+
+                  </Col>
+
+                </Row>
 
               </Card.Body>
 

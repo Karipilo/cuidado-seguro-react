@@ -6,6 +6,11 @@ import MessageSection from "../components/dashboard/MessageSection";
 import { usuarios } from "../data/usuario";
 import "../styles/dashboard.css";
 import Antropometria from "../components/profesional/Antropometria";
+import SignosVitales from "../components/profesional/SignosVitales";
+import HistorialEvoluciones from "../components/profesional/HistorialEvoluciones";
+import HistorialIndicaciones from "../components/profesional/HistorialIndicaciones";
+import ExamenesClinicos from "../components/profesional/ExamenesClinicos";
+import ResumenClinico from "../components/profesional/ResumenClinico";
 
 const DashboardTutor = () => {
 
@@ -16,6 +21,11 @@ const DashboardTutor = () => {
 
   const [pacientes, setPacientes] =
     useState([]);
+
+  const [
+    pacienteActivo,
+    setPacienteActivo
+  ] = useState(null);
 
   useEffect(() => {
 
@@ -46,7 +56,22 @@ const DashboardTutor = () => {
         );
 
       if (paciente) {
-        setPacientes([paciente]);
+
+        const datosGuardados =
+          localStorage.getItem(
+            `paciente-${paciente.numeroDocumento}`
+          );
+
+        const pacienteFinal =
+          datosGuardados
+            ? JSON.parse(datosGuardados)
+            : paciente;
+
+        setPacientes([pacienteFinal]);
+
+        setPacienteActivo(
+          pacienteFinal
+        );
       }
     }
 
@@ -248,6 +273,62 @@ const DashboardTutor = () => {
               ))
 
             )}
+
+          </Col>
+
+        </Row>
+
+        <Row>
+
+          <Col lg={12} className="mb-4">
+
+            <ResumenClinico
+              paciente={pacienteActivo}
+            />
+
+          </Col>
+
+        </Row>
+
+        <Row>
+
+          <Col lg={6} className="mb-4">
+
+            <HistorialEvoluciones
+              paciente={pacienteActivo}
+            />
+
+          </Col>
+
+          <Col lg={6} className="mb-4">
+
+            <HistorialIndicaciones
+              paciente={pacienteActivo}
+            />
+
+          </Col>
+
+        </Row>
+
+        <Row>
+
+          <Col lg={12} className="mb-4">
+
+            <SignosVitales
+              paciente={pacienteActivo}
+            />
+
+          </Col>
+
+        </Row>
+
+        <Row>
+
+          <Col lg={12} className="mb-4">
+
+            <ExamenesClinicos
+              paciente={pacienteActivo}
+            />
 
           </Col>
 
