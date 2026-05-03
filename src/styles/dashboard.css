@@ -311,3 +311,75 @@
 .btn-dashboard-primary:hover {
   background-color: #4b8688;
 }
+
+.dashboard-header-profesional {
+
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+
+    background: white;
+
+    padding: 24px;
+
+    border-radius: 20px;
+
+    box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+
+}
+
+.dashboard-status-badge {
+
+    padding: 10px 16px;
+
+    font-size: 14px;
+
+}
+
+.dashboard-modern-card {
+
+    border: none !important;
+
+    border-radius: 20px !important;
+
+    box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+
+}
+
+.dashboard-card-title {
+
+    font-weight: 600;
+
+    margin-bottom: 20px;
+
+}
+
+.evolucion-item {
+
+    background: #f8f9fa;
+
+    border-radius: 14px;
+
+    padding: 16px;
+
+}
+
+.nav-tabs .nav-link {
+
+    border: none !important;
+
+    color: #5F9EA0 !important;
+
+    font-weight: 600;
+
+}
+
+.nav-tabs .nav-link.active {
+
+    background: #5F9EA0 !important;
+
+    color: white !important;
+
+    border-radius: 12px !important;
+
+}

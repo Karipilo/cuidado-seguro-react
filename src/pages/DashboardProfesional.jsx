@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import { Container, Row, Col, Form, Button, Card} from "react-bootstrap";
+import { Container, Row, Col, Form, Button, Card } from "react-bootstrap";
 import DashboardLayout from "../components/dashboard/DashboardLayout";
 import MessageSection from "../components/dashboard/MessageSection";
 import { usuarios } from "../data/usuario";
@@ -239,9 +239,38 @@ const DashboardProfesional = () => {
 
                 {/* DATOS PACIENTE */}
 
-                <PacienteResumen
-                  paciente={paciente}
-                />
+                <div id="historial">
+
+                  <PacienteResumen
+                    paciente={paciente}
+                  />
+
+                </div>
+
+                <Card
+                  id="medicamentos"
+                  className="dashboard-modern-card mb-4"
+                >
+
+                  <Card.Body>
+
+                    <Card.Title
+                      className="dashboard-card-title"
+                    >
+
+                      Medicamentos habituales
+
+                    </Card.Title>
+
+                    <p className="mb-0">
+
+                      {paciente?.medicamentosActuales}
+
+                    </p>
+
+                  </Card.Body>
+
+                </Card>
 
                 {/* EVOLUCION */}
 

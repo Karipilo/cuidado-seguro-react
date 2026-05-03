@@ -1,6 +1,6 @@
 import React from "react";
-import {Nav} from "react-bootstrap";
-import {Person, People, ClipboardPulse, ChatDots} from "react-bootstrap-icons";
+import { Nav } from "react-bootstrap";
+import { PersonBadge, People, ClipboardPulse, ChatDots, Activity, Capsule, FileEarmarkText } from "react-bootstrap-icons";
 
 const Sidebar = ({ usuario }) => {
 
@@ -37,7 +37,7 @@ const Sidebar = ({ usuario }) => {
                     onClick={() => irASeccion("perfil")}
                 >
 
-                    <Person />
+                    <PersonBadge />
 
                     <span>
                         Mi perfil
@@ -75,7 +75,7 @@ const Sidebar = ({ usuario }) => {
                             }
                         >
 
-                            <ClipboardPulse />
+                            <FileEarmarkText />
 
                             <span>
                                 Registrar Evolución
@@ -91,10 +91,42 @@ const Sidebar = ({ usuario }) => {
                             }
                         >
 
-                            <ClipboardPulse />
+                            <Activity />
 
                             <span>
                                 Controles
+                            </span>
+
+                        </Nav.Link>
+
+                        {/* MEDICAMENTOS */}
+
+                        <Nav.Link
+                            onClick={() =>
+                                irASeccion("medicamentos")
+                            }
+                        >
+
+                            <Capsule />
+
+                            <span>
+                                Medicamentos
+                            </span>
+
+                        </Nav.Link>
+
+                        {/* HISTORIAL */}
+
+                        <Nav.Link
+                            onClick={() =>
+                                irASeccion("historial")
+                            }
+                        >
+
+                            <FileEarmarkText />
+
+                            <span>
+                                Historial Clínico
                             </span>
 
                         </Nav.Link>
