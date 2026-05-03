@@ -10,74 +10,90 @@ const HistorialClinico = ({
 
     return (
 
-        <Card className="dashboard-modern-card">
+    <Card className="dashboard-modern-card">
 
-            <Card.Body>
+        <Card.Body>
 
-                <Card.Title
-                    className="dashboard-card-title"
-                >
+            <Card.Title
+                className="dashboard-card-title"
+            >
 
-                    Historial de evoluciones
+                Historial Clínico
 
-                </Card.Title>
+            </Card.Title>
 
-                {evoluciones.length === 0 ? (
+            {evoluciones.length === 0 ? (
 
-                    <p className="mb-0">
+                <p className="mb-0">
 
-                        No existen evoluciones registradas
+                    No existen evoluciones registradas
 
-                    </p>
+                </p>
 
-                ) : (
+            ) : (
 
-                    evoluciones.map((ev, index) => (
+                <div className="timeline-clinica">
+
+                    {evoluciones.map((ev, index) => (
 
                         <div
                             key={index}
-                            className="evolucion-item mb-4"
+                            className="timeline-item"
                         >
 
-                            <div className="d-flex justify-content-between align-items-center mb-2">
+                            <div className="timeline-dot"></div>
 
-                                <strong>
+                            <div className="timeline-content">
 
-                                    {ev.profesional}
+                                <div className="timeline-header">
 
-                                </strong>
+                                    <div>
 
-                                <small className="text-muted">
+                                        <h6 className="mb-1">
 
-                                    {ev.fecha}
+                                            {ev.profesional}
 
-                                </small>
+                                        </h6>
+
+                                        <small className="text-muted">
+
+                                            Evolución clínica registrada
+
+                                        </small>
+
+                                    </div>
+
+                                    <small className="text-muted">
+
+                                        {ev.fecha}
+
+                                    </small>
+
+                                </div>
+
+                                <p className="mb-0 mt-3">
+
+                                    {ev.texto}
+
+                                </p>
 
                             </div>
 
-                            <p className="mb-0">
-
-                                {ev.texto}
-
-                            </p>
-
-                            {index !== evoluciones.length - 1 && (
-
-                                <hr />
-
-                            )}
-
                         </div>
 
-                    ))
+                    ))}
 
-                )}
+                </div>
 
-            </Card.Body>
+            )}
 
-        </Card>
+        </Card.Body>
 
-    );
+    </Card>
+
+);
+
+
 };
 
 export default HistorialClinico;

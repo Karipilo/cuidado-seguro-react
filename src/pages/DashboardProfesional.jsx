@@ -10,7 +10,9 @@ import BuscadorPaciente from "../components/profesional/BuscadorPaciente";
 import PacienteResumen from "../components/profesional/PacienteResumen";
 import TabsClinicas from "../components/profesional/TabsClinicas";
 import HistorialClinico from "../components/profesional/HistorialClinico";
-
+import SignosVitales from "../components/profesional/SignosVitales";
+import Antropometria from "../components/profesional/Antropometria";
+import ExamenesClinicos from "../components/profesional/ExamenesClinicos";
 const DashboardProfesional = () => {
 
   const navigate = useNavigate();
@@ -116,7 +118,9 @@ const DashboardProfesional = () => {
 
     <DashboardLayout usuario={profesional}>
 
-      <Container fluid>
+      <Container
+       fluid
+       className="dashboard-top-spacing">
 
         {/* HEADER */}
 
@@ -245,6 +249,16 @@ const DashboardProfesional = () => {
                     paciente={paciente}
                   />
 
+                  {/* SIGNOS VITALES */}
+                  <SignosVitales />
+
+                  {/* ANTROPOMETRIA */}
+                  <Antropometria />
+
+                  {/* EXAMENES CLINICOS */}
+
+                  <ExamenesClinicos />
+
                 </div>
 
                 <Card
@@ -295,6 +309,7 @@ const DashboardProfesional = () => {
 
                         <Form.Control
                           as="textarea"
+                          className="dashboard-textarea"
                           rows={5}
                           placeholder="Escriba evolución clínica..."
                           value={evolucion}
@@ -332,65 +347,6 @@ const DashboardProfesional = () => {
 
                 />
 
-                <Card
-                  id="controles"
-                  className="dashboard-modern-card mt-4"
-                >
-
-                  <Card.Body>
-
-                    <Card.Title
-                      className="dashboard-card-title"
-                    >
-                      Historial de evoluciones
-                    </Card.Title>
-
-                    {(JSON.parse(
-                      localStorage.getItem("evoluciones")
-                    ) || []).length === 0 ? (
-
-                      <p className="mb-0">
-                        No existen evoluciones registradas
-                      </p>
-
-                    ) : (
-
-                      (JSON.parse(
-                        localStorage.getItem("evoluciones")
-                      ) || []).map((ev, index) => (
-
-                        <div
-                          key={index}
-                          className="evolucion-item"
-                        >
-
-                          <p>
-                            <strong>Profesional:</strong>
-                            {" "}
-                            {ev.profesional}
-                          </p>
-
-                          <p>
-                            <strong>Fecha:</strong>
-                            {" "}
-                            {ev.fecha}
-                          </p>
-
-                          <p>
-                            <strong>Evolución:</strong>
-                            {" "}
-                            {ev.texto}
-                          </p>
-
-                        </div>
-
-                      ))
-
-                    )}
-
-                  </Card.Body>
-
-                </Card>
 
               </>
 

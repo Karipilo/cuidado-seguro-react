@@ -5,6 +5,7 @@ import DashboardLayout from "../components/dashboard/DashboardLayout";
 import MessageSection from "../components/dashboard/MessageSection";
 import { usuarios } from "../data/usuario";
 import "../styles/dashboard.css";
+import Antropometria from "../components/profesional/Antropometria";
 
 const DashboardTutor = () => {
 
