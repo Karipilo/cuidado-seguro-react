@@ -1,32 +1,15 @@
-import React, {
-  useState,
-  useEffect
-} from "react";
-
-import {
-  useNavigate
-} from "react-router-dom";
-
-import {
-  Container,
-  Row,
-  Col,
-  Form,
-  Button,
-  Card,
-  Badge
-} from "react-bootstrap";
-
-import DashboardLayout from
-  "../components/dashboard/DashboardLayout";
-
-import MessageSection from
-  "../components/dashboard/MessageSection";
-
-import { usuarios }
-  from "../data/usuario";
-
+import React, { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
+import { Container, Row, Col, Form, Button, Card} from "react-bootstrap";
+import DashboardLayout from "../components/dashboard/DashboardLayout";
+import MessageSection from "../components/dashboard/MessageSection";
+import { usuarios } from "../data/usuario";
 import "../styles/dashboard.css";
+import HeaderProfesional from "../components/profesional/HeaderProfesional";
+import BuscadorPaciente from "../components/profesional/BuscadorPaciente";
+import PacienteResumen from "../components/profesional/PacienteResumen";
+import TabsClinicas from "../components/profesional/TabsClinicas";
+import HistorialClinico from "../components/profesional/HistorialClinico";
 
 const DashboardProfesional = () => {
 
@@ -43,6 +26,8 @@ const DashboardProfesional = () => {
 
   const [evolucion, setEvolucion] =
     useState("");
+
+  const evoluciones = JSON.parse(localStorage.getItem("evoluciones")) || [];
 
   useEffect(() => {
 
@@ -135,35 +120,9 @@ const DashboardProfesional = () => {
 
         {/* HEADER */}
 
-        <div className="dashboard-top mb-4">
-
-          <div>
-
-            <h2 className="dashboard-title">
-              Panel Profesional
-            </h2>
-
-            <p className="dashboard-subtitle">
-
-              {profesional?.nombres}
-              {" "}
-              {profesional?.apellidos}
-              {" "}
-              -
-              {" "}
-              {profesional?.profesion}
-
-            </p>
-
-          </div>
-
-          <Badge bg="info">
-
-            Profesional activo
-
-          </Badge>
-
-        </div>
+        <HeaderProfesional
+          profesional={profesional}
+        />
 
         <Row>
 
@@ -173,37 +132,15 @@ const DashboardProfesional = () => {
 
             {/* BUSCADOR */}
 
-            <Card
-              id="buscar-paciente"
-              className="dashboard-modern-card mb-4"
-            >
+            <div id="buscar-paciente">
 
-              <Card.Body>
+              <BuscadorPaciente
+                rutBusqueda={rutBusqueda}
+                setRutBusqueda={setRutBusqueda}
+                buscarPaciente={buscarPaciente}
+              />
 
-                <Card.Title
-                  className="dashboard-card-title"
-                >
-                  Buscar paciente
-                </Card.Title>
-
-                <Form.Control
-                  placeholder="Ingrese RUT del paciente"
-                  value={rutBusqueda}
-                  onChange={(e) =>
-                    setRutBusqueda(e.target.value)
-                  }
-                />
-
-                <Button
-                  className="mt-3 w-100 btn-dashboard-primary"
-                  onClick={buscarPaciente}
-                >
-                  Buscar
-                </Button>
-
-              </Card.Body>
-
-            </Card>
+            </div>
 
             {/* PERFIL */}
 
@@ -302,97 +239,69 @@ const DashboardProfesional = () => {
 
                 {/* DATOS PACIENTE */}
 
-                <Card className="dashboard-modern-card mb-4">
-
-                  <Card.Body>
-
-                    <Card.Title
-                      className="dashboard-card-title"
-                    >
-                      Información del paciente
-                    </Card.Title>
-
-                    <div className="dashboard-info-group">
-
-                      <p>
-                        <strong>Nombre:</strong>
-                        {" "}
-                        {paciente?.nombres}
-                        {" "}
-                        {paciente?.apellidos}
-                      </p>
-
-                      <p>
-                        <strong>Documento:</strong>
-                        {" "}
-                        {paciente?.numeroDocumento}
-                      </p>
-
-                      <p>
-                        <strong>Grupo sanguíneo:</strong>
-                        {" "}
-                        {paciente?.grupoSanguineo}
-                      </p>
-
-                      <p>
-                        <strong>Alergias:</strong>
-                        {" "}
-                        {paciente?.alergias}
-                      </p>
-
-                      <p>
-                        <strong>Enfermedades:</strong>
-                        {" "}
-                        {paciente?.enfermedadesCronicas}
-                      </p>
-
-                      <p>
-                        <strong>Medicamentos:</strong>
-                        {" "}
-                        {paciente?.medicamentosActuales}
-                      </p>
-
-                    </div>
-
-                  </Card.Body>
-
-                </Card>
+                <PacienteResumen
+                  paciente={paciente}
+                />
 
                 {/* EVOLUCION */}
 
-                <Card
-                  id="evolucion"
-                  className="dashboard-modern-card"
-                >
+                <TabsClinicas
 
-                  <Card.Body>
+                  evolucionComponent={
 
-                    <Card.Title
-                      className="dashboard-card-title"
+                    <Card
+                      id="evolucion"
+                      className="dashboard-modern-card"
                     >
-                      Registrar evolución clínica
-                    </Card.Title>
 
-                    <Form.Control
-                      as="textarea"
-                      rows={5}
-                      placeholder="Escriba evolución clínica..."
-                      value={evolucion}
-                      onChange={(e) =>
-                        setEvolucion(e.target.value)
-                      }
-                    />
+                      <Card.Body>
 
-                    <Button
-                      className="mt-3 btn-dashboard-primary"
-                      onClick={guardarEvolucion}
-                    >
-                      Guardar evolución
-                    </Button>
+                        <Card.Title
+                          className="dashboard-card-title"
+                        >
 
-                  </Card.Body>
+                          Registrar evolución clínica
 
-                </Card>
+                        </Card.Title>
+
+                        <Form.Control
+                          as="textarea"
+                          rows={5}
+                          placeholder="Escriba evolución clínica..."
+                          value={evolucion}
+                          onChange={(e) =>
+                            setEvolucion(e.target.value)
+                          }
+                        />
+
+                        <Button
+                          className="mt-3 btn-dashboard-primary"
+                          onClick={guardarEvolucion}
+                        >
+
+                          Guardar evolución
+
+                        </Button>
+
+                      </Card.Body>
+
+                    </Card>
+
+                  }
+
+                  historialComponent={
+
+                    <div id="controles">
+
+                      <HistorialClinico
+                        evoluciones={evoluciones}
+                      />
+
+                    </div>
+
+                  }
+
+                />
 
                 <Card
                   id="controles"
