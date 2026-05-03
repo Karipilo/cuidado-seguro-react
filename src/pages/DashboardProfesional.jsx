@@ -88,12 +88,12 @@ const DashboardProfesional = () => {
 
       alert("Paciente no encontrado");
 
-      setPaciente(null);
-
       return;
     }
 
-    setPaciente(encontrado);
+    navigate(
+      `/profesional/paciente/${encontrado.numeroDocumento}`
+    );
   };
 
   /* GUARDAR EVOLUCION */

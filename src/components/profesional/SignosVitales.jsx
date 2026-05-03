@@ -49,11 +49,7 @@ const SignosVitales = ({
 
                 </h3>
 
-                <span>
-
-                    mmHg
-
-                </span>
+                
 
             </div>
 
@@ -81,11 +77,7 @@ const SignosVitales = ({
 
                 </h3>
 
-                <span>
-
-                    lpm
-
-                </span>
+                
 
             </div>
 
@@ -113,11 +105,7 @@ const SignosVitales = ({
 
                 </h3>
 
-                <span>
-
-                    °C
-
-                </span>
+                
 
             </div>
 
@@ -145,11 +133,7 @@ const SignosVitales = ({
 
                 </h3>
 
-                <span>
-
-                    %
-
-                </span>
+                
 
             </div>
 

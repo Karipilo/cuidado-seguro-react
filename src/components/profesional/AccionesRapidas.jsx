@@ -2,7 +2,7 @@ import React from "react";
 
 import { PlusCircle, Activity, ClipboardPulse, FileEarmarkText, Rulers, FileMedical } from "react-bootstrap-icons";
 
-const AccionesRapidas = () => {
+const AccionesRapidas = ({ abrirFormularioSV }) => {
 
     return (
 
@@ -40,7 +40,10 @@ const AccionesRapidas = () => {
 
             </div>
 
-            <div className="accion-item">
+            <div
+                className="accion-item"
+                onClick={abrirFormularioSV}
+            >
 
                 <div className="accion-icon green">
 
