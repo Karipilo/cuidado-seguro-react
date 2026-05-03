@@ -1,8 +1,21 @@
 import React from "react";
 
-import { PlusCircle, Activity, ClipboardPulse, FileEarmarkText, Rulers, FileMedical } from "react-bootstrap-icons";
+import {
+    
+    Activity,
+    ClipboardPulse,
+    FileEarmarkText,
+    Rulers,
+    FileMedical
+} from "react-bootstrap-icons";
 
-const AccionesRapidas = ({ abrirFormularioSV }) => {
+const AccionesRapidas = ({
+    abrirFormularioSV,
+    abrirFormularioAntropometria,
+    abrirFormularioEvolucion,
+    abrirFormularioIndicaciones,
+    abrirFormularioExamenes
+}) => {
 
     return (
 
@@ -14,31 +27,9 @@ const AccionesRapidas = ({ abrirFormularioSV }) => {
 
             </h4>
 
-            <div className="accion-item">
+            
 
-                <div className="accion-icon blue">
-
-                    <PlusCircle />
-
-                </div>
-
-                <div>
-
-                    <h6>
-
-                        Nuevo registro clínico
-
-                    </h6>
-
-                    <p>
-
-                        Crear nuevo registro
-
-                    </p>
-
-                </div>
-
-            </div>
+            {/* SIGNOS VITALES */}
 
             <div
                 className="accion-item"
@@ -69,7 +60,12 @@ const AccionesRapidas = ({ abrirFormularioSV }) => {
 
             </div>
 
-            <div className="accion-item">
+            {/* EVOLUCIÓN */}
+
+            <div
+                className="accion-item"
+                onClick={abrirFormularioEvolucion}
+            >
 
                 <div className="accion-icon yellow">
 
@@ -95,7 +91,12 @@ const AccionesRapidas = ({ abrirFormularioSV }) => {
 
             </div>
 
-            <div className="accion-item">
+            {/* ANTROPOMETRÍA */}
+
+            <div
+                className="accion-item"
+                onClick={abrirFormularioAntropometria}
+            >
 
                 <div className="accion-icon orange">
 
@@ -121,7 +122,12 @@ const AccionesRapidas = ({ abrirFormularioSV }) => {
 
             </div>
 
-            <div className="accion-item">
+            {/* EXÁMENES */}
+
+            <div
+                className="accion-item"
+                onClick={abrirFormularioExamenes}
+            >
 
                 <div className="accion-icon red">
 
@@ -147,7 +153,12 @@ const AccionesRapidas = ({ abrirFormularioSV }) => {
 
             </div>
 
-            <div className="accion-item">
+            {/* INDICACIONES */}
+
+            <div
+                className="accion-item"
+                onClick={abrirFormularioIndicaciones}
+            >
 
                 <div className="accion-icon purple">
 

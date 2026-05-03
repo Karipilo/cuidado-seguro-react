@@ -5,39 +5,9 @@ import {
     Badge
 } from "react-bootstrap";
 
-const ExamenesClinicos = () => {
-
-    const examenes = [
-
-        {
-            nombre: "Hemograma",
-            fecha: "02-05-2026",
-            estado: "Normal",
-            color: "success"
-        },
-
-        {
-            nombre: "Glicemia",
-            fecha: "28-04-2026",
-            estado: "Elevada",
-            color: "danger"
-        },
-
-        {
-            nombre: "Perfil Lipídico",
-            fecha: "15-04-2026",
-            estado: "Normal",
-            color: "success"
-        },
-
-        {
-            nombre: "Radiografía Torácica",
-            fecha: "10-04-2026",
-            estado: "Observación",
-            color: "warning"
-        }
-
-    ];
+const ExamenesClinicos = ({
+    paciente
+}) => {
 
     return (
 
@@ -55,40 +25,136 @@ const ExamenesClinicos = () => {
 
                 <div className="examenes-lista">
 
-                    {examenes.map((examen, index) => (
+                    {
+                        paciente?.examenes?.length > 0 ? (
 
-                        <div
-                            key={index}
-                            className="examen-item"
-                        >
+                            paciente.examenes
+                                .slice()
+                                .reverse()
+                                .map(
+                                    (
+                                        examen,
+                                        index
+                                    ) => {
 
-                            <div>
+                                        const obtenerColor = () => {
 
-                                <h6 className="mb-1">
+                                            if (
+                                                examen.estado ===
+                                                "Completado"
+                                            ) {
 
-                                    {examen.nombre}
+                                                return "success";
+                                            }
 
-                                </h6>
+                                            if (
+                                                examen.estado ===
+                                                "En proceso"
+                                            ) {
 
-                                <small className="text-muted">
+                                                return "warning";
+                                            }
 
-                                    Fecha:
-                                    {" "}
-                                    {examen.fecha}
+                                            return "secondary";
+                                        };
 
-                                </small>
+                                        return (
 
-                            </div>
+                                            <div
+                                                key={index}
+                                                className="examen-item"
+                                            >
 
-                            <Badge bg={examen.color}>
+                                                <div>
 
-                                {examen.estado}
+                                                    <h6 className="mb-1">
 
-                            </Badge>
+                                                        {
+                                                            examen.examen
+                                                        }
 
-                        </div>
+                                                    </h6>
 
-                    ))}
+                                                    <small className="text-muted d-block">
+
+                                                        Fecha:
+                                                        {" "}
+                                                        {
+                                                            examen.fecha
+                                                        }
+
+                                                    </small>
+
+                                                    <small className="text-muted d-block">
+
+                                                        Profesional:
+                                                        {" "}
+                                                        {
+                                                            examen.profesional
+                                                        }
+
+                                                    </small>
+
+                                                    {
+                                                        examen.resultado && (
+
+                                                            <small className="text-muted d-block">
+
+                                                                Resultado:
+                                                                {" "}
+                                                                {
+                                                                    examen.resultado
+                                                                }
+
+                                                            </small>
+
+                                                        )
+                                                    }
+
+                                                    {
+                                                        examen.observaciones && (
+
+                                                            <small className="text-muted d-block">
+
+                                                                Observaciones:
+                                                                {" "}
+                                                                {
+                                                                    examen.observaciones
+                                                                }
+
+                                                            </small>
+
+                                                        )
+                                                    }
+
+                                                </div>
+
+                                                <Badge
+                                                    bg={obtenerColor()}
+                                                >
+
+                                                    {
+                                                        examen.estado
+                                                    }
+
+                                                </Badge>
+
+                                            </div>
+
+                                        );
+                                    }
+                                )
+
+                        ) : (
+
+                            <p>
+
+                                No existen exámenes registrados.
+
+                            </p>
+
+                        )
+                    }
 
                 </div>
 

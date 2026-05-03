@@ -7,12 +7,21 @@ import {
     Badge
 } from "react-bootstrap";
 
-const Antropometria = () => {
+const Antropometria = ({ paciente }) => {
+
+    const ultimoRegistro =
+
+        paciente?.antropometria?.[
+        paciente.antropometria.length - 1
+        ];
 
     const datos = {
 
-        peso: 82,
-        altura: 1.72
+        peso:
+            ultimoRegistro?.peso || "--",
+
+        altura:
+            ultimoRegistro?.altura || "--"
 
     };
 

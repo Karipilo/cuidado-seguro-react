@@ -1,5 +1,4 @@
-import React from "react";
-import { useState } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { useParams } from "react-router-dom";
 import { Container, Card } from "react-bootstrap";
 import { usuarios } from "../data/usuario";
@@ -10,6 +9,16 @@ import TabsClinicas from "../components/profesional/TabsClinicas";
 import Antropometria from "../components/profesional/Antropometria";
 import AccionesRapidas from "../components/profesional/AccionesRapidas";
 import FormularioSignosVitales from "../components/profesional/FormularioSignosVitales";
+import HistorialSignosVitales from "../components/profesional/HistorialSignosVitales";
+import FormularioAntropometria from "../components/profesional/FormularioAntropometria";
+import HistorialAntropometria from "../components/profesional/HistorialAntropometria";
+import FormularioEvolucion from "../components/profesional/FormularioEvolucion";
+import HistorialEvoluciones from "../components/profesional/HistorialEvoluciones";
+import FormularioIndicaciones from "../components/profesional/FormularioIndicaciones";
+import HistorialIndicaciones from "../components/profesional/HistorialIndicaciones";
+import ExamenesClinicos from "../components/profesional/ExamenesClinicos";
+import FormularioExamenes from "../components/profesional/FormularioExamenes";
+import ResumenClinico from "../components/profesional/ResumenClinico";
 
 const PanelClinico = () => {
 
@@ -18,7 +27,25 @@ const PanelClinico = () => {
     const [mostrarFormularioSV, setMostrarFormularioSV] =
         useState(false);
 
+    const [
+        mostrarFormularioAntropometria,
+        setMostrarFormularioAntropometria
+    ] = useState(false);
 
+    const [
+        mostrarFormularioEvolucion,
+        setMostrarFormularioEvolucion
+    ] = useState(false);
+
+    const [
+        mostrarFormularioIndicaciones,
+        setMostrarFormularioIndicaciones
+    ] = useState(false);
+
+    const [
+        mostrarFormularioExamenes,
+        setMostrarFormularioExamenes
+    ] = useState(false);
 
     const paciente = usuarios.find(
         (u) =>
@@ -27,7 +54,51 @@ const PanelClinico = () => {
     );
 
     const [pacienteActivo, setPacienteActivo] =
-        useState(paciente);
+        useState(() => {
+
+            const guardado =
+                localStorage.getItem(
+                    `paciente-${rut}`
+                );
+
+            return guardado
+                ? JSON.parse(guardado)
+                : paciente;
+        });
+
+    const [activeTab, setActiveTab] =
+        useState("resumen");
+
+    const formularioRef =
+        useRef(null);
+
+    const irAFormulario = () => {
+
+        setTimeout(() => {
+
+            formularioRef.current?.scrollIntoView({
+
+                behavior: "smooth",
+                block: "start"
+
+            });
+
+        }, 100);
+    };
+
+    useEffect(() => {
+
+        localStorage.setItem(
+
+            `paciente-${rut}`,
+
+            JSON.stringify(
+                pacienteActivo
+            )
+
+        );
+
+    }, [pacienteActivo, rut]);
 
     if (!paciente) {
 
@@ -187,14 +258,80 @@ const PanelClinico = () => {
 
             {/* ANTROPOMETRÍA */}
 
-            <Antropometria />
+            <Antropometria
+                paciente={pacienteActivo}
+            />
             {
                 mostrarFormularioSV && (
 
-                    <FormularioSignosVitales
-                        paciente={pacienteActivo}
-                        setPaciente={setPacienteActivo}
-                    />
+                    <div ref={formularioRef}>
+
+                        <FormularioSignosVitales
+                            paciente={pacienteActivo}
+                            setPaciente={setPacienteActivo}
+                        />
+
+                    </div>
+
+                )
+            }
+
+            {
+                mostrarFormularioAntropometria && (
+
+                    <div ref={formularioRef}>
+
+                        <FormularioAntropometria
+                            paciente={pacienteActivo}
+                            setPaciente={setPacienteActivo}
+                        />
+
+                    </div>
+
+                )
+            }
+
+            {
+                mostrarFormularioEvolucion && (
+
+                    <div ref={formularioRef}>
+
+                        <FormularioEvolucion
+                            paciente={pacienteActivo}
+                            setPaciente={setPacienteActivo}
+                        />
+                    </div>
+                )
+            }
+
+            {
+                mostrarFormularioIndicaciones && (
+
+                    <div ref={formularioRef}>
+
+                        <FormularioIndicaciones
+                            paciente={pacienteActivo}
+                            setPaciente={setPacienteActivo}
+                        />
+
+                    </div>
+
+                )
+            }
+
+
+
+            {
+                mostrarFormularioExamenes && (
+
+                    <div ref={formularioRef}>
+
+                        <FormularioExamenes
+                            paciente={pacienteActivo}
+                            setPaciente={setPacienteActivo}
+                        />
+
+                    </div>
 
                 )
             }
@@ -206,13 +343,47 @@ const PanelClinico = () => {
                 <Col lg={8}>
 
                     <TabsClinicas
-                        resumenComponent={<div>Resumen clínico</div>}
-                        historialComponent={<div>Historial clínico</div>}
-                        signosVitalesComponent={
-                            <SignosVitales paciente={pacienteActivo} />
+                        activeTab={activeTab}
+                        setActiveTab={setActiveTab}
+                        resumenComponent={
+
+                            <ResumenClinico
+                                paciente={pacienteActivo}
+                            />
+
                         }
-                        evolucionComponent={<div>Evoluciones</div>}
-                        indicacionesComponent={<div>Indicaciones</div>}
+                        historialComponent={
+
+                            <ExamenesClinicos
+                                paciente={pacienteActivo}
+                            />
+
+                        }
+                        signosVitalesComponent={
+                            <HistorialSignosVitales
+                                paciente={pacienteActivo}
+                            />
+                        }
+
+                        antropometriaComponent={
+                            <HistorialAntropometria
+                                paciente={pacienteActivo}
+                            />
+                        }
+                        evolucionComponent={
+
+                            <HistorialEvoluciones
+                                paciente={pacienteActivo}
+                            />
+
+                        }
+                        indicacionesComponent={
+
+                            <HistorialIndicaciones
+                                paciente={pacienteActivo}
+                            />
+
+                        }
                     />
 
                 </Col>
@@ -220,11 +391,56 @@ const PanelClinico = () => {
                 <Col lg={4}>
 
                     <AccionesRapidas
-                        abrirFormularioSV={() =>
+                        abrirFormularioSV={() => {
+
                             setMostrarFormularioSV(
                                 !mostrarFormularioSV
-                            )
-                        }
+                            );
+                            setActiveTab("signos");
+
+                            irAFormulario();
+                        }}
+
+                    abrirFormularioAntropometria={() => {
+
+                        setMostrarFormularioAntropometria(
+                            !mostrarFormularioAntropometria
+                        );
+
+                        setActiveTab("antropometria");
+                        irAFormulario();
+                    }}
+                    abrirFormularioEvolucion={() => {
+
+                        setMostrarFormularioEvolucion(
+                            !mostrarFormularioEvolucion
+                        );
+
+                        setActiveTab("evolucion");
+                        irAFormulario();
+                    }}
+
+                    abrirFormularioIndicaciones={() => {
+
+                        setMostrarFormularioIndicaciones(
+                            !mostrarFormularioIndicaciones
+                        );
+
+                        setActiveTab("indicaciones");
+                        irAFormulario();
+                    }}
+
+                    abrirFormularioExamenes={() => {
+
+                        setMostrarFormularioExamenes(
+                            !mostrarFormularioExamenes
+                        );
+
+                        setActiveTab("historial");
+                        irAFormulario();
+                    }}
+
+
                     />
                 </Col>
 

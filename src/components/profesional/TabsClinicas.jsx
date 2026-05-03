@@ -10,7 +10,10 @@ const TabsClinicas = ({
     signosVitalesComponent,
     evolucionComponent,
     historialComponent,
-    indicacionesComponent
+    indicacionesComponent,
+    antropometriaComponent,
+    activeTab,
+    setActiveTab
 }) => {
 
     return (
@@ -18,7 +21,8 @@ const TabsClinicas = ({
         <div className="tabs-clinicas-container">
 
             <Tabs
-                defaultActiveKey="resumen"
+                activeKey={activeTab}
+                onSelect={(k) => setActiveTab(k)}
                 className="tabs-clinicas mb-4"
             >
 
@@ -58,6 +62,19 @@ const TabsClinicas = ({
                     <div className="mt-4">
 
                         {signosVitalesComponent}
+
+                    </div>
+
+                </Tab>
+
+                <Tab
+                    eventKey="antropometria"
+                    title="Parámetros Antropométricos"
+                >
+
+                    <div className="mt-4">
+
+                        {antropometriaComponent}
 
                     </div>
 
