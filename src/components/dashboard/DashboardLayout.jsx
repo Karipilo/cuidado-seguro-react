@@ -3,13 +3,17 @@ import Sidebar from "./Sidebar";
 
 const DashboardLayout = ({
   usuario,
+  paciente,
   children
 }) => {
 
   return (
     <div className="dashboard-layout">
 
-      <Sidebar usuario={usuario} />
+      <Sidebar
+        usuario={usuario}
+        paciente={paciente}
+      />
 
       <main className="dashboard-main">
 

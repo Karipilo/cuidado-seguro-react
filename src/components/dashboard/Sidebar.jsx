@@ -2,7 +2,7 @@ import React from "react";
 import { Nav } from "react-bootstrap";
 import { PersonBadge, People, ClipboardPulse, ChatDots, Activity, Capsule, FileEarmarkText } from "react-bootstrap-icons";
 
-const Sidebar = ({ usuario }) => {
+const Sidebar = ({ usuario, paciente }) => {
 
     const irASeccion = (id) => {
 
@@ -47,107 +47,95 @@ const Sidebar = ({ usuario }) => {
 
                 {/* PROFESIONAL */}
 
-                {usuario?.tipoUsuario === "PROFESIONAL" && (
+                {usuario?.tipoUsuario === "PROFESIONAL"
+                    && paciente && (
 
-                    <>
+                        <>
 
-                        {/* BUSCAR PACIENTE */}
 
-                        <Nav.Link
-                            onClick={() =>
-                                irASeccion("buscar-paciente")
-                            }
-                        >
+                            {/* EVOLUCION */}
 
-                            <People />
+                            <Nav.Link
+                                onClick={() =>
+                                    irASeccion("evolucion")
+                                }
+                            >
 
-                            <span>
-                                Buscar Pacientes
-                            </span>
+                                <FileEarmarkText />
 
-                        </Nav.Link>
+                                <span>
+                                    Registrar Evolución
+                                </span>
 
-                        {/* EVOLUCION */}
+                            </Nav.Link>
 
-                        <Nav.Link
-                            onClick={() =>
-                                irASeccion("evolucion")
-                            }
-                        >
+                            {/* CONTROLES */}
 
-                            <FileEarmarkText />
+                            <Nav.Link
+                                onClick={() =>
+                                    irASeccion("controles")
+                                }
+                            >
 
-                            <span>
-                                Registrar Evolución
-                            </span>
+                                <Activity />
 
-                        </Nav.Link>
+                                <span>
+                                    Controles
+                                </span>
 
-                        {/* CONTROLES */}
+                            </Nav.Link>
 
-                        <Nav.Link
-                            onClick={() =>
-                                irASeccion("controles")
-                            }
-                        >
+                            {/* MEDICAMENTOS */}
 
-                            <Activity />
+                            <Nav.Link
+                                onClick={() =>
+                                    irASeccion("medicamentos")
+                                }
+                            >
 
-                            <span>
-                                Controles
-                            </span>
+                                <Capsule />
 
-                        </Nav.Link>
+                                <span>
+                                    Medicamentos
+                                </span>
 
-                        {/* MEDICAMENTOS */}
+                            </Nav.Link>
 
-                        <Nav.Link
-                            onClick={() =>
-                                irASeccion("medicamentos")
-                            }
-                        >
+                            {/* HISTORIAL */}
 
-                            <Capsule />
+                            <Nav.Link
+                                onClick={() =>
+                                    irASeccion("historial")
+                                }
+                            >
 
-                            <span>
-                                Medicamentos
-                            </span>
+                                <FileEarmarkText />
 
-                        </Nav.Link>
+                                <span>
+                                    Historial Clínico
+                                </span>
 
-                        {/* HISTORIAL */}
+                            </Nav.Link>
 
-                        <Nav.Link
-                            onClick={() =>
-                                irASeccion("historial")
-                            }
-                        >
+                            {/* MENSAJES */}
 
-                            <FileEarmarkText />
+                            <Nav.Link
+                                onClick={() => irASeccion("mensajes")}
+                            >
 
-                            <span>
-                                Historial Clínico
-                            </span>
+                                <ChatDots />
 
-                        </Nav.Link>
+                                <span>
+                                    Mensajes
+                                </span>
 
-                    </>
+                            </Nav.Link>
 
-                )}
+                        </>
 
-                {/* MENSAJES */}
+                    )}
 
-                <Nav.Link
-                    onClick={() => irASeccion("mensajes")}
-                >
 
-                    <ChatDots />
-
-                    <span>
-                        Mensajes
-                    </span>
-
-                </Nav.Link>
 
             </Nav>
 

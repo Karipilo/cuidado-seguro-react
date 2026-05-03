@@ -1,7 +1,7 @@
 import React from "react";
-import { Badge } from "react-bootstrap";
+import { Badge, Form, Button } from "react-bootstrap";
 
-const HeaderProfesional = ({ profesional }) => {
+const HeaderProfesional = ({ profesional, rutBusqueda, setRutBusqueda, buscarPaciente }) => {
 
     return (
 
@@ -9,41 +9,63 @@ const HeaderProfesional = ({ profesional }) => {
 
             <div>
 
-                <h2 className="dashboard-title mb-1">
+                <h2 className="dashboard-main-title mb-3">
 
                     Panel Clínico
 
                 </h2>
 
-                <p className="dashboard-subtitle mb-0">
+                <h4 className="mb-1">
 
                     {profesional?.nombres}
                     {" "}
                     {profesional?.apellidos}
 
-                </p>
+                </h4>
 
-                <small className="text-muted">
+                <p className="mb-0">
 
                     {profesional?.profesion}
-                    {" "}
-                    -
-                    {" "}
-                    {profesional?.institucion}
 
-                </small>
+                </p>
 
             </div>
 
-            <Badge
-                bg="info"
-                className="dashboard-status-badge"
-            >
+            <div className="header-right-section">
 
-                Profesional activo
+                <Badge
+                    bg="info"
+                    className="dashboard-status-badge"
+                >
 
-            </Badge>
+                    Profesional activo
 
+                </Badge>
+
+                <div className="header-search-container">
+
+                    <Form.Control
+                        type="text"
+                        placeholder="Buscar paciente por RUT..."
+                        value={rutBusqueda}
+                        onChange={(e) =>
+                            setRutBusqueda(e.target.value)
+                        }
+                        className="header-search-input"
+                    />
+
+                    <Button
+                        className="header-search-button"
+                        onClick={buscarPaciente}
+                    >
+
+                        Buscar
+
+                    </Button>
+
+                </div>
+
+            </div>
         </div>
 
     );

@@ -14,95 +14,136 @@ const PacienteResumen = ({ paciente }) => {
         return null;
     }
 
+    const calcularEdad = (fechaNacimiento) => {
+
+        const hoy = new Date();
+
+        const nacimiento =
+            new Date(fechaNacimiento);
+
+        let edad =
+            hoy.getFullYear() -
+            nacimiento.getFullYear();
+
+        const mes =
+            hoy.getMonth() -
+            nacimiento.getMonth();
+
+        if (
+            mes < 0 ||
+            (
+                mes === 0 &&
+                hoy.getDate() <
+                nacimiento.getDate()
+            )
+        ) {
+
+            edad--;
+
+        }
+
+        return edad;
+    };
+
     return (
 
-        <Card className="dashboard-modern-card mb-4">
+        <Card className="paciente-banner mb-4">
 
             <Card.Body>
 
-                <div className="d-flex justify-content-between align-items-start mb-4">
+                <div className="paciente-header">
 
                     <div>
 
-                        <h4 className="mb-1">
+                        <h3 className="mb-1">
 
                             {paciente?.nombres}
                             {" "}
                             {paciente?.apellidos}
 
-                        </h4>
+                        </h3>
 
                         <p className="text-muted mb-0">
 
+                            RUT:
+                            {" "}
                             {paciente?.numeroDocumento}
 
                         </p>
 
                     </div>
 
-                    <Badge bg="secondary">
+                    <div className="estado-paciente">
 
                         Paciente activo
 
-                    </Badge>
+                    </div>
 
                 </div>
 
-                <Row>
+                <Row className="mt-4 g-3">
 
-                    <Col md={6} className="mb-3">
+                    <Col md={4}>
 
-                        <strong>
-                            Grupo sanguíneo:
-                        </strong>
+                        <div className="paciente-info-card">
 
-                        <p className="mb-0">
+                            <small className="text-muted">
 
-                            {paciente?.grupoSanguineo}
+                                Edad
 
-                        </p>
+                            </small>
 
-                    </Col>
+                            <h5>
 
-                    <Col md={6} className="mb-3">
+                                {paciente?.fechaNacimiento
+                                    ? calcularEdad(
+                                        paciente.fechaNacimiento
+                                    )
+                                    : "--"}
 
-                        <strong>
-                            Alergias:
-                        </strong>
+                            </h5>
 
-                        <p className="mb-0">
-
-                            {paciente?.alergias}
-
-                        </p>
+                        </div>
 
                     </Col>
 
-                    <Col md={6}>
+                    <Col md={4}>
 
-                        <strong>
-                            Enfermedades:
-                        </strong>
+                        <div className="paciente-info-card">
 
-                        <p className="mb-0">
+                            <small className="text-muted">
 
-                            {paciente?.enfermedadesCronicas}
+                                Género
 
-                        </p>
+                            </small>
+
+                            <h5>
+
+                                {paciente?.genero}
+
+                            </h5>
+
+                        </div>
 
                     </Col>
 
-                    <Col md={6}>
+                    <Col md={4}>
 
-                        <strong>
-                            Medicamentos:
-                        </strong>
+                        <div className="paciente-info-card">
 
-                        <p className="mb-0">
+                            <small className="text-muted">
 
-                            {paciente?.medicamentosActuales}
+                                Alergias
 
-                        </p>
+                            </small>
+
+                            <h5>
+
+                                {paciente?.alergias}
+
+                            </h5>
+
+                        </div>
 
                     </Col>
 

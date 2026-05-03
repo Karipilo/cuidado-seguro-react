@@ -1,8 +1,6 @@
 import React from "react";
-
-import {
-    Card
-} from "react-bootstrap";
+import { Card } from "react-bootstrap";
+import { Activity } from "react-bootstrap-icons";
 
 const HistorialClinico = ({
     evoluciones
@@ -10,88 +8,92 @@ const HistorialClinico = ({
 
     return (
 
-    <Card className="dashboard-modern-card">
+        <Card className="dashboard-modern-card">
 
-        <Card.Body>
+            <Card.Body>
 
-            <Card.Title
-                className="dashboard-card-title"
-            >
+                <Card.Title
+                    className="dashboard-card-title"
+                >
 
-                Historial Clínico
+                    Últimos registros clínicos
 
-            </Card.Title>
+                </Card.Title>
 
-            {evoluciones.length === 0 ? (
+                {evoluciones.length === 0 ? (
 
-                <p className="mb-0">
+                    <p className="mb-0">
 
-                    No existen evoluciones registradas
+                        No existen evoluciones registradas
 
-                </p>
+                    </p>
 
-            ) : (
+                ) : (
 
-                <div className="timeline-clinica">
+                    <div className="timeline-clinica">
 
-                    {evoluciones.map((ev, index) => (
+                        {evoluciones.map((ev, index) => (
 
-                        <div
-                            key={index}
-                            className="timeline-item"
-                        >
+                            <div
+                                key={index}
+                                className="timeline-item"
+                            >
 
-                            <div className="timeline-dot"></div>
+                                <div className="timeline-dot">
 
-                            <div className="timeline-content">
+                                    <Activity />
 
-                                <div className="timeline-header">
+                                </div>
 
-                                    <div>
+                                <div className="timeline-content">
 
-                                        <h6 className="mb-1">
+                                    <div className="timeline-header">
 
-                                            {ev.profesional}
+                                        <div>
 
-                                        </h6>
+                                            <h6 className="mb-1">
+
+                                                {ev.profesional}
+
+                                            </h6>
+
+                                            <small className="text-muted">
+
+                                                {ev.profesion}
+
+                                            </small>
+
+                                        </div>
 
                                         <small className="text-muted">
 
-                                            Evolución clínica registrada
+                                            {ev.fecha}
 
                                         </small>
 
                                     </div>
 
-                                    <small className="text-muted">
+                                    <p className="mb-0 mt-3">
 
-                                        {ev.fecha}
+                                        {ev.texto}
 
-                                    </small>
+                                    </p>
 
                                 </div>
 
-                                <p className="mb-0 mt-3">
-
-                                    {ev.texto}
-
-                                </p>
-
                             </div>
 
-                        </div>
+                        ))}
 
-                    ))}
+                    </div>
 
-                </div>
+                )}
 
-            )}
+            </Card.Body>
 
-        </Card.Body>
+        </Card>
 
-    </Card>
-
-);
+    );
 
 
 };

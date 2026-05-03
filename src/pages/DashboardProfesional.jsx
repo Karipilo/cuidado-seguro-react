@@ -13,6 +13,9 @@ import HistorialClinico from "../components/profesional/HistorialClinico";
 import SignosVitales from "../components/profesional/SignosVitales";
 import Antropometria from "../components/profesional/Antropometria";
 import ExamenesClinicos from "../components/profesional/ExamenesClinicos";
+import FormularioSignosVitales from "../components/profesional/FormularioSignosVitales";
+import AccionesRapidas from "../components/profesional/AccionesRapidas";
+
 const DashboardProfesional = () => {
 
   const navigate = useNavigate();
@@ -29,7 +32,28 @@ const DashboardProfesional = () => {
   const [evolucion, setEvolucion] =
     useState("");
 
-  const evoluciones = JSON.parse(localStorage.getItem("evoluciones")) || [];
+  const [indicacion, setIndicacion] =
+    useState("");
+
+  const evoluciones =
+    JSON.parse(
+      localStorage.getItem("evoluciones")
+    ) || [];
+
+  const indicaciones =
+    JSON.parse(
+      localStorage.getItem("indicaciones")
+    ) || [];
+
+  const indicacionesPaciente =
+
+    indicaciones.filter(
+
+      (i) =>
+        i.rutPaciente ===
+        paciente?.numeroDocumento
+
+    );
 
   useEffect(() => {
 
@@ -88,11 +112,31 @@ const DashboardProfesional = () => {
         localStorage.getItem("evoluciones")
       ) || [];
 
+    const indicaciones =
+      JSON.parse(
+        localStorage.getItem("indicaciones")
+      ) || [];
+
+    const indicacionesPaciente =
+
+      indicaciones.filter(
+
+        (i) =>
+          i.rutPaciente ===
+          paciente?.numeroDocumento
+
+      );
+
     evoluciones.push({
       rutPaciente: paciente.numeroDocumento,
       texto: evolucion,
       fecha: new Date().toLocaleString(),
-      profesional: profesional.nombres
+      profesional:
+        `${profesional.nombres}
+    ${profesional.apellidos}`,
+
+      profesion:
+        profesional.profesion,
     });
 
     localStorage.setItem(
@@ -103,6 +147,54 @@ const DashboardProfesional = () => {
     alert("Evolución guardada");
 
     setEvolucion("");
+  };
+
+  const guardarIndicacion = () => {
+
+    if (!indicacion) {
+
+      alert("Debe escribir una indicación");
+
+      return;
+    }
+
+    const indicaciones =
+      JSON.parse(
+        localStorage.getItem("indicaciones")
+      ) || [];
+
+    indicaciones.push({
+
+      rutPaciente:
+        paciente.numeroDocumento,
+
+      texto:
+        indicacion,
+
+      fecha:
+        new Date().toLocaleString(),
+
+      profesional:
+        `${profesional.nombres}
+            ${profesional.apellidos}`,
+
+      profesion:
+        profesional.profesion
+
+    });
+
+    localStorage.setItem(
+
+      "indicaciones",
+
+      JSON.stringify(indicaciones)
+
+    );
+
+    alert("Indicación guardada");
+
+    setIndicacion("");
+
   };
 
   if (!profesional) {
@@ -116,128 +208,32 @@ const DashboardProfesional = () => {
 
   return (
 
-    <DashboardLayout usuario={profesional}>
+    <DashboardLayout
+      usuario={profesional}
+      paciente={paciente}
+    >
 
       <Container
-       fluid
-       className="dashboard-top-spacing">
+        fluid
+        className="dashboard-top-spacing">
 
         {/* HEADER */}
 
         <HeaderProfesional
           profesional={profesional}
+          rutBusqueda={rutBusqueda}
+          setRutBusqueda={setRutBusqueda}
+          buscarPaciente={buscarPaciente}
         />
 
-        <Row>
 
-          {/* COLUMNA IZQUIERDA */}
+        <Row className="justify-content-center">
 
-          <Col lg={4}>
+          <Col lg={10}>
 
-            {/* BUSCADOR */}
 
-            <div id="buscar-paciente">
 
-              <BuscadorPaciente
-                rutBusqueda={rutBusqueda}
-                setRutBusqueda={setRutBusqueda}
-                buscarPaciente={buscarPaciente}
-              />
-
-            </div>
-
-            {/* PERFIL */}
-
-            <Card
-              id="perfil"
-              className="dashboard-modern-card"
-            >
-
-              <Card.Body>
-
-                <Card.Title
-                  className="dashboard-card-title"
-                >
-                  Información profesional
-                </Card.Title>
-
-                <div className="dashboard-info-group">
-
-                  <p>
-                    <strong>Profesión:</strong>
-                    {" "}
-                    {profesional?.profesion}
-                  </p>
-
-                  <p>
-                    <strong>Especialidad:</strong>
-                    {" "}
-                    {profesional?.especialidad}
-                  </p>
-
-                  <p>
-                    <strong>Subespecialidad:</strong>
-                    {" "}
-                    {profesional?.subespecialidad}
-                  </p>
-
-                  <p>
-                    <strong>Institución:</strong>
-                    {" "}
-                    {profesional?.institucion}
-                  </p>
-
-                  <p>
-                    <strong>Universidad:</strong>
-                    {" "}
-                    {profesional?.universidad}
-                  </p>
-
-                  <p>
-                    <strong>Experiencia:</strong>
-                    {" "}
-                    {profesional?.experienciaAños}
-                    {" "}
-                    años
-                  </p>
-
-                  <p>
-                    <strong>Licencia:</strong>
-                    {" "}
-                    {profesional?.numeroLicencia}
-                  </p>
-
-                </div>
-
-              </Card.Body>
-
-            </Card>
-
-          </Col>
-
-          {/* COLUMNA DERECHA */}
-
-          <Col lg={8}>
-
-            {!paciente ? (
-
-              <Card className="dashboard-modern-card">
-
-                <Card.Body className="text-center p-5">
-
-                  <h5>
-                    Seleccione un paciente
-                  </h5>
-
-                  <p className="text-muted mb-0">
-                    Ingrese un RUT para comenzar
-                  </p>
-
-                </Card.Body>
-
-              </Card>
-
-            ) : (
+            {paciente && (
 
               <>
 
@@ -249,17 +245,10 @@ const DashboardProfesional = () => {
                     paciente={paciente}
                   />
 
-                  {/* SIGNOS VITALES */}
-                  <SignosVitales />
-
-                  {/* ANTROPOMETRIA */}
-                  <Antropometria />
-
-                  {/* EXAMENES CLINICOS */}
-
-                  <ExamenesClinicos />
 
                 </div>
+
+                {/* MEDICAMENTOS */}
 
                 <Card
                   id="medicamentos"
@@ -286,67 +275,252 @@ const DashboardProfesional = () => {
 
                 </Card>
 
-                {/* EVOLUCION */}
+                {/* TABS CLINICAS */}
 
-                <TabsClinicas
+                <Row className="mt-4">
 
-                  evolucionComponent={
+                  <Col lg={8}>
 
-                    <Card
-                      id="evolucion"
-                      className="dashboard-modern-card"
-                    >
+                    <TabsClinicas
 
-                      <Card.Body>
+                      resumenComponent={
 
-                        <Card.Title
-                          className="dashboard-card-title"
+                        <Card className="dashboard-modern-card">
+
+                          <Card.Body>
+
+                            <Card.Title
+                              className="dashboard-card-title"
+                            >
+
+                              Resumen clínico
+
+                            </Card.Title>
+
+                            <p>
+
+                              Paciente actualmente
+                              en seguimiento clínico.
+
+                            </p>
+
+                            <p className="mb-0">
+
+                              Último control
+                              registrado correctamente.
+
+                            </p>
+
+                          </Card.Body>
+
+                        </Card>
+
+                      }
+
+                      signosVitalesComponent={
+
+                        <>
+
+                          <FormularioSignosVitales
+                            paciente={paciente}
+                            setPaciente={setPaciente}
+                          />
+
+                          <div className="mt-4">
+
+                            <SignosVitales
+                              paciente={paciente}
+                            />
+
+                          </div>
+
+                          <div className="mt-4">
+
+                            <Antropometria />
+
+                          </div>
+
+                          <div className="mt-4">
+
+                            <ExamenesClinicos />
+
+                          </div>
+
+                        </>
+
+                      }
+
+                      evolucionComponent={
+
+                        <Card
+                          id="evolucion"
+                          className="dashboard-modern-card"
                         >
 
-                          Registrar evolución clínica
+                          <Card.Body>
 
-                        </Card.Title>
+                            <Card.Title
+                              className="dashboard-card-title"
+                            >
 
-                        <Form.Control
-                          as="textarea"
-                          className="dashboard-textarea"
-                          rows={5}
-                          placeholder="Escriba evolución clínica..."
-                          value={evolucion}
-                          onChange={(e) =>
-                            setEvolucion(e.target.value)
-                          }
-                        />
+                              Registrar evolución clínica
 
-                        <Button
-                          className="mt-3 btn-dashboard-primary"
-                          onClick={guardarEvolucion}
-                        >
+                            </Card.Title>
 
-                          Guardar evolución
+                            <Form.Control
+                              as="textarea"
+                              className="dashboard-textarea"
+                              rows={5}
+                              placeholder="Escriba evolución clínica..."
+                              value={evolucion}
+                              onChange={(e) =>
+                                setEvolucion(
+                                  e.target.value
+                                )
+                              }
+                            />
 
-                        </Button>
+                            <Button
+                              className="mt-3 btn-dashboard-primary"
+                              onClick={guardarEvolucion}
+                            >
 
-                      </Card.Body>
+                              Guardar evolución
 
-                    </Card>
+                            </Button>
 
-                  }
+                          </Card.Body>
 
-                  historialComponent={
+                        </Card>
 
-                    <div id="controles">
+                      }
 
-                      <HistorialClinico
-                        evoluciones={evoluciones}
-                      />
+                      historialComponent={
 
-                    </div>
+                        <div id="controles">
 
-                  }
+                          <HistorialClinico
+                            evoluciones={evoluciones}
+                          />
 
-                />
+                        </div>
 
+                      }
+
+                      indicacionesComponent={
+
+                        <Card className="dashboard-modern-card">
+
+                          <Card.Body>
+
+                            <Card.Title
+                              className="dashboard-card-title"
+                            >
+
+                              Indicaciones clínicas
+
+                            </Card.Title>
+
+                            <Form.Control
+                              as="textarea"
+                              rows={4}
+                              className="dashboard-textarea"
+                              placeholder="Escriba indicaciones..."
+                              value={indicacion}
+                              onChange={(e) =>
+                                setIndicacion(e.target.value)
+                              }
+                            />
+
+                            <Button
+                              className="mt-3 btn-dashboard-primary"
+                              onClick={guardarIndicacion}
+                            >
+
+                              Guardar indicación
+
+                            </Button>
+
+                            <hr />
+
+                            <h5 className="mb-4">
+
+                              Historial de indicaciones
+
+                            </h5>
+
+                            {indicacionesPaciente.length === 0 ? (
+
+                              <p className="text-muted mb-0">
+
+                                No existen indicaciones registradas
+
+                              </p>
+
+                            ) : (
+
+                              indicacionesPaciente.map((ind, index) => (
+
+                                <div
+                                  key={index}
+                                  className="timeline-content mb-3"
+                                >
+
+                                  <div className="timeline-header">
+
+                                    <div>
+
+                                      <h6 className="mb-1">
+
+                                        {ind.profesional}
+
+                                      </h6>
+
+                                      <small className="text-muted">
+
+                                        {ind.profesion}
+
+                                      </small>
+
+                                    </div>
+
+                                    <small className="text-muted">
+
+                                      {ind.fecha}
+
+                                    </small>
+
+                                  </div>
+
+                                  <p className="mb-0 mt-3">
+
+                                    {ind.texto}
+
+                                  </p>
+
+                                </div>
+
+                              ))
+
+                            )}
+
+                          </Card.Body>
+
+                        </Card>
+
+                      }
+
+                    />
+
+                  </Col>
+
+                  <Col lg={4}>
+
+                    <AccionesRapidas />
+
+                  </Col>
+
+                </Row>
 
               </>
 
@@ -356,14 +530,20 @@ const DashboardProfesional = () => {
 
         </Row>
 
-        {/* MENSAJES */}
 
-        <div id="mensajes">
 
-          <MessageSection />
 
-        </div>
 
+
+        {paciente && (
+
+          <div id="mensajes">
+
+            <MessageSection />
+
+          </div>
+
+        )}
       </Container>
 
     </DashboardLayout>

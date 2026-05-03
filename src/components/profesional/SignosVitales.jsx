@@ -13,144 +13,151 @@ import {
     DropletHalf
 } from "react-bootstrap-icons";
 
-const SignosVitales = () => {
+const SignosVitales = ({
+    paciente
+}) => {
 
-    const signos = {
+    const ultimoRegistro =
 
-        presion: "120/80 mmHg",
-        frecuencia: "78 lpm",
-        temperatura: "36.5 °C",
-        saturacion: "98%"
-
-    };
+        paciente?.signosVitales?.[
+        paciente.signosVitales.length - 1
+        ];
 
     return (
 
-        <Row className="g-4 mb-4">
+    <div className="signos-grid mb-4">
 
-            <Col md={6} xl={3}>
+        <div className="signo-card presion-card">
 
-                <Card className="dashboard-modern-card h-100">
+            <div className="signo-icon">
 
-                    <Card.Body>
+                ❤️
 
-                        <div className="signo-icono">
+            </div>
 
-                            <HeartPulse />
+            <div>
 
-                        </div>
+                <small>
 
-                        <h6 className="mt-3">
+                    Presión arterial
 
-                            Presión Arterial
+                </small>
 
-                        </h6>
+                <h3>
 
-                        <h4>
+                    {ultimoRegistro?.presion || "--"}
 
-                            {signos.presion}
+                </h3>
 
-                        </h4>
+                <span>
 
-                    </Card.Body>
+                    mmHg
 
-                </Card>
+                </span>
 
-            </Col>
+            </div>
 
-            <Col md={6} xl={3}>
+        </div>
 
-                <Card className="dashboard-modern-card h-100">
+        <div className="signo-card frecuencia-card">
 
-                    <Card.Body>
+            <div className="signo-icon">
 
-                        <div className="signo-icono">
+                🫀
 
-                            <Activity />
+            </div>
 
-                        </div>
+            <div>
 
-                        <h6 className="mt-3">
+                <small>
 
-                            Frecuencia Cardíaca
+                    Frecuencia cardíaca
 
-                        </h6>
+                </small>
 
-                        <h4>
+                <h3>
 
-                            {signos.frecuencia}
+                    {ultimoRegistro?.frecuencia || "--"}
 
-                        </h4>
+                </h3>
 
-                    </Card.Body>
+                <span>
 
-                </Card>
+                    lpm
 
-            </Col>
+                </span>
 
-            <Col md={6} xl={3}>
+            </div>
 
-                <Card className="dashboard-modern-card h-100">
+        </div>
 
-                    <Card.Body>
+        <div className="signo-card temperatura-card">
 
-                        <div className="signo-icono">
+            <div className="signo-icon">
 
-                            <ThermometerHalf />
+                🌡️
 
-                        </div>
+            </div>
 
-                        <h6 className="mt-3">
+            <div>
 
-                            Temperatura
+                <small>
 
-                        </h6>
+                    Temperatura
 
-                        <h4>
+                </small>
 
-                            {signos.temperatura}
+                <h3>
 
-                        </h4>
+                    {ultimoRegistro?.temperatura || "--"}
 
-                    </Card.Body>
+                </h3>
 
-                </Card>
+                <span>
 
-            </Col>
+                    °C
 
-            <Col md={6} xl={3}>
+                </span>
 
-                <Card className="dashboard-modern-card h-100">
+            </div>
 
-                    <Card.Body>
+        </div>
 
-                        <div className="signo-icono">
+        <div className="signo-card saturacion-card">
 
-                            <DropletHalf />
+            <div className="signo-icon">
 
-                        </div>
+                🩸
 
-                        <h6 className="mt-3">
+            </div>
 
-                            Saturación O2
+            <div>
 
-                        </h6>
+                <small>
 
-                        <h4>
+                    Saturación O₂
 
-                            {signos.saturacion}
+                </small>
 
-                        </h4>
+                <h3>
 
-                    </Card.Body>
+                    {ultimoRegistro?.saturacion || "--"}
 
-                </Card>
+                </h3>
 
-            </Col>
+                <span>
 
-        </Row>
+                    %
 
-    );
+                </span>
+
+            </div>
+
+        </div>
+
+    </div>
+
+);
 };
 
 export default SignosVitales;

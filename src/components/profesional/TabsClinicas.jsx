@@ -6,44 +6,92 @@ import {
 } from "react-bootstrap";
 
 const TabsClinicas = ({
+    resumenComponent,
+    signosVitalesComponent,
     evolucionComponent,
-    historialComponent
+    historialComponent,
+    indicacionesComponent
 }) => {
 
     return (
 
-        <Tabs
-            defaultActiveKey="evolucion"
-            className="mb-4"
-        >
+        <div className="tabs-clinicas-container">
 
-            <Tab
-                eventKey="evolucion"
-                title="Evolución"
+            <Tabs
+                defaultActiveKey="resumen"
+                className="tabs-clinicas mb-4"
             >
 
-                <div className="mt-4">
+                <Tab
+                    eventKey="resumen"
+                    title="Resumen"
+                >
 
-                    {evolucionComponent}
+                    <div className="mt-4">
 
-                </div>
+                        {resumenComponent}
 
-            </Tab>
+                    </div>
 
-            <Tab
-                eventKey="historial"
-                title="Historial clínico"
-            >
+                </Tab>
 
-                <div className="mt-4">
+                <Tab
+                    eventKey="historial"
+                    title="Historial Clínico"
 
-                    {historialComponent}
+                >
 
-                </div>
 
-            </Tab>
+                    <div className="mt-4">
 
-        </Tabs>
+                        {historialComponent}
+
+                    </div>
+
+                </Tab>
+
+                <Tab
+                    eventKey="signos"
+                    title="Signos Vitales"
+                >
+
+                    <div className="mt-4">
+
+                        {signosVitalesComponent}
+
+                    </div>
+
+                </Tab>
+
+                <Tab
+                    eventKey="evolucion"
+                    title="Evoluciones"
+                >
+
+                    <div className="mt-4">
+
+                        {evolucionComponent}
+
+                    </div>
+
+                </Tab>
+
+                <Tab
+                    eventKey="indicaciones"
+                    title="Indicaciones"
+                >
+
+                    <div className="mt-4">
+
+                        {indicacionesComponent}
+
+                    </div>
+
+                </Tab>
+
+            </Tabs>
+
+        </div>
 
     );
 };
