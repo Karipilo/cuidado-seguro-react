@@ -26,9 +26,7 @@ const Registro = () => {
     telefono: "",
     direccion: "",
     tipoUsuario: "",
-
     rutPaciente: "",
-
     grupoSanguineo: "",
     factorRh: "",
     alergias: "",
@@ -48,7 +46,6 @@ const Registro = () => {
     experienciaAños: "",
     institucion: "",
     horasSemanales: "",
-
     aceptaTerminos: false
   });
 

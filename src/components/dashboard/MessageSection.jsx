@@ -1,217 +1,122 @@
-import React, { useState, useEffect } from 'react';
-import Card from '../ui/Card';
-import Button from '../ui/Button';
-import Input from '../ui/Input';
+import React, { useState } from "react";
 
-/**
- * Componente para la sección de mensajes
- * Permite enviar mensajes al centro y listar mensajes enviados
- */
-const MessageSection = ({ user }) => {
-  const [messages, setMessages] = useState([]);
-  const [newMessage, setNewMessage] = useState({
-    asunto: '',
-    contenido: '',
-    destinatario: 'centro'
-  });
-  const [loading, setLoading] = useState(false);
-  const [errors, setErrors] = useState({});
+import {
+  Card,
+  Form,
+  Button,
+  ListGroup,
+  Badge
+} from "react-bootstrap";
 
-  // Cargar mensajes al montar el componente
-  useEffect(() => {
-    loadMessages();
-  }, []);
+const MessageSection = () => {
 
-  // Cargar mensajes desde localStorage
-  const loadMessages = () => {
-    const storedMessages = localStorage.getItem(`messages_${user?.numeroDocumento}`)
+  const [mensaje, setMensaje] = useState("");
 
-    if (storedMessages) {
-      setMessages(JSON.parse(storedMessages));
-    } else {
-      setMessages([]); // ← vacío, sin datos falsos
+  const [mensajes, setMensajes] = useState([
+    {
+      id: 1,
+      autor: "Centro Clínico",
+      texto: "Recuerde asistir a su próximo control médico.",
+      fecha: "Hoy"
     }
-  };
+  ]);
 
-  // Validar formulario de mensaje
-  const validateMessage = () => {
-    const newErrors = {};
+  const enviarMensaje = () => {
 
-    if (!newMessage.asunto.trim()) {
-      newErrors.asunto = 'El asunto es requerido';
-    }
-
-    if (!newMessage.contenido.trim()) {
-      newErrors.contenido = 'El contenido del mensaje es requerido';
-    } else if (newMessage.contenido.length < 10) {
-      newErrors.contenido = 'El mensaje debe tener al menos 10 caracteres';
-    }
-
-    setErrors(newErrors);
-    return Object.keys(newErrors).length === 0;
-  };
-
-  // Manejar cambios en el formulario
-  const handleChange = (e) => {
-    const { name, value } = e.target;
-    setNewMessage(prev => ({
-      ...prev,
-      [name]: value
-    }));
-
-    // Limpiar error del campo
-    if (errors[name]) {
-      setErrors(prev => ({
-        ...prev,
-        [name]: ''
-      }));
-    }
-  };
-
-  // Enviar mensaje
-  const handleSendMessage = async (e) => {
-    e.preventDefault();
-
-    if (!validateMessage()) {
+    if (!mensaje.trim()) {
+      alert("Ingrese un mensaje");
       return;
     }
 
-    setLoading(true);
+    const nuevoMensaje = {
+      id: Date.now(),
+      autor: "Paciente",
+      texto: mensaje,
+      fecha: "Ahora"
+    };
 
-    try {
-      // Simular envío
-      await new Promise(resolve => setTimeout(resolve, 1000));
+    setMensajes([
+      nuevoMensaje,
+      ...mensajes
+    ]);
 
-      // Crear nuevo mensaje
-      const message = {
-        id: Date.now(),
-        ...newMessage,
-        fecha: new Date().toISOString(),
-        estado: 'pendiente'
-      };
-
-      // Guardar en localStorage
-      const updatedMessages = [message, ...messages];
-      setMessages(updatedMessages);
-      localStorage.setItem(`messages_${user?.numeroDocumento}`, JSON.stringify(updatedMessages));
-
-      // Limpiar formulario
-      setNewMessage({
-        asunto: '',
-        contenido: '',
-        destinatario: 'centro'
-      });
-
-    } catch (error) {
-      console.error('Error al enviar mensaje:', error);
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  // Formatear fecha
-  const formatDate = (dateString) => {
-    const date = new Date(dateString);
-    return date.toLocaleDateString('es-ES', {
-      day: '2-digit',
-      month: '2-digit',
-      year: 'numeric',
-      hour: '2-digit',
-      minute: '2-digit'
-    });
+    setMensaje("");
   };
 
   return (
-    <div>
-      {/* Formulario de Nuevo Mensaje */}
-      <Card title="Enviar Mensaje al Centro" className="mb-4">
-        <form onSubmit={handleSendMessage}>
-          <Input
-            label="Asunto"
-            type="text"
-            placeholder="Ingrese el asunto del mensaje"
-            name="asunto"
-            value={newMessage.asunto}
-            onChange={handleChange}
-            error={errors.asunto}
-            required
+    <Card className="dashboard-modern-card mt-4">
+
+      <Card.Body>
+
+        <div className="message-header">
+
+          <h5 className="dashboard-card-title mb-0">
+            Mensajes
+          </h5>
+
+          <Badge bg="primary">
+            {mensajes.length}
+          </Badge>
+
+        </div>
+
+        <Form.Group className="mb-3 mt-4">
+
+          <Form.Label>
+            Nuevo mensaje
+          </Form.Label>
+
+          <Form.Control
+            as="textarea"
+            rows={3}
+            value={mensaje}
+            onChange={(e) => setMensaje(e.target.value)}
+            placeholder="Escriba su mensaje..."
           />
 
-          <div className="mb-3">
-            <label htmlFor="contenido" className="form-label">
-              Mensaje *
-            </label>
-            <textarea
-              className={`form-control form-control-custom ${errors.contenido ? 'is-invalid' : ''}`}
-              id="contenido"
-              name="contenido"
-              rows="4"
-              placeholder="Escriba su mensaje aquí..."
-              value={newMessage.contenido}
-              onChange={handleChange}
-              required
-            />
-            {errors.contenido && (
-              <div className="invalid-feedback error-message">
-                {errors.contenido}
-              </div>
-            )}
-          </div>
+        </Form.Group>
 
-          <Button
-            type="submit"
-            variant="primary"
-            fullWidth
-            loading={loading}
-            disabled={loading}
-          >
-            {loading ? 'Enviando...' : 'Enviar Mensaje'}
-          </Button>
-        </form>
-      </Card>
+        <Button
+          className="btn-enviar-mensaje"
+          onClick={enviarMensaje}
+        >
+          Enviar mensaje
+        </Button>
 
-      {/* Lista de Mensajes Enviados */}
-      <Card title="Mensajes Enviados">
-        {messages.length > 0 ? (
-          <div className="messages-list">
-            {messages.map((message) => (
-              <div key={message.id} className="info-card mb-3">
-                <div className="d-flex justify-content-between align-items-start mb-2">
-                  <h6 className="text-primary mb-0">{message.asunto}</h6>
-                  <span className={`badge ${message.estado === 'respondido'
-                      ? 'bg-success'
-                      : 'bg-warning'
-                    }`}>
-                    {message.estado === 'respondido' ? 'Respondido' : 'Pendiente'}
-                  </span>
-                </div>
-                <p className="mb-2">{message.contenido}</p>
-                <div className="d-flex justify-content-between align-items-center">
-                  <small className="text-muted">
-                    <i className="bi bi-clock me-1"></i>
-                    {formatDate(message.fecha)}
-                  </small>
-                  <small className="text-muted">
-                    <i className="bi bi-person me-1"></i>
-                    Para: Centro de Salud
-                  </small>
-                </div>
-                {message.respuesta && (
-                  <div className="mt-3 p-2 bg-light rounded">
-                    <small className="text-primary fw-bold">Respuesta:</small>
-                    <p className="mb-0 mt-1">{message.respuesta}</p>
-                  </div>
-                )}
+        <ListGroup className="mt-4">
+
+          {mensajes.map((msg) => (
+
+            <ListGroup.Item
+              key={msg.id}
+              className="message-item"
+            >
+
+              <div className="message-top">
+
+                <strong>
+                  {msg.autor}
+                </strong>
+
+                <small>
+                  {msg.fecha}
+                </small>
+
               </div>
-            ))}
-          </div>
-        ) : (
-          <p className="text-muted text-center">
-            No hay mensajes enviados aún.
-          </p>
-        )}
-      </Card>
-    </div>
+
+              <p className="mb-0 mt-2">
+                {msg.texto}
+              </p>
+
+            </ListGroup.Item>
+
+          ))}
+
+        </ListGroup>
+
+      </Card.Body>
+
+    </Card>
   );
 };
 

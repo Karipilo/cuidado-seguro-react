@@ -42,7 +42,7 @@ const Login = () => {
     } else if (tipo === "TUTOR") {
       navigate("/dashboardTutor", { replace: true });
     } else if (tipo === "PROFESIONAL") {
-      navigate("/dashboardProfesional", { replace: true });
+      navigate("/dashboard-profesional", { replace: true });
     }
   };
 
