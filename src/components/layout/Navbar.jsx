@@ -23,11 +23,12 @@ const NavbarComponent = () => {
   const irAlPanel = () => {
     if (!usuario) return;
 
-    if (usuario.tipoUsuario === "PACIENTE") {
-      navigate("/dashboardPaciente");
-    } else if (usuario.tipoUsuario === "TUTOR") {
+    const tipo = usuario.userInfo?.tipoUsuario?.toUpperCase();
+    if (tipo === "PACIENTE") {
+      navigate("/dashboard");
+    } else if (tipo === "TUTOR") {
       navigate("/dashboardTutor");
-    } else {
+    } else if (tipo === "PROFESIONAL") {
       navigate("/dashboard-profesional");
     }
   };
@@ -35,6 +36,8 @@ const NavbarComponent = () => {
   // cerrar sesión
   const cerrarSesion = () => {
     localStorage.removeItem("sesion");
+    localStorage.removeItem("token");
+    localStorage.removeItem("refreshToken");
     setUsuario(null);
     navigate("/");
   };

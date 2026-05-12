@@ -195,23 +195,7 @@ const FormularioSignosVitales = ({
 
                     </Col>
 
-                    <Col md={6}>
-
-                        <Form.Label className="fw-semibold mb-2">
-
-                            Saturación O2
-
-                        </Form.Label>
-
-                        <Form.Control
-                            name="saturacion"
-                            placeholder="%"
-                            value={formulario.saturacion}
-                            onChange={handleChange}
-                        />
-
-                    </Col>
-
+                    
                 </Row>
 
                 <Button
