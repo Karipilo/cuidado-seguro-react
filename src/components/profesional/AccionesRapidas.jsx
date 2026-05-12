@@ -11,7 +11,7 @@ import {
 
 const AccionesRapidas = ({
     abrirFormularioSV,
-    abrirFormularioAntropometria,
+    //abrirFormularioAntropometria,
     abrirFormularioEvolucion,
     abrirFormularioIndicaciones,
     abrirFormularioExamenes
@@ -91,37 +91,7 @@ const AccionesRapidas = ({
 
             </div>
 
-            {/* ANTROPOMETRÍA */}
-
-            <div
-                className="accion-item"
-                onClick={abrirFormularioAntropometria}
-            >
-
-                <div className="accion-icon orange">
-
-                    <Rulers />
-
-                </div>
-
-                <div>
-
-                    <h6>
-
-                        Antropometría
-
-                    </h6>
-
-                    <p>
-
-                        Registrar peso y talla
-
-                    </p>
-
-                </div>
-
-            </div>
-
+            
             {/* EXÁMENES */}
 
             <div

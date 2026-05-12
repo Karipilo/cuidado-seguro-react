@@ -3,7 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { Container, Row, Col, Form, Button, Card } from "react-bootstrap";
 import DashboardLayout from "../components/dashboard/DashboardLayout";
 import MessageSection from "../components/dashboard/MessageSection";
-import { usuarios } from "../data/usuario";
+//import { usuarios } from "../data/usuario";
 import "../styles/dashboard.css";
 import HeaderProfesional from "../components/profesional/HeaderProfesional";
 import BuscadorPaciente from "../components/profesional/BuscadorPaciente";
@@ -11,7 +11,7 @@ import PacienteResumen from "../components/profesional/PacienteResumen";
 import TabsClinicas from "../components/profesional/TabsClinicas";
 import HistorialClinico from "../components/profesional/HistorialClinico";
 import SignosVitales from "../components/profesional/SignosVitales";
-import Antropometria from "../components/profesional/Antropometria";
+
 import ExamenesClinicos from "../components/profesional/ExamenesClinicos";
 import FormularioSignosVitales from "../components/profesional/FormularioSignosVitales";
 import AccionesRapidas from "../components/profesional/AccionesRapidas";
@@ -75,14 +75,51 @@ const DashboardProfesional = () => {
 
   /* BUSCAR PACIENTE */
 
-  const buscarPaciente = () => {
+  //console.log("genero:", paciente?.genero);
+const buscarPaciente = async () => {
 
-    const encontrado =
-      usuarios.find(
-        (u) =>
-          u.tipoUsuario === "PACIENTE" &&
-          u.numeroDocumento === rutBusqueda
+  try {
+
+    const sesion = JSON.parse(
+      localStorage.getItem("sesion")
+    );
+
+    const token = sesion?.accessToken;
+
+    if (!token) {
+
+      alert("Sesión no válida");
+
+      return;
+    }
+
+    /* =========================
+       OBTENER FICHAS CLÍNICAS
+    ========================== */
+
+    const responseFichas = await fetch(
+      "http://localhost:8090/bff/fichas",
+      {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+          "Authorization": `Bearer ${token}`
+        }
+      }
+    );
+
+    if (!responseFichas.ok) {
+
+      throw new Error(
+        `Error fichas ${responseFichas.status}`
       );
+    }
+
+    const fichas = await responseFichas.json();
+
+    const encontrado = fichas.find(
+      (f) => f.rutPaciente === rutBusqueda
+    );
 
     if (!encontrado) {
 
@@ -91,11 +128,113 @@ const DashboardProfesional = () => {
       return;
     }
 
-    navigate(
-      `/profesional/paciente/${encontrado.numeroDocumento}`
+    console.log(
+      "PACIENTE ENCONTRADO:",
+      encontrado
     );
-  };
 
+    /* =========================
+       OBTENER MEDICAMENTOS
+    ========================== */
+
+    const responseMedicamentos = await fetch(
+      "http://localhost:8090/bff/medicamentos",
+      {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+          "Authorization": `Bearer ${token}`
+        }
+      }
+    );
+
+    if (!responseMedicamentos.ok) {
+
+      throw new Error(
+        `Error medicamentos ${responseMedicamentos.status}`
+      );
+    }
+
+    const medicamentos =
+      await responseMedicamentos.json();
+
+    console.log(
+      "MEDICAMENTOS:",
+      medicamentos
+    );
+
+    /* =========================
+       FILTRAR POR ficha_id
+    ========================== */
+
+    const medicamentosPaciente =
+      medicamentos.filter(
+        (m) =>
+          m.ficha?.id === encontrado.id
+      );
+
+    console.log(
+      "MEDICAMENTOS PACIENTE:",
+      medicamentosPaciente
+    );
+
+    /* =========================
+       FORMATEAR TEXTO
+    ========================== */
+
+    const medicamentosTexto =
+      medicamentosPaciente.length > 0
+        ? medicamentosPaciente
+            .map((m) => m.nombre)
+            .join(", ")
+        : "Sin medicamentos registrados";
+
+    /* =========================
+       SET PACIENTE
+    ========================== */
+
+    setPaciente({
+
+      id:
+        encontrado.id,
+
+      numeroDocumento:
+        encontrado.rutPaciente,
+
+      nombres:
+        encontrado.nombrePaciente,
+
+      edad:
+        encontrado.edad,
+
+      genero:
+        encontrado.genero,
+
+      alergias:
+        encontrado.alergias,
+
+      diagnostico:
+        encontrado.diagnostico,
+
+      observaciones:
+        encontrado.observaciones,
+
+      medicamentosActuales:
+        medicamentosTexto
+    });
+
+  } catch (error) {
+
+    console.error(
+      "Error buscando paciente:",
+      error
+    );
+
+    alert(
+      "No se pudo obtener la información"
+    );
+  }
+};
   /* GUARDAR EVOLUCION */
 
   const guardarEvolucion = () => {
@@ -334,11 +473,7 @@ const DashboardProfesional = () => {
 
                           </div>
 
-                          <div className="mt-4">
-
-                            <Antropometria />
-
-                          </div>
+                          
 
                           <div className="mt-4">
 

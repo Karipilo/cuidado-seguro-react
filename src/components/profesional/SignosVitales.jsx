@@ -111,34 +111,7 @@ const SignosVitales = ({
 
         </div>
 
-        <div className="signo-card saturacion-card">
-
-            <div className="signo-icon">
-
-                🩸
-
-            </div>
-
-            <div>
-
-                <small>
-
-                    Saturación O₂
-
-                </small>
-
-                <h3>
-
-                    {ultimoRegistro?.saturacion || "--"}
-
-                </h3>
-
-                
-
-            </div>
-
-        </div>
-
+        
     </div>
 
 );

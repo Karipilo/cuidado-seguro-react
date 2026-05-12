@@ -13,42 +13,57 @@ const Registro = () => {
   const [paso, setPaso] = useState(1);
 
   const [formData, setFormData] = useState({
-    username: "",
-    password: "",
-    email: "",
-    nombres: "",
-    apellidos: "",
-    tipoDocumento: "DNI",
-    numeroDocumento: "",
-    fechaNacimiento: "",
-    genero: "",
-    otroGenero: "",
-    telefono: "",
-    direccion: "",
-    tipoUsuario: "",
-    rutPaciente: "",
-    grupoSanguineo: "",
-    factorRh: "",
-    alergias: "",
-    enfermedadesCronicas: "",
-    medicamentosActuales: "",
-    contactoEmergencia: "",
-    telefonoEmergencia: "",
-    seguroMedico: "",
-    numeroPoliza: "",
-    numeroLicencia: "",
-    profesion: "",
-    otraProfesion: "",
-    especialidad: "",
-    subespecialidad: "",
-    universidad: "",
-    añoGraduacion: "",
-    experienciaAños: "",
-    institucion: "",
-    horasSemanales: "",
-    aceptaTerminos: false
-  });
+  username: "",
+  password: "",
+  email: "",
 
+  nombres: "",
+  apellidos: "",
+  historiaClinica: "",
+  tipoDocumento: "DNI",
+  numeroDocumento: "",
+
+  fechaNacimiento: "",
+
+  genero: "",
+  otroGenero: "",
+
+  telefono: "",
+  direccion: "",
+
+  tipoUsuario: "",
+
+  pacientesRuts: [],
+
+  grupoSanguineo: "",
+  factorRh: "",
+  alergias: "",
+  enfermedadesCronicas: "",
+  medicamentosActuales: "",
+  contactoEmergencia: "",
+  telefonoEmergencia: "",
+
+  prevision: "",
+
+  numeroLicencia: "",
+
+  profesion: "",
+  otraProfesion: "",
+
+  especialidad: "",
+  subespecialidad: "",
+  universidad: "",
+
+  anioGraduacion: null,
+  experienciaAnios: null,
+
+  institucion: "",
+  horasSemanales: "",
+
+  aceptaTerminos: false,
+
+  versionTerminos: 1
+});
   const handleChange = (e) => {
 
     const { name, value } = e.target;
@@ -109,90 +124,189 @@ const Registro = () => {
     return "";
   };
 
-  const handleRegistro = (e) => {
-    e.preventDefault();
 
-    let camposObligatorios = [
-      "username",
-      "password",
-      "email",
-      "nombres",
-      "apellidos",
-      "numeroDocumento",
-      "fechaNacimiento",
-      "genero",
-      "telefono",
-      "direccion"
-    ];
+const handleRegistro = async (e) => {
+  e.preventDefault();
 
-    if (formData.tipoUsuario === "PACIENTE") {
-      camposObligatorios.push(
-        "grupoSanguineo",
-        "factorRh",
-        "contactoEmergencia",
-        "telefonoEmergencia",
-        "seguroMedico"
-      );
+  let camposObligatorios = [
+    "username",
+    "password",
+    "email",
+    "nombres",
+    "apellidos",
+    "numeroDocumento",
+    "fechaNacimiento",
+    "genero",
+    "telefono",
+    "direccion"
+  ];
+
+  if (formData.tipoUsuario === "PACIENTE") {
+    camposObligatorios.push(
+      "grupoSanguineo",
+      "factorRh",
+      "contactoEmergencia",
+      "telefonoEmergencia",
+      "seguroMedico",
+      "historiaClinica"
+    );
+  }
+
+  if (formData.tipoUsuario === "TUTOR") {
+    camposObligatorios.push("rutPaciente");
+  }
+
+  for (let campo of camposObligatorios) {
+
+    if (!formData[campo] || formData[campo] === "+569") {
+      alert("Todos los campos obligatorios deben completarse");
+      return;
     }
+  }
 
-    if (formData.tipoUsuario === "TUTOR") {
-      camposObligatorios.push("rutPaciente");
-    }
+  if (!validarPassword(formData.password)) {
+    alert("La contraseña debe tener mínimo 6 caracteres, una mayúscula, un número y un símbolo");
+    return;
+  }
 
-    for (let campo of camposObligatorios) {
-      if (!formData[campo] || formData[campo] === "+569") {
-        alert("Todos los campos obligatorios deben completarse");
-        return;
+
+  if (!formData.aceptaTerminos) {
+    alert("Debe aceptar los términos y condiciones");
+    return;
+  }
+
+  const usuarioFinal = {
+
+    username: formData.username,
+    password: formData.password,
+    email: formData.email,
+
+    nombres: formData.nombres,
+    apellidos: formData.apellidos,
+
+    tipoDocumento: formData.tipoDocumento,
+    numeroDocumento: formData.numeroDocumento,
+
+    fechaNacimiento: formData.fechaNacimiento,
+
+    genero:
+      formData.genero === "OTRO"
+        ? formData.otroGenero
+        : formData.genero,
+
+    telefono: formData.telefono,
+    direccion: formData.direccion,
+
+    tipoUsuario: formData.tipoUsuario,
+
+    roles: [`ROLE_${formData.tipoUsuario}`],
+
+    aceptaTerminos: formData.aceptaTerminos,
+    versionTerminos: 1,
+
+    pacientesRuts:
+      formData.tipoUsuario === "TUTOR"
+        ? [formData.rutPaciente]
+        : [],
+
+    grupoSanguineo: formData.grupoSanguineo || "",
+    factorRh: formData.factorRh || "",
+    alergias: formData.alergias || "",
+    enfermedadesCronicas: formData.enfermedadesCronicas || "",
+    medicamentosActuales: formData.medicamentosActuales || "",
+    historiaClinica: formData.historiaClinica || "",
+    contactoEmergencia: formData.contactoEmergencia || "",
+    telefonoEmergencia: formData.telefonoEmergencia || "",
+
+    prevision: formData.seguroMedico || "",
+
+    numeroLicencia: formData.numeroLicencia || "",
+
+    profesion:
+      formData.profesion === "OTRO"
+        ? formData.otraProfesion
+        : formData.profesion || "",
+
+    especialidad: formData.especialidad || "",
+    subespecialidad: formData.subespecialidad || "",
+    universidad: formData.universidad || "",
+
+    anioGraduacion: Number(formData.anioGraduacion) || null,
+
+    experienciaAnios:
+      formData.experienciaAnios || null,
+
+    institucion: formData.institucion || "",
+    horasSemanales: formData.horasSemanales || ""
+  };
+
+  try {
+
+    const response = await fetch(
+      "http://localhost:8090/bff/auth/register",
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify(usuarioFinal)
       }
-    }
-
-    if (!validarPassword(formData.password)) {
-      alert("La contraseña debe tener mínimo 6 caracteres, una mayúscula, un número y un símbolo");
-      return;
-    }
-
-    if (formData.tipoUsuario === "TUTOR" && !pacienteAsociado) {
-      alert("El RUT del paciente no existe");
-      return;
-    }
-
-    if (!formData.aceptaTerminos) {
-      alert("Debe aceptar los términos y condiciones");
-      return;
-    }
-
-    const usuarioFinal = {
-      ...formData,
-      roles: [`ROLE_${formData.tipoUsuario}`],
-      versionTerminos: 1,
-
-      pacientesRuts:
-        formData.tipoUsuario === "TUTOR"
-          ? [formData.rutPaciente]
-          : []
-    };
-
-    const usuariosGuardados =
-      JSON.parse(localStorage.getItem("usuarios")) || [];
-
-    usuariosGuardados.push(usuarioFinal);
-
-    localStorage.setItem(
-      "usuarios",
-      JSON.stringify(usuariosGuardados)
     );
 
-    if (formData.tipoUsuario === "PACIENTE") {
-      navigate("/dashboardPaciente");
-    } else if (formData.tipoUsuario === "TUTOR") {
-      navigate("/dashboardTutor");
-    } else {
-      navigate("/dashboardProfesional");
+    if (!response.ok) {
+
+      const errorText = await response.text();
+
+      console.log(errorText);
+
+      alert("Error al registrar usuario: " + errorText);
+
+      return;
     }
 
+    const data = await response.json();
+
+console.log(data);
+
+// Guardar tokens en localStorage
+    
+      if (!data || !data.accessToken) {
+        console.log("Respuesta inválida:", data);
+        alert("Registro falló: respuesta inválida del servidor");
+        
+        console.log("RESPUESTA COMPLETA:", response);
+        console.log("DATA:", response.data);
 
 
-  };
+        return;
+      }
+
+      
+      localStorage.setItem("accessToken", data.accessToken);
+      localStorage.setItem("refreshToken", data.refreshToken);
+      localStorage.setItem("expiresIn", data.expiresIn);
+    //alert("Usuario registrado correctamente");
+    if (formData.tipoUsuario === "PACIENTE") {
+
+      navigate("/dashboardProfesional");
+
+    } else if (formData.tipoUsuario === "TUTOR") {
+
+      navigate("/dashboardTutor");
+
+    } else {
+
+      navigate("/dashboardPaciente");
+    }
+
+  } catch (error) {
+
+    console.error(error);
+
+    alert("No se pudo conectar con el servidor");
+  }
+};
+
 
   return (
     <div className="auth-container">
@@ -327,30 +441,50 @@ const Registro = () => {
               <Form.Select
                 name="genero"
                 value={formData.genero}
-                onChange={handleChange}
+                onChange={(e) => {
+
+                  const value = e.target.value;
+
+                  if (value !== "OTRO") {
+
+                    setFormData({
+                      ...formData,
+                      genero: value,
+                      otroGenero: ""
+                    });
+
+                  } else {
+
+                    setFormData({
+                      ...formData,
+                      genero: "OTRO"
+                    });
+
+                  }
+                }}
               >
-                <option value="">
-                  Seleccione
-                </option>
+  <option value="">
+    Seleccione
+  </option>
 
-                <option value="MASCULINO">
-                  Masculino
-                </option>
+  <option value="MASCULINO">
+    Masculino
+  </option>
 
-                <option value="FEMENINO">
-                  Femenino
-                </option>
+  <option value="FEMENINO">
+    Femenino
+  </option>
 
-                <option value="PREFIERE_NO_DECIR">
-                  Prefiero no decirlo
-                </option>
+  <option value="N/A">
+    Prefiero no decirlo
+  </option>
 
-                <option value="OTRO">
-                  Otro
-                </option>
+  <option value="OTRO">
+    Otro
+  </option>
 
-              </Form.Select>
-              {formData.genero === "OTRO" && (
+</Form.Select>
+{formData.genero === "OTRO" && (
 
                 <Form.Group className="mb-3">
 
@@ -361,7 +495,12 @@ const Registro = () => {
                   <Form.Control
                     name="otroGenero"
                     value={formData.otroGenero}
-                    onChange={handleChange}
+                    onChange={(e) =>
+                      setFormData({
+                        ...formData,
+                        otroGenero: e.target.value
+                      })
+                    }
                   />
 
                 </Form.Group>
@@ -547,7 +686,7 @@ const Registro = () => {
 
                   <option>+</option>
                   <option>-</option>
-                  <option>No lo sé</option>
+                  <option>N/A</option>
                 </Form.Select>
               </Form.Group>
 
@@ -650,6 +789,19 @@ const Registro = () => {
                 </Form.Select>
               </Form.Group>
 
+<Form.Group className="mb-3">
+  <Form.Label>
+    Historia clínica
+  </Form.Label>
+
+  <Form.Control
+    as="textarea"
+    rows={3}
+    name="historiaClinica"
+    value={formData.historiaClinica}
+    onChange={handleChange}
+  />
+</Form.Group>
             </>
           )}
 
@@ -676,27 +828,49 @@ const Registro = () => {
                 </Form.Label>
 
                 <Form.Select
-                  name="profesion"
-                  value={formData.profesion}
-                  onChange={handleChange}
-                >
-                  <option value="">
-                    Seleccione
-                  </option>
+  name="profesion"
+  value={formData.profesion}
+  onChange={(e) => {
 
-                  <option>Médico</option>
-                  <option>Enfermero/a</option>
-                  <option>Kinesiólogo/a</option>
-                  <option>Nutricionista</option>
-                  <option>Psicólogo/a</option>
-                  <option>Fonoaudiólogo/a</option>
-                  <option>Terapeuta ocupacional</option>
-                  <option>TENS</option>
-                  <option value="OTRO">
-                    Otro
-                  </option>
-                </Form.Select>
-                {formData.profesion === "OTRO" && (
+    const value = e.target.value;
+
+    if (value !== "OTRO") {
+
+      setFormData({
+        ...formData,
+        profesion: value,
+        otraProfesion: ""
+      });
+
+    } else {
+
+      setFormData({
+        ...formData,
+        profesion: "OTRO"
+      });
+
+    }
+  }}
+>
+  <option value="">
+    Seleccione
+  </option>
+
+  <option>Médico</option>
+  <option>Enfermero/a</option>
+  <option>Kinesiólogo/a</option>
+  <option>Nutricionista</option>
+  <option>Psicólogo/a</option>
+  <option>Fonoaudiólogo/a</option>
+  <option>Terapeuta ocupacional</option>
+  <option>TENS</option>
+
+  <option value="OTRO">
+    Otro
+  </option>
+
+</Form.Select>
+{formData.profesion === "OTRO" && (
 
                   <Form.Group className="mb-3 mt_3">
 
@@ -707,7 +881,12 @@ const Registro = () => {
                     <Form.Control
                       name="otraProfesion"
                       value={formData.otraProfesion}
-                      onChange={handleChange}
+                      onChange={(e) =>
+                        setFormData({
+                          ...formData,
+                          otraProfesion: e.target.value
+                        })
+                      }
                     />
 
                   </Form.Group>
@@ -757,8 +936,8 @@ const Registro = () => {
                 </Form.Label>
 
                 <Form.Select
-                  name="añoGraduacion"
-                  value={formData.añoGraduacion}
+                  name="anioGraduacion"
+                  value={formData.anioGraduacion}
                   onChange={handleChange}
                 >
                   <option value="">
@@ -783,8 +962,8 @@ const Registro = () => {
                 </Form.Label>
 
                 <Form.Select
-                  name="experienciaAños"
-                  value={formData.experienciaAños}
+                  name="experienciaAnios"
+                  value={formData.experienciaAnios}
                   onChange={handleChange}
                 >
                   <option value="">
@@ -874,8 +1053,7 @@ const Registro = () => {
                     !formData.alergias ||
                     !formData.enfermedadesCronicas ||
                     !formData.medicamentosActuales ||
-                    !formData.seguroMedico ||
-                    !formData.subespecialidad
+                    !formData.seguroMedico 
                   )
                 ) {
                   alert("Complete todos los datos del paciente");
@@ -893,8 +1071,8 @@ const Registro = () => {
                     ) ||
                     !formData.especialidad ||
                     !formData.universidad ||
-                    !formData.añoGraduacion ||
-                    !formData.experienciaAños ||
+                    !formData.anioGraduacion ||
+                    !formData.experienciaAnios ||
                     !formData.institucion ||
                     !formData.horasSemanales
                   )

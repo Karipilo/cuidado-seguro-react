@@ -14,6 +14,7 @@ import Login from './pages/Login';
 import Registro from './pages/Registro';
 
 import DashboardPaciente from "./pages/DashboardPaciente";
+import DashboardPacienteNormal from "./pages/DashboardPacienteNormal";
 import DashboardTutor from "./pages/DashboardTutor";
 import DashboardProfesional from "./pages/DashboardProfesional";
 
@@ -81,6 +82,11 @@ function App() {
             <Route
               path="/dashboardTutor"
               element={<DashboardTutor />}
+            />
+
+            <Route
+              path="/dashboardPacienteNormal"
+              element={<DashboardPacienteNormal />}
             />
 
             <Route

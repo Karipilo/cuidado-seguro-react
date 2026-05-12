@@ -1,9 +1,12 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { Container, Row, Col, Card, Badge } from "react-bootstrap";
+
 import DashboardLayout from "../components/dashboard/DashboardLayout";
 import MessageSection from "../components/dashboard/MessageSection";
+
 import "../styles/dashboard.css";
+
 import SignosVitales from "../components/profesional/SignosVitales";
 import HistorialEvoluciones from "../components/profesional/HistorialEvoluciones";
 import HistorialIndicaciones from "../components/profesional/HistorialIndicaciones";
@@ -14,49 +17,203 @@ const DashboardPaciente = () => {
 
   const [user, setUser] = useState(null);
 
-  const [
-    pacienteActivo,
-    setPacienteActivo
-  ] = useState(null);
+  const [pacienteActivo, setPacienteActivo] =
+    useState(null);
+
+  const [loading, setLoading] = useState(true);
 
   const navigate = useNavigate();
 
   useEffect(() => {
-    const userData = localStorage.getItem('sesion');
 
-    if (!userData) {
-      navigate('/login');
-      return;
-    }
+    const obtenerUsuario = async () => {
 
-    const parsedUser = JSON.parse(userData);
-    setUser(parsedUser);
+      try {
 
-    const datosPaciente =
-      localStorage.getItem(
-        `paciente-${parsedUser.numeroDocumento}`
-      );
+        const sesion = JSON.parse(
+          localStorage.getItem("sesion")
+        );
 
-    if (datosPaciente) {
+        const token = sesion?.accessToken;
 
-      setPacienteActivo(
-        JSON.parse(datosPaciente)
-      );
+        if (!token) {
 
-    } else {
+          navigate("/login", {
+            replace: true
+          });
 
-      setPacienteActivo(parsedUser);
+          return;
 
-    }
+        }
+
+        const response = await fetch(
+          "http://localhost:8090/bff/auth/userinfo",
+          {
+            method: "GET",
+            headers: {
+              Authorization: `Bearer ${token}`,
+              "Content-Type": "application/json"
+            }
+          }
+        );
+
+        console.log(
+          "STATUS:",
+          response.status
+        );
+
+        if (!response.ok) {
+
+          if (response.status === 401) {
+
+            localStorage.removeItem(
+              "sesion"
+            );
+
+            navigate("/login", {
+              replace: true
+            });
+
+            return;
+
+          }
+
+          const errorText =
+            await response.text();
+
+          console.error(
+            "ERROR BACKEND:",
+            errorText
+          );
+
+          throw new Error(
+            `HTTP ${response.status}`
+          );
+
+        }
+
+        // EVITA:
+        // Unexpected end of JSON input
+
+        const text =
+          await response.text();
+
+        if (
+          !text ||
+          text.trim() === ""
+        ) {
+
+          throw new Error(
+            "Respuesta vacía del backend"
+          );
+
+        }
+
+        const data = JSON.parse(text);
+
+        console.log("DATA:", data);
+
+        const persona =
+          data?.usuario?.persona || {};
+
+        const usuarioCompleto = {
+
+          nombres:
+            persona?.nombres || "",
+
+          apellidos:
+            persona?.apellidos || "",
+
+          numeroDocumento:
+            persona?.numeroDocumento || "",
+
+          fechaNacimiento:
+            persona?.fechaNacimiento || "",
+
+          genero:
+            persona?.genero || "",
+
+          telefono:
+            persona?.telefono || "",
+
+          email:
+            persona?.email || "",
+
+          direccion:
+            persona?.direccion || "",
+
+          grupoSanguineo:
+            data?.grupoSanguineo || "",
+
+          factorRh:
+            data?.factorRh || "",
+
+          alergias:
+            data?.alergias || "",
+
+          enfermedadesCronicas:
+            data?.enfermedadesCronicas || "",
+
+          medicamentosActuales:
+            data?.medicamentosActuales || "",
+
+          contactoEmergencia:
+            data?.contactoEmergencia || "",
+
+          telefonoEmergencia:
+            data?.telefonoEmergencia || "",
+
+          seguroMedico:
+            data?.prevision || ""
+
+        };
+
+        setUser(usuarioCompleto);
+
+        setPacienteActivo(
+          usuarioCompleto
+        );
+
+      } catch (error) {
+
+        console.error(
+          "Error obteniendo usuario:",
+          error
+        );
+
+      } finally {
+
+        setLoading(false);
+
+      }
+
+    };
+
+    obtenerUsuario();
 
   }, [navigate]);
 
-  if (!user) {
+  if (loading) {
+
     return (
       <div className="text-center mt-5">
         <p>Cargando información...</p>
       </div>
     );
+
+  }
+
+  if (!user) {
+
+    return (
+      <div className="text-center mt-5">
+        <p>
+          No se pudo cargar la información
+          del usuario.
+        </p>
+      </div>
+    );
+
   }
 
   return (
@@ -72,28 +229,54 @@ const DashboardPaciente = () => {
           <div>
 
             <h2 className="dashboard-title">
-              Panel del Paciente
-            </h2>
 
-            <p className="dashboard-subtitle">
-              Bienvenido,
+              Panel del Profesional -
+              Paciente:
               {" "}
               {user?.nombres}
               {" "}
               {user?.apellidos}
+
+            </h2>
+
+            <p className="dashboard-subtitle">
+
+              Profesional, aquí encontrarás
+              toda la información relevante
+              de tus pacientes.
+
             </p>
 
           </div>
 
-          <Badge bg="success" className="status-badge">
+          <Badge
+            bg="success"
+            className="status-badge"
+          >
             Sesión activa
           </Badge>
 
         </div>
 
+        {/* SIGNOS VITALES */}
+
         <Row>
 
-          {/* INFORMACION PERSONAL */}
+          <Col lg={12} className="mb-4">
+
+            <SignosVitales
+              paciente={pacienteActivo}
+            />
+
+          </Col>
+
+        </Row>
+
+        {/* INFORMACIÓN */}
+
+        <Row>
+
+          {/* PERSONAL */}
 
           <Col lg={6} className="mb-4">
 
@@ -105,7 +288,9 @@ const DashboardPaciente = () => {
               <Card.Body>
 
                 <Card.Title className="dashboard-card-title">
+
                   Información personal
+
                 </Card.Title>
 
                 <div className="dashboard-info-group">
@@ -133,7 +318,7 @@ const DashboardPaciente = () => {
                   <p>
                     <strong>Teléfono:</strong>
                     {" "}
-                    +569 {user?.telefono}
+                    {user?.telefono}
                   </p>
 
                   <p>
@@ -162,7 +347,7 @@ const DashboardPaciente = () => {
 
           </Col>
 
-          {/* INFORMACION CLINICA */}
+          {/* CLÍNICA */}
 
           <Col lg={6} className="mb-4">
 
@@ -171,7 +356,9 @@ const DashboardPaciente = () => {
               <Card.Body>
 
                 <Card.Title className="dashboard-card-title">
+
                   Información clínica
+
                 </Card.Title>
 
                 <div className="dashboard-info-group">
@@ -222,20 +409,20 @@ const DashboardPaciente = () => {
 
         </Row>
 
-
-
         {/* CONTACTO EMERGENCIA */}
 
         <Row>
 
-          <Col lg={12}>
+          <Col lg={12} className="mb-4">
 
             <Card className="dashboard-modern-card">
 
               <Card.Body>
 
                 <Card.Title className="dashboard-card-title">
+
                   Contacto de emergencia
+
                 </Card.Title>
 
                 <div className="dashboard-info-group">
@@ -249,66 +436,10 @@ const DashboardPaciente = () => {
                   <p>
                     <strong>Teléfono:</strong>
                     {" "}
-                    +569 {user?.telefonoEmergencia}
+                    {user?.telefonoEmergencia}
                   </p>
 
                 </div>
-
-                <Row>
-
-                  <Col lg={12} className="mb-4">
-
-                    <ResumenClinico
-                      paciente={pacienteActivo}
-                    />
-
-                  </Col>
-
-                </Row>
-
-                <Row>
-
-                  <Col lg={6} className="mb-4">
-
-                    <HistorialEvoluciones
-                      paciente={pacienteActivo}
-                    />
-
-                  </Col>
-
-                  <Col lg={6} className="mb-4">
-
-                    <HistorialIndicaciones
-                      paciente={pacienteActivo}
-                    />
-
-                  </Col>
-
-                </Row>
-
-                <Row>
-
-                  <Col lg={12} className="mb-4">
-
-                    <SignosVitales
-                      paciente={pacienteActivo}
-                    />
-
-                  </Col>
-
-                </Row>
-
-                <Row>
-
-                  <Col lg={12} className="mb-4">
-
-                    <ExamenesClinicos
-                      paciente={pacienteActivo}
-                    />
-
-                  </Col>
-
-                </Row>
 
               </Card.Body>
 
@@ -318,19 +449,26 @@ const DashboardPaciente = () => {
 
         </Row>
 
-        {/* MENSAJES */}
+        {/* RESUMEN */}
 
-        <div id="mensajes">
+        <Row>
 
-          <MessageSection />
+          <Col lg={12} className="mb-4">
 
-        </div>
+            <ResumenClinico
+              paciente={pacienteActivo}
+            />
+
+          </Col>
+
+        </Row>
 
       </Container>
 
     </DashboardLayout>
 
   );
+
 };
 
 export default DashboardPaciente;
