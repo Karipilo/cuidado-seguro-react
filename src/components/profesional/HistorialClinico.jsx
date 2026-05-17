@@ -3,7 +3,7 @@ import { Card } from "react-bootstrap";
 import { Activity } from "react-bootstrap-icons";
 
 const HistorialClinico = ({
-    evoluciones
+    evoluciones = []
 }) => {
 
     return (
@@ -20,7 +20,7 @@ const HistorialClinico = ({
 
                 </Card.Title>
 
-                {evoluciones.length === 0 ? (
+                {evoluciones?.length === 0 ? (
 
                     <p className="mb-0">
 
@@ -32,7 +32,7 @@ const HistorialClinico = ({
 
                     <div className="timeline-clinica">
 
-                        {evoluciones.map((ev, index) => (
+                        {evoluciones?.map((ev, index) => (
 
                             <div
                                 key={index}
@@ -94,7 +94,6 @@ const HistorialClinico = ({
         </Card>
 
     );
-
 
 };
 

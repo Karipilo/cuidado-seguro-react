@@ -55,55 +55,46 @@ const Login = () => {
       const data = await response.json();
 
       console.log("LOGIN OK:", data);
+      console.log("TIPO USUARIO:", data.userInfo?.tipoUsuario);
+      console.log("USER INFO:", data.userInfo);
+      console.log("Sesion Completa:",data);
 
       // GUARDAR SESIÓN
       //localStorage.setItem("sesion", JSON.stringify(data));
-      const sesionModificada = {
-  ...data,
-  userInfo: {
-    ...data.userInfo,
-    tipoUsuario: "PACIENTE"
-  }
-};
 
-localStorage.setItem(
-  "sesion",
-  JSON.stringify(sesionModificada)
-);
+      localStorage.setItem(
+        "sesion",
+        JSON.stringify(data)
+      );
 
-      // SI VIENE JWT
-      if (data.token) {
-        localStorage.setItem("token", data.token);
+      const tipo =
+        data.userInfo?.tipoUsuario?.toUpperCase();
+
+      if (tipo === "PACIENTE") {
+
+        navigate("/dashboardPacienteNormal", {
+          replace: true
+        });
+
+      } else if (tipo === "PROFESIONAL") {
+
+        navigate("/dashboardProfesional", {
+          replace: true
+        });
+
+      } else if (tipo === "TUTOR") {
+
+        navigate("/dashboardTutor", {
+          replace: true
+        });
+
+      } else {
+
+        navigate("/", {
+          replace: true
+        });
       }
-
-      if (data.refreshToken) {
-        localStorage.setItem("refreshToken", data.refreshToken);
-      }
-
-      
-
-      // REDIRECCIONES
-      let tipo = "PACIENTE";
-const tipo2 =
-  data.userInfo?.tipoUsuario?.toUpperCase();
-
-if (tipo2 === "PACIENTE") {
-
-  navigate("/dashboardPaciente",{ replace: true });
-  //navigate("/dashboardPacienteNormal",{ replace: true });
-
-} else if (tipo2 === "PROFESIONAL") {
-
-  navigate(
-    "/dashboardPaciente",
-    { replace: true }
-  );
-
-} else {
-
-  navigate("/", { replace: true });
-
-}    } catch (err) {
+    } catch (err) {
 
       console.error("ERROR LOGIN:", err);
 

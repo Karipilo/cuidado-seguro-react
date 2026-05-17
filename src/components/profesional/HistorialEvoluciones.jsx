@@ -6,7 +6,8 @@ import {
 } from "react-bootstrap";
 
 const HistorialEvoluciones = ({
-    paciente
+    paciente,
+    modo
 }) => {
 
     return (

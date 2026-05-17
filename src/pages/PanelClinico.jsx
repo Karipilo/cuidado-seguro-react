@@ -1,7 +1,6 @@
 import React, { useState, useEffect, useRef } from "react";
 import { useParams } from "react-router-dom";
 import { Container, Card } from "react-bootstrap";
-import { usuarios } from "../data/usuario";
 import Row from "react-bootstrap/Row";
 import Col from "react-bootstrap/Col";
 import SignosVitales from "../components/profesional/SignosVitales";
@@ -47,11 +46,7 @@ const PanelClinico = () => {
         setMostrarFormularioExamenes
     ] = useState(false);
 
-    const paciente = usuarios.find(
-        (u) =>
-            u.tipoUsuario === "PACIENTE" &&
-            u.numeroDocumento === rut
-    );
+    const paciente = null;
 
     const [pacienteActivo, setPacienteActivo] =
         useState(() => {

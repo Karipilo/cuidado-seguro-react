@@ -3,7 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { Container, Row, Col, Card, Badge } from "react-bootstrap";
 import DashboardLayout from "../components/dashboard/DashboardLayout";
 import MessageSection from "../components/dashboard/MessageSection";
-import { usuarios } from "../data/usuario";
+
 import "../styles/dashboard.css";
 import Antropometria from "../components/profesional/Antropometria";
 import SignosVitales from "../components/profesional/SignosVitales";
@@ -42,39 +42,65 @@ const DashboardTutor = () => {
     }
 
     setTutor(sesion);
+    console.log("SESION:", sesion);
+    console.log(
+      "USER INFO:",
+      JSON.stringify(
+        sesion.userInfo,
+        null,
+        2
+      )
+    );
 
     /* BUSCAR PACIENTE */
 
-    if (sesion.rutPaciente) {
+    if (sesion.userInfo?.pacientesRuts?.length > 0) {
 
-      const paciente =
-        usuarios.find(
-          (u) =>
-            u.tipoUsuario === "PACIENTE" &&
-            u.numeroDocumento ===
-            sesion.rutPaciente
-        );
+  const obtenerPaciente = async () => {
 
-      if (paciente) {
+    try {
 
-        const datosGuardados =
-          localStorage.getItem(
-            `paciente-${paciente.numeroDocumento}`
-          );
+      const token =
+        localStorage.getItem("token");
 
-        const pacienteFinal =
-          datosGuardados
-            ? JSON.parse(datosGuardados)
-            : paciente;
+      const rutPaciente =
+        sesion.userInfo.pacientesRuts[0];
 
-        setPacientes([pacienteFinal]);
+      const response = await fetch(
+        `http://localhost:8090/bff/pacientes/rut/${rutPaciente}`,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`
+          }
+        }
+      );
 
-        setPacienteActivo(
-          pacienteFinal
+      if (!response.ok) {
+
+        throw new Error(
+          "Paciente no encontrado"
         );
       }
-    }
 
+      const data = await response.json();
+
+      console.log("PACIENTE:", data);
+
+      setPacientes([data]);
+
+      setPacienteActivo(data);
+
+    } catch (error) {
+
+      console.error(
+        "ERROR PACIENTE:",
+        error
+      );
+    }
+  };
+
+  obtenerPaciente();
+}
   }, [navigate]);
 
   if (!tutor) {
