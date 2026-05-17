@@ -2,7 +2,6 @@ import React, { useState } from "react";
 import { Form } from "react-bootstrap";
 import { useNavigate } from "react-router-dom";
 import Formulario from "../components/ui/Formulario";
-import { usuarios } from "../data/usuario";
 import "../styles/auth.css";
 
 const Registro = () => {
@@ -19,7 +18,6 @@ const Registro = () => {
 
   nombres: "",
   apellidos: "",
-  historiaClinica: "",
   tipoDocumento: "DNI",
   numeroDocumento: "",
 
@@ -86,11 +84,7 @@ const Registro = () => {
     return regex.test(email);
   };
 
-  const pacienteAsociado = usuarios.find(
-    (u) =>
-      u.tipoUsuario === "PACIENTE" &&
-      u.numeroDocumento === formData.rutPaciente
-  );
+  const pacienteAsociado = null;
 
   const obtenerConsentimiento = () => {
 
@@ -148,7 +142,7 @@ const handleRegistro = async (e) => {
       "contactoEmergencia",
       "telefonoEmergencia",
       "seguroMedico",
-      "historiaClinica"
+      
     );
   }
 
@@ -214,7 +208,6 @@ const handleRegistro = async (e) => {
     alergias: formData.alergias || "",
     enfermedadesCronicas: formData.enfermedadesCronicas || "",
     medicamentosActuales: formData.medicamentosActuales || "",
-    historiaClinica: formData.historiaClinica || "",
     contactoEmergencia: formData.contactoEmergencia || "",
     telefonoEmergencia: formData.telefonoEmergencia || "",
 
@@ -288,15 +281,15 @@ console.log(data);
     //alert("Usuario registrado correctamente");
     if (formData.tipoUsuario === "PACIENTE") {
 
-      navigate("/dashboardProfesional");
+      navigate("/dashboardPaciente");
 
     } else if (formData.tipoUsuario === "TUTOR") {
 
       navigate("/dashboardTutor");
 
-    } else {
+    } else if (formData.tipoUsuario === "PROFESIONAL") {
 
-      navigate("/dashboardPaciente");
+      navigate("/dashboardProfesional");
     }
 
   } catch (error) {
@@ -789,19 +782,7 @@ console.log(data);
                 </Form.Select>
               </Form.Group>
 
-<Form.Group className="mb-3">
-  <Form.Label>
-    Historia clínica
-  </Form.Label>
 
-  <Form.Control
-    as="textarea"
-    rows={3}
-    name="historiaClinica"
-    value={formData.historiaClinica}
-    onChange={handleChange}
-  />
-</Form.Group>
             </>
           )}
 

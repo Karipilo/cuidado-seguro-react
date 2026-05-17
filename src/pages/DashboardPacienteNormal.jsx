@@ -4,11 +4,11 @@ import { Container, Row, Col, Card, Badge } from "react-bootstrap";
 
 import DashboardLayout from "../components/dashboard/DashboardLayout";
 import "../styles/dashboard.css";
-
-import SignosVitales from "../components/profesional/SignosVitales";
+import Antropometria from "../components/profesional/Antropometria";
 import HistorialEvoluciones from "../components/profesional/HistorialEvoluciones";
 import HistorialIndicaciones from "../components/profesional/HistorialIndicaciones";
-import ResumenClinico from "../components/profesional/ResumenClinico";
+import SignosVitales from "../components/profesional/SignosVitales";
+import HistorialClinico from "../components/profesional/HistorialClinico";
 
 const DashboardPacienteNormal = () => {
 
@@ -137,13 +137,11 @@ const DashboardPacienteNormal = () => {
           <div>
 
             <h2 className="dashboard-title">
-              Panel del Paciente
+              Panel de seguimiento clínico continuo
             </h2>
 
             <p className="dashboard-subtitle">
-              Bienvenido{" "}
-              {user?.nombres}{" "}
-              {user?.apellidos}
+              Aquí podrás visualizar tu información clínica resumida y las indicaciones registradas por el equipo de salud.
             </p>
 
           </div>
@@ -154,19 +152,7 @@ const DashboardPacienteNormal = () => {
 
         </div>
 
-        {/* SIGNOS VITALES */}
 
-        <Row>
-
-          <Col lg={12} className="mb-4">
-
-            <SignosVitales
-              paciente={pacienteActivo}
-            />
-
-          </Col>
-
-        </Row>
 
         {/* INFORMACIÓN PERSONAL */}
 
@@ -194,12 +180,12 @@ const DashboardPacienteNormal = () => {
                   </p>
 
                   <p>
-                    <strong>Documento:</strong>{" "}
+                    <strong>RUT:</strong>{" "}
                     {user?.numeroDocumento}
                   </p>
 
                   <p>
-                    <strong>Correo:</strong>{" "}
+                    <strong>Correo electrónico:</strong>{" "}
                     {user?.email}
                   </p>
 
@@ -260,6 +246,108 @@ const DashboardPacienteNormal = () => {
               </Card.Body>
 
             </Card>
+
+          </Col>
+
+        </Row>
+
+        <Row>
+
+          <Col lg={12} className="mb-4">
+
+            <Card className="dashboard-modern-card">
+
+              <Card.Body>
+
+                <Card.Title className="dashboard-card-title">
+                  Información clínica resumida
+                </Card.Title>
+
+                <div className="dashboard-info-group">
+
+                  <p>
+                    <strong>Grupo sanguíneo:</strong>{" "}
+                    {user?.grupoSanguineo}
+                  </p>
+
+                  <p>
+                    <strong>Factor RH:</strong>{" "}
+                    {user?.factorRh}
+                  </p>
+
+                  <p>
+                    <strong>Alergias:</strong>{" "}
+                    {user?.alergias}
+                  </p>
+
+                  <p>
+                    <strong>Enfermedades crónicas:</strong>{" "}
+                    {user?.enfermedadesCronicas}
+                  </p>
+
+                  <p>
+                    <strong>Medicamentos actuales:</strong>{" "}
+                    {user?.medicamentosActuales}
+                  </p>
+
+                  <p>
+                    <strong>Previsión:</strong>{" "}
+                    {user?.seguroMedico}
+                  </p>
+
+                </div>
+
+              </Card.Body>
+
+            </Card>
+
+          </Col>
+
+        </Row>
+
+        {/* SIGNOS VITALES */}
+
+        <Row>
+
+          <Col lg={12} className="mb-4">
+
+            <SignosVitales
+              paciente={pacienteActivo}
+            />
+
+          </Col>
+
+        </Row>
+        <Row>
+
+          <Col lg={12} className="mb-4">
+
+            <HistorialClinico
+              evoluciones={pacienteActivo?.evoluciones || []}
+            />
+
+          </Col>
+
+        </Row>
+        <Row>
+
+          <Col lg={12} className="mb-4">
+
+            <HistorialEvoluciones
+              paciente={pacienteActivo}
+              modo="paciente"
+            />
+
+          </Col>
+
+        </Row>
+        <Row>
+
+          <Col lg={12} className="mb-4">
+
+            <HistorialIndicaciones
+              paciente={pacienteActivo}
+            />
 
           </Col>
 

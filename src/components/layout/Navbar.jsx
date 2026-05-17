@@ -25,11 +25,11 @@ const NavbarComponent = () => {
 
     const tipo = usuario.userInfo?.tipoUsuario?.toUpperCase();
     if (tipo === "PACIENTE") {
-      navigate("/dashboard");
+      navigate("/dashboardPacienteNormal");
     } else if (tipo === "TUTOR") {
       navigate("/dashboardTutor");
     } else if (tipo === "PROFESIONAL") {
-      navigate("/dashboard-profesional");
+      navigate("/dashboardProfesional");
     }
   };
 
@@ -75,7 +75,7 @@ const NavbarComponent = () => {
             {usuario ? (
               <>
                 <span className="user-text">
-                  Hola, {usuario.nombres || usuario.username}
+                  Hola, {usuario.userInfo?.nombreCompleto}
                 </span>
 
                 <Button className="btn-panel" onClick={irAlPanel}>
