@@ -5,7 +5,6 @@ import Formulario from "../components/ui/Formulario";
 import "../styles/auth.css";
 
 const Login = () => {
-
   const navigate = useNavigate();
 
   const [username, setUsername] = useState("");
@@ -13,15 +12,12 @@ const Login = () => {
   const [error, setError] = useState("");
 
   const handleLogin = async (e) => {
-
     e.preventDefault();
 
     setError("");
 
     try {
-
       const response = await fetch("http://localhost:8090/bff/auth/login", {
-
         method: "POST",
 
         credentials: "include", // IMPORTANTE PARA CORS
@@ -38,13 +34,10 @@ const Login = () => {
 
       // ERROR LOGIN
       if (!response.ok) {
-
         if (response.status === 401) {
           setError("Usuario o contraseña incorrectos");
-
         } else if (response.status === 403) {
           setError("Acceso denegado");
-
         } else {
           setError("Error en el servidor");
         }
@@ -57,65 +50,52 @@ const Login = () => {
       console.log("LOGIN OK:", data);
       console.log("TIPO USUARIO:", data.userInfo?.tipoUsuario);
       console.log("USER INFO:", data.userInfo);
-      console.log("Sesion Completa:",data);
+      console.log("LOGIN JSON:", JSON.stringify(data, null, 2));
+      console.log("TOKEN LOGIN:", data.accessToken);
 
       // GUARDAR SESIÓN
       //localStorage.setItem("sesion", JSON.stringify(data));
 
-      localStorage.setItem(
-        "sesion",
-        JSON.stringify(data)
-      );
+      localStorage.setItem("sesion", JSON.stringify(data));
 
-      const tipo =
-        data.userInfo?.tipoUsuario?.toUpperCase();
+      localStorage.setItem("token", data.accessToken);
+
+      const tipo = data.userInfo?.tipoUsuario?.toUpperCase();
 
       if (tipo === "PACIENTE") {
-
         navigate("/dashboardPacienteNormal", {
-          replace: true
+          replace: true,
         });
-
       } else if (tipo === "PROFESIONAL") {
-
         navigate("/dashboardProfesional", {
-          replace: true
+          replace: true,
         });
-
       } else if (tipo === "TUTOR") {
-
         navigate("/dashboardTutor", {
-          replace: true
+          replace: true,
         });
-
       } else {
-
         navigate("/", {
-          replace: true
+          replace: true,
         });
       }
     } catch (err) {
-
       console.error("ERROR LOGIN:", err);
 
       setError(
-        "No fue posible conectar con el servidor. Verifique CORS o que el Gateway esté activo."
+        "No fue posible conectar con el servidor. Verifique CORS o que el Gateway esté activo.",
       );
     }
   };
   return (
-
     <div className="auth-container">
-
       <Formulario
         title="Iniciar Sesión"
         buttonText="Iniciar Sesión"
         onSubmit={handleLogin}
       >
-
         {/* CARD ERROR RESPONSIVA */}
         {error && (
-
           <Card
             className="mb-3 shadow-sm border-0"
             style={{
@@ -124,11 +104,8 @@ const Login = () => {
               borderRadius: "12px",
             }}
           >
-
             <Card.Body className="d-flex flex-column flex-md-row align-items-center justify-content-between gap-3">
-
               <div>
-
                 <Card.Title
                   style={{
                     color: "#b00020",
@@ -149,7 +126,6 @@ const Login = () => {
                 >
                   {error}
                 </Card.Text>
-
               </div>
 
               <Button
@@ -159,15 +135,12 @@ const Login = () => {
               >
                 Cerrar
               </Button>
-
             </Card.Body>
-
           </Card>
         )}
 
         {/* USUARIO */}
         <Form.Group className="mb-3">
-
           <Form.Label>Usuario</Form.Label>
 
           <Form.Control
@@ -176,12 +149,10 @@ const Login = () => {
             value={username}
             onChange={(e) => setUsername(e.target.value)}
           />
-
         </Form.Group>
 
         {/* PASSWORD */}
         <Form.Group className="mb-3">
-
           <Form.Label>Contraseña</Form.Label>
 
           <Form.Control
@@ -190,11 +161,8 @@ const Login = () => {
             value={password}
             onChange={(e) => setPassword(e.target.value)}
           />
-
         </Form.Group>
-
       </Formulario>
-
     </div>
   );
 };
