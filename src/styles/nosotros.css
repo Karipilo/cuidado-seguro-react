@@ -1,100 +1,110 @@
+/* ====================================
+   Nosotros Page
+   ==================================== */
+
 .nosotros-container {
   min-height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: var(--space-2xl) var(--space-md);
 
   background:
-    linear-gradient(
-      rgba(0, 0, 0, 0.55),
-      rgba(0, 0, 0, 0.55)
-    ),
+    linear-gradient(rgba(0, 0, 0, 0.45), rgba(0, 0, 0, 0.45)),
     url("https://images.unsplash.com/photo-1576091160550-2173dba999ef?q=80&w=1920");
 
   background-size: cover;
   background-position: center;
-
-  padding: 60px 20px;
+  background-attachment: fixed;
 }
 
 .nosotros-card {
-  background-color: rgba(255, 255, 255, 0.96);
-
-  border-radius: 20px;
-
-  padding: 50px;
-
-  box-shadow:
-    0 10px 30px rgba(0, 0, 0, 0.25);
+  background: rgba(255, 255, 255, 0.97);
+  border-radius: var(--radius-2xl);
+  padding: var(--space-2xl);
+  max-width: 960px;
+  width: 100%;
+  box-shadow: var(--shadow-xl);
 }
 
 .nosotros-hero {
   text-align: center;
-
-  margin-bottom: 50px;
+  margin-bottom: var(--space-2xl);
 }
 
 .nosotros-hero h1 {
-  font-size: 3rem;
-
-  font-weight: 700;
-
-  color: #5F9EA0;
-
-  margin-bottom: 20px;
+  font-size: clamp(2rem, 5vw, 3rem);
+  font-weight: var(--font-weight-bold);
+  background: var(--primary-gradient);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  margin-bottom: var(--space-md);
 }
 
 .nosotros-hero p {
-  max-width: 800px;
-
-  margin: auto;
-
+  max-width: 720px;
+  margin: 0 auto;
+  font-size: var(--text-base);
+  color: var(--text-secondary);
   line-height: 1.8;
-
-  font-size: 1.1rem;
 }
 
 .nosotros-section {
-  margin-bottom: 50px;
+  margin-bottom: var(--space-2xl);
 }
 
 .nosotros-section h2 {
-  color: #5F9EA0;
-
-  font-weight: 700;
-
-  margin-bottom: 20px;
+  color: var(--primary);
+  font-weight: var(--font-weight-bold);
+  margin-bottom: var(--space-lg);
+  font-size: var(--text-lg);
 }
 
 .nosotros-section p {
+  font-size: var(--text-base);
+  color: var(--text-secondary);
   line-height: 1.8;
 }
 
+/* Valor card */
 .valor-card {
   border: none;
-
-  border-radius: 15px;
-
-  transition: 0.3s ease;
-
-  box-shadow:
-    0 4px 15px rgba(0, 0, 0, 0.08);
+  border-radius: var(--radius-xl);
+  padding: var(--space-xl);
+  box-shadow: var(--shadow-sm);
+  border: 1px solid var(--border-light);
+  background: var(--surface);
+  transition: all var(--transition-base);
+  height: 100%;
 }
 
 .valor-card:hover {
-  transform: translateY(-5px);
+  transform: translateY(-4px);
+  box-shadow: var(--shadow-md);
 }
 
 .valor-card .card-title {
-  color: #5F9EA0;
-
-  font-weight: 700;
+  color: var(--primary);
+  font-weight: var(--font-weight-bold);
+  font-size: var(--text-lg);
+  margin-bottom: var(--space-sm);
 }
 
-@media (max-width: 768px) {
+.valor-card .card-text {
+  color: var(--text-secondary);
+  font-size: var(--text-sm);
+  line-height: 1.7;
+  margin: 0;
+}
 
+/* Responsive */
+@media (max-width: 768px) {
   .nosotros-card {
-    padding: 30px 20px;
+    padding: var(--space-xl) var(--space-md);
   }
 
   .nosotros-hero h1 {
-    font-size: 2.3rem;
+    font-size: 2rem;
   }
 }

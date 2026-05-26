@@ -1,8 +1,10 @@
-import React, { useState } from "react";
+import { useState } from "react";
 import { Form } from "react-bootstrap";
 import { useNavigate } from "react-router-dom";
 import Formulario from "../components/ui/Formulario";
 import "../styles/auth.css";
+import { setMemoryItem } from "../utils/memoryStore";
+import { request } from "../utils/api";
 
 const Registro = () => {
 
@@ -142,7 +144,7 @@ const handleRegistro = async (e) => {
       "contactoEmergencia",
       "telefonoEmergencia",
       "seguroMedico",
-      
+
     );
   }
 
@@ -235,49 +237,27 @@ const handleRegistro = async (e) => {
 
   try {
 
-    const response = await fetch(
-      "http://localhost:8090/bff/auth/register",
+    const data = await request(
+      "/auth/register",
       {
         method: "POST",
-        headers: {
-          "Content-Type": "application/json"
-        },
-        body: JSON.stringify(usuarioFinal)
+        body: usuarioFinal,
       }
     );
 
-    if (!response.ok) {
+    console.log(data);
 
-      const errorText = await response.text();
+    // Guardar tokens en memoria volátil
 
-      console.log(errorText);
-
-      alert("Error al registrar usuario: " + errorText);
-
+    if (!data || !data.accessToken) {
+      console.log("Respuesta inválida:", data);
+      alert("Registro falló: respuesta inválida del servidor");
       return;
     }
 
-    const data = await response.json();
-
-console.log(data);
-
-// Guardar tokens en localStorage
-    
-      if (!data || !data.accessToken) {
-        console.log("Respuesta inválida:", data);
-        alert("Registro falló: respuesta inválida del servidor");
-        
-        console.log("RESPUESTA COMPLETA:", response);
-        console.log("DATA:", response.data);
-
-
-        return;
-      }
-
-      
-      localStorage.setItem("accessToken", data.accessToken);
-      localStorage.setItem("refreshToken", data.refreshToken);
-      localStorage.setItem("expiresIn", data.expiresIn);
+    setMemoryItem("accessToken", data.accessToken);
+    setMemoryItem("refreshToken", data.refreshToken);
+    setMemoryItem("expiresIn", data.expiresIn);
     //alert("Usuario registrado correctamente");
     if (formData.tipoUsuario === "PACIENTE") {
 
@@ -1034,7 +1014,7 @@ console.log(data);
                     !formData.alergias ||
                     !formData.enfermedadesCronicas ||
                     !formData.medicamentosActuales ||
-                    !formData.seguroMedico 
+                    !formData.seguroMedico
                   )
                 ) {
                   alert("Complete todos los datos del paciente");

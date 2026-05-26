@@ -6,63 +6,37 @@ const TabsClinicas = ({
   signosVitalesComponent,
   evolucionComponent,
   historialComponent,
-  indicacionesComponent
+  indicacionesComponent,
 }) => {
 
-  const [activeTab, setActiveTab] =
-    useState("resumen");
+  const [activeTab, setActiveTab] = useState("resumen");
 
   return (
-
     <Tabs
       activeKey={activeTab}
       onSelect={(k) => setActiveTab(k)}
-      className="mb-4"
+      className="tabs-clinicas mb-4"
+      id="tabs-clinicas"
     >
 
-      <Tab
-        eventKey="resumen"
-        title="Resumen"
-      >
-        <div className="mt-4">
-          {resumenComponent}
-        </div>
+      <Tab eventKey="resumen" title="Resumen">
+        <div className="mt-4">{resumenComponent}</div>
       </Tab>
 
-      <Tab
-        eventKey="signos"
-        title="Signos Vitales"
-      >
-        <div className="mt-4">
-          {signosVitalesComponent}
-        </div>
+      <Tab eventKey="signos" title="Signos Vitales">
+        <div className="mt-4">{signosVitalesComponent}</div>
       </Tab>
 
-      <Tab
-        eventKey="evolucion"
-        title="Evoluciones"
-      >
-        <div className="mt-4">
-          {evolucionComponent}
-        </div>
+      <Tab eventKey="evolucion" title="Evoluciones">
+        <div className="mt-4">{evolucionComponent}</div>
       </Tab>
 
-      <Tab
-        eventKey="historial"
-        title="Historial Clínico"
-      >
-        <div className="mt-4">
-          {historialComponent}
-        </div>
+      <Tab eventKey="historial" title="Historial Clínico">
+        <div className="mt-4">{historialComponent}</div>
       </Tab>
 
-      <Tab
-        eventKey="indicaciones"
-        title="Indicaciones"
-      >
-        <div className="mt-4">
-          {indicacionesComponent}
-        </div>
+      <Tab eventKey="indicaciones" title="Indicaciones">
+        <div className="mt-4">{indicacionesComponent}</div>
       </Tab>
 
     </Tabs>

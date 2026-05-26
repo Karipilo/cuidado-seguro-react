@@ -1,14 +1,15 @@
-import React, {
+import {
     useState
 } from "react";
 
 import {
+    Button,
     Card,
-    Row,
     Col,
     Form,
-    Button
+    Row
 } from "react-bootstrap";
+import { setMemoryJSON } from "../../utils/memoryStore";
 
 const FormularioSignosVitales = ({
     paciente,
@@ -88,15 +89,7 @@ const FormularioSignosVitales = ({
 
         setPaciente(pacienteActualizado);
 
-        localStorage.setItem(
-
-            "pacienteActivo",
-
-            JSON.stringify(
-                pacienteActualizado
-            )
-
-        );
+        setMemoryJSON("pacienteActivo", pacienteActualizado);
 
         alert(
             "Signos vitales guardados"
@@ -195,7 +188,7 @@ const FormularioSignosVitales = ({
 
                     </Col>
 
-                    
+
                 </Row>
 
                 <Button

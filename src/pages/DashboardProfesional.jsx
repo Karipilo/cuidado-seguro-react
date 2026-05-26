@@ -1,20 +1,21 @@
-import React, { useState, useEffect } from "react";
+import { useEffect, useState } from "react";
+import { Button, Card, Col, Container, Form, Row } from "react-bootstrap";
 import { useNavigate } from "react-router-dom";
-import { Container, Row, Col, Form, Button, Card } from "react-bootstrap";
 import DashboardLayout from "../components/dashboard/DashboardLayout";
 import MessageSection from "../components/dashboard/MessageSection";
 //import { usuarios } from "../data/usuario";
-import "../styles/dashboard.css";
 import HeaderProfesional from "../components/profesional/HeaderProfesional";
-import BuscadorPaciente from "../components/profesional/BuscadorPaciente";
-import PacienteResumen from "../components/profesional/PacienteResumen";
-import TabsClinicas from "../components/profesional/TabsClinicas";
 import HistorialClinico from "../components/profesional/HistorialClinico";
+import PacienteResumen from "../components/profesional/PacienteResumen";
 import SignosVitales from "../components/profesional/SignosVitales";
+import TabsClinicas from "../components/profesional/TabsClinicas";
+import "../styles/dashboard.css";
 
+import AccionesRapidas from "../components/profesional/AccionesRapidas";
 import ExamenesClinicos from "../components/profesional/ExamenesClinicos";
 import FormularioSignosVitales from "../components/profesional/FormularioSignosVitales";
-import AccionesRapidas from "../components/profesional/AccionesRapidas";
+import { getMemoryJSON, setMemoryJSON } from "../utils/memoryStore";
+import { request } from "../utils/api";
 
 const DashboardProfesional = () => {
 
@@ -36,14 +37,10 @@ const DashboardProfesional = () => {
     useState("");
 
   const evoluciones =
-    JSON.parse(
-      localStorage.getItem("evoluciones")
-    ) || [];
+    getMemoryJSON("evoluciones", []);
 
   const indicaciones =
-    JSON.parse(
-      localStorage.getItem("indicaciones")
-    ) || [];
+    getMemoryJSON("indicaciones", []);
 
   const indicacionesPaciente =
 
@@ -58,9 +55,7 @@ const DashboardProfesional = () => {
   useEffect(() => {
 
     const sesion =
-      JSON.parse(
-        localStorage.getItem("sesion")
-      );
+      getMemoryJSON("sesion");
 
     if (!sesion) {
 
@@ -80,9 +75,7 @@ const buscarPaciente = async () => {
 
   try {
 
-    const sesion = JSON.parse(
-      localStorage.getItem("sesion")
-    );
+    const sesion = getMemoryJSON("sesion");
 
     const token = sesion?.accessToken;
 
@@ -97,25 +90,10 @@ const buscarPaciente = async () => {
        OBTENER FICHAS CLÍNICAS
     ========================== */
 
-    const responseFichas = await fetch(
-      "http://localhost:8090/bff/fichas",
-      {
-        method: "GET",
-        headers: {
-          "Content-Type": "application/json",
-          "Authorization": `Bearer ${token}`
-        }
-      }
+    const fichas = await request(
+      "/fichas",
+      { token }
     );
-
-    if (!responseFichas.ok) {
-
-      throw new Error(
-        `Error fichas ${responseFichas.status}`
-      );
-    }
-
-    const fichas = await responseFichas.json();
 
     const encontrado = fichas.find(
       (f) => f.rutPaciente === rutBusqueda
@@ -137,26 +115,11 @@ const buscarPaciente = async () => {
        OBTENER MEDICAMENTOS
     ========================== */
 
-    const responseMedicamentos = await fetch(
-      "http://localhost:8090/bff/medicamentos",
-      {
-        method: "GET",
-        headers: {
-          "Content-Type": "application/json",
-          "Authorization": `Bearer ${token}`
-        }
-      }
-    );
-
-    if (!responseMedicamentos.ok) {
-
-      throw new Error(
-        `Error medicamentos ${responseMedicamentos.status}`
-      );
-    }
-
     const medicamentos =
-      await responseMedicamentos.json();
+      await request(
+        "/medicamentos",
+        { token }
+      );
 
     console.log(
       "MEDICAMENTOS:",
@@ -247,14 +210,10 @@ const buscarPaciente = async () => {
     }
 
     const evoluciones =
-      JSON.parse(
-        localStorage.getItem("evoluciones")
-      ) || [];
+      getMemoryJSON("evoluciones", []);
 
     const indicaciones =
-      JSON.parse(
-        localStorage.getItem("indicaciones")
-      ) || [];
+      getMemoryJSON("indicaciones", []);
 
     const indicacionesPaciente =
 
@@ -278,10 +237,7 @@ const buscarPaciente = async () => {
         profesional.profesion,
     });
 
-    localStorage.setItem(
-      "evoluciones",
-      JSON.stringify(evoluciones)
-    );
+    setMemoryJSON("evoluciones", evoluciones);
 
     alert("Evolución guardada");
 
@@ -298,9 +254,7 @@ const buscarPaciente = async () => {
     }
 
     const indicaciones =
-      JSON.parse(
-        localStorage.getItem("indicaciones")
-      ) || [];
+      getMemoryJSON("indicaciones", []);
 
     indicaciones.push({
 
@@ -322,13 +276,7 @@ const buscarPaciente = async () => {
 
     });
 
-    localStorage.setItem(
-
-      "indicaciones",
-
-      JSON.stringify(indicaciones)
-
-    );
+    setMemoryJSON("indicaciones", indicaciones);
 
     alert("Indicación guardada");
 
@@ -473,7 +421,7 @@ const buscarPaciente = async () => {
 
                           </div>
 
-                          
+
 
                           <div className="mt-4">
 

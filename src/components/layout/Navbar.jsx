@@ -1,7 +1,8 @@
-import React, { useEffect, useState } from "react";
-import { Navbar, Nav, Container, Button } from "react-bootstrap";
-import { useNavigate, useLocation } from "react-router-dom";
+import { useEffect, useState } from "react";
+import { Button, Container, Nav, Navbar } from "react-bootstrap";
+import { useLocation, useNavigate } from "react-router-dom";
 import logo from "../../images/log.png";
+import { getMemoryItem, removeMemoryItem } from "../../utils/memoryStore";
 
 const NavbarComponent = () => {
 
@@ -9,20 +10,21 @@ const NavbarComponent = () => {
   const location = useLocation();
 
   const [usuario, setUsuario] = useState(null);
+  const [expanded, setExpanded] = useState(false);
 
-  // cargar sesión 
   useEffect(() => {
-    const sesion = JSON.parse(localStorage.getItem("sesion"));
+
+    const sesion = getMemoryItem("sesion");
     if (sesion) {
-      setUsuario(sesion);
+      setUsuario(typeof sesion === "string" ? JSON.parse(sesion) : sesion);
     }
+
+    setExpanded(false);
+
   }, [location]);
 
-
-  // ir al panel según rol
   const irAlPanel = () => {
     if (!usuario) return;
-
     const tipo = usuario.userInfo?.tipoUsuario?.toUpperCase();
     if (tipo === "PACIENTE") {
       navigate("/dashboardPacienteNormal");
@@ -33,38 +35,59 @@ const NavbarComponent = () => {
     }
   };
 
-  // cerrar sesión
   const cerrarSesion = () => {
-    localStorage.removeItem("sesion");
-    localStorage.removeItem("token");
-    localStorage.removeItem("refreshToken");
+    ["sesion", "token", "accessToken", "refreshToken", "expiresIn"].forEach((k) => removeMemoryItem(k));
     setUsuario(null);
     navigate("/");
   };
 
   return (
-    <Navbar expand="lg" className="custom-navbar shadow-sm">
+    <Navbar
+      expand="lg"
+      className="custom-navbar shadow-sm"
+      expanded={expanded}
+    >
       <Container>
-
         {/* LOGO */}
         <Navbar.Brand onClick={() => navigate("/")} className="brand">
-          <img src={logo} alt="logo" className="logo" />
+          <img
+            src={logo}
+            alt="Cuidado Seguro"
+            className="logo"
+            width="40"
+            height="40"
+          />
           <span className="brand-text">Cuidado Seguro</span>
         </Navbar.Brand>
 
-        <Navbar.Toggle />
+        <Navbar.Toggle
+          aria-controls="main-navbar"
+          onClick={() => setExpanded(!expanded)}
+        />
 
-        <Navbar.Collapse>
+        <Navbar.Collapse id="main-navbar">
 
           {/* MENU CENTRO */}
           <Nav className="mx-auto nav-center">
-            <Nav.Link onClick={() => navigate("/")}>
+            <Nav.Link
+              onClick={() => navigate("/")}
+              active={location.pathname === "/"}
+              className="nav-link-custom"
+            >
               Inicio
             </Nav.Link>
-            <Nav.Link onClick={() => navigate("/contacto")}>
+            <Nav.Link
+              onClick={() => navigate("/contacto")}
+              active={location.pathname === "/contacto"}
+              className="nav-link-custom"
+            >
               Contacto
             </Nav.Link>
-            <Nav.Link onClick={() => navigate("/nosotros")}>
+            <Nav.Link
+              onClick={() => navigate("/nosotros")}
+              active={location.pathname === "/nosotros"}
+              className="nav-link-custom"
+            >
               Nosotros
             </Nav.Link>
           </Nav>
@@ -74,15 +97,26 @@ const NavbarComponent = () => {
 
             {usuario ? (
               <>
-                <span className="user-text">
+                <span
+                  className="user-greeting d-none d-sm-inline"
+                  aria-label={`Usuario: ${usuario.userInfo?.nombreCompleto || "Usuario"}`}
+                >
                   Hola, {usuario.userInfo?.nombreCompleto}
                 </span>
 
-                <Button className="btn-panel" onClick={irAlPanel}>
+                <Button
+                  className="btn-panel"
+                  onClick={irAlPanel}
+                  aria-label="Ir a mi panel"
+                >
                   Mi Panel
                 </Button>
 
-                <Button className="btn-logout" onClick={cerrarSesion}>
+                <Button
+                  className="btn-logout"
+                  onClick={cerrarSesion}
+                  aria-label="Cerrar sesión"
+                >
                   Cerrar sesión
                 </Button>
               </>
@@ -102,10 +136,7 @@ const NavbarComponent = () => {
                   Registrarse
                 </Button>
               </>
-
-
             )}
-
           </Nav>
 
         </Navbar.Collapse>

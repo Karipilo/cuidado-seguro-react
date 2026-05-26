@@ -1,17 +1,14 @@
-import React, { useState, useEffect } from "react";
+import { useEffect, useState } from "react";
+import { Badge, Card, Col, Container, Row } from "react-bootstrap";
 import { useNavigate } from "react-router-dom";
-import { Container, Row, Col, Card, Badge } from "react-bootstrap";
 
 import DashboardLayout from "../components/dashboard/DashboardLayout";
-import MessageSection from "../components/dashboard/MessageSection";
-
+import { getMemoryJSON, removeMemoryItem } from "../utils/memoryStore";
 import "../styles/dashboard.css";
+import { request } from "../utils/api";
 
-import SignosVitales from "../components/profesional/SignosVitales";
-import HistorialEvoluciones from "../components/profesional/HistorialEvoluciones";
-import HistorialIndicaciones from "../components/profesional/HistorialIndicaciones";
-import ExamenesClinicos from "../components/profesional/ExamenesClinicos";
 import ResumenClinico from "../components/profesional/ResumenClinico";
+import SignosVitales from "../components/profesional/SignosVitales";
 
 const DashboardPaciente = () => {
 
@@ -30,9 +27,7 @@ const DashboardPaciente = () => {
 
       try {
 
-        const sesion = JSON.parse(
-          localStorage.getItem("sesion")
-        );
+        const sesion = getMemoryJSON("sesion");
 
         const token = sesion?.accessToken;
 
@@ -46,70 +41,10 @@ const DashboardPaciente = () => {
 
         }
 
-        const response = await fetch(
-          "http://localhost:8090/bff/auth/userinfo",
-          {
-            method: "GET",
-            headers: {
-              Authorization: `Bearer ${token}`,
-              "Content-Type": "application/json"
-            }
-          }
+        const data = await request(
+          "/auth/userinfo",
+          { method: "GET", token }
         );
-
-        console.log(
-          "STATUS:",
-          response.status
-        );
-
-        if (!response.ok) {
-
-          if (response.status === 401) {
-
-            localStorage.removeItem(
-              "sesion"
-            );
-
-            navigate("/login", {
-              replace: true
-            });
-
-            return;
-
-          }
-
-          const errorText =
-            await response.text();
-
-          console.error(
-            "ERROR BACKEND:",
-            errorText
-          );
-
-          throw new Error(
-            `HTTP ${response.status}`
-          );
-
-        }
-
-        // EVITA:
-        // Unexpected end of JSON input
-
-        const text =
-          await response.text();
-
-        if (
-          !text ||
-          text.trim() === ""
-        ) {
-
-          throw new Error(
-            "Respuesta vacía del backend"
-          );
-
-        }
-
-        const data = JSON.parse(text);
 
         console.log("DATA:", data);
 

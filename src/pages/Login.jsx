@@ -1,168 +1,121 @@
-import React, { useState } from "react";
-import { Form, Card, Button } from "react-bootstrap";
+import { useState } from "react";
+import { Button, Card, Form } from "react-bootstrap";
 import { useNavigate } from "react-router-dom";
 import Formulario from "../components/ui/Formulario";
 import "../styles/auth.css";
+import { setMemoryJSON } from "../utils/memoryStore";
+import { request } from "../utils/api";
 
 const Login = () => {
+
   const navigate = useNavigate();
 
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
+  const [cargando, setCargando] = useState(false);
 
   const handleLogin = async (e) => {
     e.preventDefault();
-
     setError("");
+    setCargando(true);
 
     try {
-      const response = await fetch("http://localhost:8090/bff/auth/login", {
+      const data = await request("/auth/login", {
         method: "POST",
-
-        credentials: "include", // IMPORTANTE PARA CORS
-
-        headers: {
-          "Content-Type": "application/json",
-        },
-
-        body: JSON.stringify({
-          username,
-          password,
-        }),
+        body: { username, password },
       });
 
-      // ERROR LOGIN
-      if (!response.ok) {
-        if (response.status === 401) {
-          setError("Usuario o contraseña incorrectos");
-        } else if (response.status === 403) {
-          setError("Acceso denegado");
-        } else {
-          setError("Error en el servidor");
-        }
-
-        return;
-      }
-
-      const data = await response.json();
-
-      console.log("LOGIN OK:", data);
-      console.log("TIPO USUARIO:", data.userInfo?.tipoUsuario);
-      console.log("USER INFO:", data.userInfo);
-      console.log("LOGIN JSON:", JSON.stringify(data, null, 2));
-      console.log("TOKEN LOGIN:", data.accessToken);
-
-      // GUARDAR SESIÓN
-      //localStorage.setItem("sesion", JSON.stringify(data));
-
-      localStorage.setItem("sesion", JSON.stringify(data));
-
-      localStorage.setItem("token", data.accessToken);
+      setMemoryJSON("sesion", data);
 
       const tipo = data.userInfo?.tipoUsuario?.toUpperCase();
 
       if (tipo === "PACIENTE") {
-        navigate("/dashboardPacienteNormal", {
-          replace: true,
-        });
+        navigate("/dashboardPacienteNormal", { replace: true });
       } else if (tipo === "PROFESIONAL") {
-        navigate("/dashboardProfesional", {
-          replace: true,
-        });
+        navigate("/dashboardProfesional", { replace: true });
       } else if (tipo === "TUTOR") {
-        navigate("/dashboardTutor", {
-          replace: true,
-        });
+        navigate("/dashboardTutor", { replace: true });
       } else {
-        navigate("/", {
-          replace: true,
-        });
+        navigate("/", { replace: true });
       }
     } catch (err) {
-      console.error("ERROR LOGIN:", err);
-
       setError(
-        "No fue posible conectar con el servidor. Verifique CORS o que el Gateway esté activo.",
+        err.message ||
+          "No fue posible conectar con el servidor. Verifique CORS o que el Gateway esté activo."
       );
+    } finally {
+      setCargando(false);
     }
   };
+
   return (
     <div className="auth-container">
-      <Formulario
-        title="Iniciar Sesión"
-        buttonText="Iniciar Sesión"
-        onSubmit={handleLogin}
-      >
-        {/* CARD ERROR RESPONSIVA */}
+
+      <div className="formulario-card">
+        <h3>Iniciar Sesión</h3>
+        <p className="subtitle">Ingrese sus credenciales para continuar</p>
+
         {error && (
-          <Card
-            className="mb-3 shadow-sm border-0"
-            style={{
-              width: "100%",
-              backgroundColor: "#ffe5e5",
-              borderRadius: "12px",
-            }}
-          >
-            <Card.Body className="d-flex flex-column flex-md-row align-items-center justify-content-between gap-3">
-              <div>
-                <Card.Title
-                  style={{
-                    color: "#b00020",
-                    fontSize: "1rem",
-                    marginBottom: "0.3rem",
-                    fontWeight: "600",
-                  }}
-                >
-                  Error de autenticación
-                </Card.Title>
-
-                <Card.Text
-                  style={{
-                    color: "#5c0000",
-                    margin: 0,
-                    fontSize: "0.95rem",
-                  }}
-                >
-                  {error}
-                </Card.Text>
-              </div>
-
-              <Button
-                variant="outline-danger"
-                size="sm"
-                onClick={() => setError("")}
-              >
-                Cerrar
-              </Button>
-            </Card.Body>
-          </Card>
+          <div className="auth-alert error" role="alert">
+            {error}
+          </div>
         )}
 
-        {/* USUARIO */}
-        <Form.Group className="mb-3">
-          <Form.Label>Usuario</Form.Label>
+        <Form onSubmit={handleLogin}>
 
-          <Form.Control
-            type="text"
-            placeholder="Ingrese su usuario"
-            value={username}
-            onChange={(e) => setUsername(e.target.value)}
-          />
-        </Form.Group>
+          <Form.Group className="mb-3">
+            <Form.Label>Usuario</Form.Label>
+            <Form.Control
+              type="text"
+              placeholder="Ingrese su usuario"
+              value={username}
+              onChange={(e) => setUsername(e.target.value)}
+              autoComplete="username"
+              isInvalid={!!error}
+              disabled={cargando}
+            />
+          </Form.Group>
 
-        {/* PASSWORD */}
-        <Form.Group className="mb-3">
-          <Form.Label>Contraseña</Form.Label>
+          <Form.Group className="mb-4">
+            <Form.Label>Contraseña</Form.Label>
+            <Form.Control
+              type="password"
+              placeholder="Ingrese su contraseña"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              autoComplete="current-password"
+              isInvalid={!!error}
+              disabled={cargando}
+            />
+          </Form.Group>
 
-          <Form.Control
-            type="password"
-            placeholder="Ingrese su contraseña"
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-          />
-        </Form.Group>
-      </Formulario>
+          <Button
+            variant="primary"
+            type="submit"
+            className="w-100"
+            disabled={cargando}
+          >
+            {cargando ? "Ingresando..." : "Iniciar Sesión"}
+          </Button>
+
+        </Form>
+
+        <p className="text-center mt-3 mb-0" style={{ fontSize: "0.875rem", color: "var(--text-secondary)" }}>
+          ¿No tiene una cuenta?{' '}
+          <span
+            style={{ color: "var(--primary)", fontWeight: 600, cursor: "pointer" }}
+            onClick={() => navigate("/registro")}
+            onKeyDown={(e) => e.key === "Enter" && navigate("/registro")}
+            tabIndex={0}
+            role="button"
+          >
+            Regístrese aquí
+          </span>
+        </p>
+
+      </div>
+
     </div>
   );
 };

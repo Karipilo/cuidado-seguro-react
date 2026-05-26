@@ -1,5 +1,103 @@
+/* ====================================
+   Button Styles
+   ==================================== */
+
+/* Primary custom */
 .btn-primary-custom {
-  background: linear-gradient(135deg, var(--primary-color), var(--medical-blue));
+  background: var(--primary-gradient);
   border: none;
-  color: white;
+  color: var(--white);
+  font-weight: var(--font-weight-semibold);
+  border-radius: var(--radius-md);
+  padding: 10px 22px;
+  font-size: var(--text-sm);
+  transition: all var(--transition-smooth);
+  box-shadow: var(--shadow-primary);
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.btn-primary-custom:hover {
+  background: var(--primary-gradient-hover);
+  color: var(--white);
+  transform: translateY(-1px);
+  box-shadow: 0 6px 20px rgba(95, 158, 160, 0.35);
+}
+
+.btn-primary-custom:active {
+  transform: translateY(0);
+}
+
+.btn-primary-custom:disabled,
+.btn-primary-custom.is-disabled {
+  opacity: 0.55;
+  cursor: not-allowed;
+  transform: none;
+}
+
+/* Secondary */
+.btn-secondary-custom {
+  background: var(--surface);
+  color: var(--text-primary);
+  border: 1.5px solid var(--border);
+  border-radius: var(--radius-md);
+  padding: 10px 22px;
+  font-weight: var(--font-weight-medium);
+  transition: all var(--transition-fast);
+}
+
+.btn-secondary-custom:hover {
+  border-color: var(--primary);
+  color: var(--primary);
+  background: var(--primary-50);
+}
+
+/* Danger */
+.btn-danger-custom {
+  background: var(--danger);
+  border: none;
+  color: var(--white);
+  border-radius: var(--radius-md);
+  padding: 10px 22px;
+  font-weight: var(--font-weight-semibold);
+  transition: all var(--transition-fast);
+}
+
+.btn-danger-custom:hover {
+  background: #b02a37;
+  color: var(--white);
+}
+
+/* Ghost / Text */
+.btn-ghost-custom {
+  background: transparent;
+  color: var(--primary);
+  border-radius: var(--radius-md);
+  padding: 8px 16px;
+  font-weight: var(--font-weight-medium);
+  transition: all var(--transition-fast);
+}
+
+.btn-ghost-custom:hover {
+  background: var(--primary-50);
+}
+
+/* Sizes */
+.btn-sm-custom {
+  font-size: var(--text-xs);
+  padding: 6px 14px;
+  border-radius: var(--radius-sm);
+}
+
+.btn-lg-custom {
+  font-size: var(--text-lg);
+  padding: 14px 28px;
+}
+
+/* Full width */
+.btn-block {
+  display: flex;
+  width: 100%;
+  justify-content: center;
 }
