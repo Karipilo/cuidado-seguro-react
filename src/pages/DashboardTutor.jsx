@@ -14,26 +14,18 @@ import "../styles/dashboard.css";
 import { request } from "../utils/api";
 
 const DashboardTutor = () => {
-
   const navigate = useNavigate();
 
-  const [tutor, setTutor] =
-    useState(null);
+  const [tutor, setTutor] = useState(null);
 
-  const [pacientes, setPacientes] =
-    useState([]);
+  const [pacientes, setPacientes] = useState([]);
 
-  const [
-    pacienteActivo,
-    setPacienteActivo
-  ] = useState(null);
+  const [pacienteActivo, setPacienteActivo] = useState(null);
 
   useEffect(() => {
-
     const sesion = getMemoryJSON("sesion");
 
     if (!sesion) {
-
       navigate("/login");
 
       return;
@@ -41,324 +33,173 @@ const DashboardTutor = () => {
 
     setTutor(sesion);
     console.log("SESION:", sesion);
-    console.log(
-      "USER INFO:",
-      JSON.stringify(
-        sesion.userInfo,
-        null,
-        2
-      )
-    );
+    console.log("USER INFO:", JSON.stringify(sesion.userInfo, null, 2));
 
     /* BUSCAR PACIENTE */
 
     if (sesion.userInfo?.pacientesRuts?.length > 0) {
+      const obtenerPaciente = async () => {
+        try {
+          const token = sesion?.accessToken;
 
-  const obtenerPaciente = async () => {
+          const rutPaciente = sesion.userInfo.pacientesRuts[0]
+            .replace(/\./g, "")
+            .trim();
 
-    try {
+          const data = await request(`/pacientes/rut/${rutPaciente}`, {
+            token,
+          });
 
-      const token =
-        sesion?.accessToken;
+          console.log("PACIENTE:", data);
 
-      const rutPaciente =
-        sesion.userInfo.pacientesRuts[0];
+          setPacientes([data]);
 
-      const data = await request(
-        `/pacientes/rut/${rutPaciente}`,
-        { token }
-      );
+          setPacienteActivo(data);
+        } catch (error) {
+          console.error("ERROR PACIENTE:", error);
+        }
+      };
 
-      console.log("PACIENTE:", data);
-
-      setPacientes([data]);
-
-      setPacienteActivo(data);
-
-    } catch (error) {
-
-      console.error(
-        "ERROR PACIENTE:",
-        error
-      );
+      obtenerPaciente();
     }
-  };
-
-  obtenerPaciente();
-}
   }, [navigate]);
 
   if (!tutor) {
-
-    return (
-      <p className="text-center mt-5">
-        Cargando...
-      </p>
-    );
+    return <p className="text-center mt-5">Cargando...</p>;
   }
 
   return (
-
     <DashboardLayout usuario={tutor}>
-
       <Container fluid>
-
         {/* HEADER */}
 
         <div className="dashboard-top mb-4">
-
           <div>
-
-            <h2 className="dashboard-title">
-              Panel del Tutor
-            </h2>
+            <h2 className="dashboard-title">Panel del Tutor</h2>
 
             <p className="dashboard-subtitle">
-
-              Bienvenido,
-              {" "}
-              {tutor?.nombres}
-              {" "}
-              {tutor?.apellidos}
-
+              Bienvenido, {tutor?.userInfo?.nombreCompleto}
             </p>
-
           </div>
 
-          <Badge bg="primary">
-
-            Tutor activo
-
-          </Badge>
-
+          <Badge bg="primary">Tutor activo</Badge>
         </div>
 
         <Row>
-
           {/* DATOS TUTOR */}
 
           <Col lg={5} className="mb-4">
-
-            <Card
-              id="perfil"
-              className="dashboard-modern-card h-100"
-            >
-
+            <Card id="perfil" className="dashboard-modern-card h-100">
               <Card.Body>
-
-                <Card.Title
-                  className="dashboard-card-title"
-                >
+                <Card.Title className="dashboard-card-title">
                   Información del tutor
                 </Card.Title>
 
                 <div className="dashboard-info-group">
-
                   <p>
-                    <strong>Nombre:</strong>
-                    {" "}
-                    {tutor?.nombres}
-                    {" "}
-                    {tutor?.apellidos}
+                    <strong>Nombre:</strong> {tutor?.userInfo?.nombreCompleto}
                   </p>
 
                   <p>
-                    <strong>Correo:</strong>
-                    {" "}
-                    {tutor?.email}
+                    <strong>Correo:</strong> {tutor?.userInfo?.email}
                   </p>
 
                   <p>
-                    <strong>Teléfono:</strong>
-                    {" "}
-                    +569 {tutor?.telefono}
+                    <strong>Teléfono:</strong> No registrado
                   </p>
 
                   <p>
-                    <strong>Dirección:</strong>
-                    {" "}
-                    {tutor?.direccion}
+                    <strong>Dirección:</strong> No registrada
                   </p>
-
                 </div>
-
               </Card.Body>
-
             </Card>
-
           </Col>
 
           {/* PACIENTE */}
 
           <Col lg={7} className="mb-4">
-
             {pacientes.length === 0 ? (
-
               <Card className="dashboard-modern-card">
-
                 <Card.Body>
-
-                  <p className="mb-0">
-                    No hay paciente asociado
-                  </p>
-
+                  <p className="mb-0">No hay paciente asociado</p>
                 </Card.Body>
-
               </Card>
-
             ) : (
-
               pacientes.map((p, index) => (
-
-                <Card
-                  key={index}
-                  className="dashboard-modern-card h-100"
-                >
-
+                <Card key={index} className="dashboard-modern-card h-100">
                   <Card.Body>
-
-                    <Card.Title
-                      className="dashboard-card-title"
-                    >
+                    <Card.Title className="dashboard-card-title">
                       Paciente asociado
                     </Card.Title>
 
                     <div className="dashboard-info-group">
-
                       <p>
-                        <strong>Nombre:</strong>
-                        {" "}
-                        {p.nombres}
-                        {" "}
-                        {p.apellidos}
+                        <strong>Nombre:</strong> {p.nombre} {p.apellido}
                       </p>
 
                       <p>
-                        <strong>Documento:</strong>
-                        {" "}
-                        {p.numeroDocumento}
+                        <strong>Documento:</strong> {p.rut}
                       </p>
 
                       <p>
-                        <strong>Grupo sanguíneo:</strong>
-                        {" "}
-                        {p.grupoSanguineo}
+                        <strong>Grupo sanguíneo:</strong> No registrado
                       </p>
 
                       <p>
-                        <strong>Factor RH:</strong>
-                        {" "}
-                        {p.factorRh}
+                        <strong>Factor RH:</strong> No registrado
                       </p>
 
                       <p>
-                        <strong>Alergias:</strong>
-                        {" "}
-                        {p.alergias}
+                        <strong>Alergias:</strong> {p.alergias || "No registra"}
                       </p>
 
                       <p>
-                        <strong>Enfermedades:</strong>
-                        {" "}
-                        {p.enfermedadesCronicas}
+                        <strong>Enfermedades:</strong>{" "}
+                        {p.diagnostico || "No registra"}
                       </p>
 
                       <p>
-                        <strong>Medicamentos:</strong>
-                        {" "}
-                        {p.medicamentosActuales}
+                        <strong>Medicamentos:</strong> No registrados
                       </p>
 
                       <p>
-                        <strong>Previsión:</strong>
-                        {" "}
-                        {p.seguroMedico}
+                        <strong>Previsión:</strong> No registrada
                       </p>
-
                     </div>
-
                   </Card.Body>
-
                 </Card>
-
               ))
-
             )}
-
           </Col>
-
         </Row>
 
-        <Row>
-
-          <Col lg={12} className="mb-4">
-
-            <ResumenClinico
-              paciente={pacienteActivo}
-            />
-
-          </Col>
-
-        </Row>
+        <Row></Row>
 
         <Row>
-
           <Col lg={6} className="mb-4">
-
-            <HistorialEvoluciones
-              paciente={pacienteActivo}
-            />
-
+            <HistorialEvoluciones paciente={pacienteActivo} />
           </Col>
 
           <Col lg={6} className="mb-4">
-
-            <HistorialIndicaciones
-              paciente={pacienteActivo}
-            />
-
+            <HistorialIndicaciones paciente={pacienteActivo} />
           </Col>
-
         </Row>
 
         <Row>
-
           <Col lg={12} className="mb-4">
-
-            <SignosVitales
-              paciente={pacienteActivo}
-            />
-
+            <SignosVitales paciente={pacienteActivo} />
           </Col>
-
         </Row>
 
         <Row>
-
           <Col lg={12} className="mb-4">
-
-            <ExamenesClinicos
-              paciente={pacienteActivo}
-            />
-
+            <ExamenesClinicos paciente={pacienteActivo} />
           </Col>
-
         </Row>
-
-        {/* MENSAJES */}
-
-        <div id="mensajes">
-
-          <MessageSection />
-
-        </div>
-
       </Container>
-
     </DashboardLayout>
-
   );
 };
 
 export default DashboardTutor;
-

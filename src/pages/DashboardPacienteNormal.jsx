@@ -110,11 +110,7 @@ const DashboardPacienteNormal = () => {
           <Badge bg="primary" className="status-badge">Paciente activo</Badge>
         </div>
 
-        <Row>
-          <Col lg={12} className="mb-4">
-            <ResumenClinico paciente={pacienteActivo} />
-          </Col>
-        </Row>
+        
 
         <Row>
           {/* INFORMACIÓN PERSONAL */}

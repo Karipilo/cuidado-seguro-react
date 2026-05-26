@@ -1,11 +1,11 @@
 /**
  * Centralizado de configuración de API.
  * Lee desde variable de entorno VITE_BFF_URL en .env
- * Valor por defecto: http://localhost:8090
+ * Valor por defecto: 
  */
 
 const BFF_URL =
-  import.meta.env?.VITE_BFF_URL || "http://localhost:8090";
+  import.meta.env?.VITE_BFF_URL || "http://localhost:8090/bff";
 
 export async function request(
   endpoint,

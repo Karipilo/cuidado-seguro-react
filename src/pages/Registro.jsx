@@ -7,74 +7,70 @@ import { setMemoryItem } from "../utils/memoryStore";
 import { request } from "../utils/api";
 
 const Registro = () => {
-
   const navigate = useNavigate();
 
   // Estado para controlar los pasos
   const [paso, setPaso] = useState(1);
 
   const [formData, setFormData] = useState({
-  username: "",
-  password: "",
-  email: "",
+    username: "",
+    password: "",
+    email: "",
 
-  nombres: "",
-  apellidos: "",
-  tipoDocumento: "DNI",
-  numeroDocumento: "",
+    nombres: "",
+    apellidos: "",
+    tipoDocumento: "DNI",
+    numeroDocumento: "",
 
-  fechaNacimiento: "",
+    fechaNacimiento: "",
 
-  genero: "",
-  otroGenero: "",
+    genero: "",
+    otroGenero: "",
 
-  telefono: "",
-  direccion: "",
+    telefono: "",
+    direccion: "",
 
-  tipoUsuario: "",
+    tipoUsuario: "",
 
-  pacientesRuts: [],
+    pacientesRuts: [],
 
-  grupoSanguineo: "",
-  factorRh: "",
-  alergias: "",
-  enfermedadesCronicas: "",
-  medicamentosActuales: "",
-  contactoEmergencia: "",
-  telefonoEmergencia: "",
+    grupoSanguineo: "",
+    factorRh: "",
+    alergias: "",
+    enfermedadesCronicas: "",
+    medicamentosActuales: "",
+    contactoEmergencia: "",
+    telefonoEmergencia: "",
 
-  prevision: "",
+    prevision: "",
 
-  numeroLicencia: "",
+    numeroLicencia: "",
 
-  profesion: "",
-  otraProfesion: "",
+    profesion: "",
+    otraProfesion: "",
 
-  especialidad: "",
-  subespecialidad: "",
-  universidad: "",
+    especialidad: "",
+    subespecialidad: "",
+    universidad: "",
 
-  anioGraduacion: null,
-  experienciaAnios: null,
+    anioGraduacion: null,
+    experienciaAnios: null,
 
-  institucion: "",
-  horasSemanales: "",
+    institucion: "",
+    horasSemanales: "",
 
-  aceptaTerminos: false,
+    aceptaTerminos: false,
 
-  versionTerminos: 1
-});
+    versionTerminos: 1,
+  });
   const handleChange = (e) => {
-
     const { name, value } = e.target;
 
     setFormData({
       ...formData,
-      [name]: value
+      [name]: value,
     });
   };
-
-
 
   const validarPassword = (password) => {
     const regex = /^(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&#]).{6,}$/;
@@ -89,7 +85,6 @@ const Registro = () => {
   const pacienteAsociado = null;
 
   const obtenerConsentimiento = () => {
-
     if (formData.tipoUsuario === "PACIENTE") {
       return `
     De acuerdo con la Ley N° 20.584 y la Ley N° 19.628,
@@ -120,185 +115,158 @@ const Registro = () => {
     return "";
   };
 
+  const handleRegistro = async (e) => {
+    e.preventDefault();
 
-const handleRegistro = async (e) => {
-  e.preventDefault();
+    let camposObligatorios = [
+      "username",
+      "password",
+      "email",
+      "nombres",
+      "apellidos",
+      "numeroDocumento",
+      "fechaNacimiento",
+      "genero",
+      "telefono",
+      "direccion",
+    ];
 
-  let camposObligatorios = [
-    "username",
-    "password",
-    "email",
-    "nombres",
-    "apellidos",
-    "numeroDocumento",
-    "fechaNacimiento",
-    "genero",
-    "telefono",
-    "direccion"
-  ];
+    if (formData.tipoUsuario === "PACIENTE") {
+      camposObligatorios.push(
+        "grupoSanguineo",
+        "factorRh",
+        "contactoEmergencia",
+        "telefonoEmergencia",
+        "seguroMedico",
+      );
+    }
 
-  if (formData.tipoUsuario === "PACIENTE") {
-    camposObligatorios.push(
-      "grupoSanguineo",
-      "factorRh",
-      "contactoEmergencia",
-      "telefonoEmergencia",
-      "seguroMedico",
+    if (formData.tipoUsuario === "TUTOR") {
+      camposObligatorios.push("rutPaciente");
+    }
 
-    );
-  }
+    for (let campo of camposObligatorios) {
+      if (!formData[campo] || formData[campo] === "+569") {
+        alert("Todos los campos obligatorios deben completarse");
+        return;
+      }
+    }
 
-  if (formData.tipoUsuario === "TUTOR") {
-    camposObligatorios.push("rutPaciente");
-  }
-
-  for (let campo of camposObligatorios) {
-
-    if (!formData[campo] || formData[campo] === "+569") {
-      alert("Todos los campos obligatorios deben completarse");
+    if (!validarPassword(formData.password)) {
+      alert(
+        "La contraseña debe tener mínimo 6 caracteres, una mayúscula, un número y un símbolo",
+      );
       return;
     }
-  }
 
-  if (!validarPassword(formData.password)) {
-    alert("La contraseña debe tener mínimo 6 caracteres, una mayúscula, un número y un símbolo");
-    return;
-  }
+    if (!formData.aceptaTerminos) {
+      alert("Debe aceptar los términos y condiciones");
+      return;
+    }
 
+    const usuarioFinal = {
+      username: formData.username,
+      password: formData.password,
+      email: formData.email,
 
-  if (!formData.aceptaTerminos) {
-    alert("Debe aceptar los términos y condiciones");
-    return;
-  }
+      nombres: formData.nombres,
+      apellidos: formData.apellidos,
 
-  const usuarioFinal = {
+      tipoDocumento: formData.tipoDocumento,
+      numeroDocumento: formData.numeroDocumento,
 
-    username: formData.username,
-    password: formData.password,
-    email: formData.email,
+      fechaNacimiento: formData.fechaNacimiento,
 
-    nombres: formData.nombres,
-    apellidos: formData.apellidos,
+      genero:
+        formData.genero === "OTRO" ? formData.otroGenero : formData.genero,
 
-    tipoDocumento: formData.tipoDocumento,
-    numeroDocumento: formData.numeroDocumento,
+      telefono: formData.telefono,
+      direccion: formData.direccion,
 
-    fechaNacimiento: formData.fechaNacimiento,
+      tipoUsuario: formData.tipoUsuario,
 
-    genero:
-      formData.genero === "OTRO"
-        ? formData.otroGenero
-        : formData.genero,
+      roles: [`ROLE_${formData.tipoUsuario}`],
 
-    telefono: formData.telefono,
-    direccion: formData.direccion,
+      aceptaTerminos: formData.aceptaTerminos,
+      versionTerminos: 1,
 
-    tipoUsuario: formData.tipoUsuario,
+      pacientesRuts:
+        formData.tipoUsuario === "TUTOR"
+          ? [formData.rutPaciente.replace(/\./g, "").trim()]
+          : [],
 
-    roles: [`ROLE_${formData.tipoUsuario}`],
+      grupoSanguineo: formData.grupoSanguineo || "",
+      factorRh: formData.factorRh || "",
+      alergias: formData.alergias || "",
+      enfermedadesCronicas: formData.enfermedadesCronicas || "",
+      medicamentosActuales: formData.medicamentosActuales || "",
+      contactoEmergencia: formData.contactoEmergencia || "",
+      telefonoEmergencia: formData.telefonoEmergencia || "",
 
-    aceptaTerminos: formData.aceptaTerminos,
-    versionTerminos: 1,
+      prevision: formData.seguroMedico || "",
 
-    pacientesRuts:
-      formData.tipoUsuario === "TUTOR"
-        ? [formData.rutPaciente]
-        : [],
+      numeroLicencia: formData.numeroLicencia || "",
 
-    grupoSanguineo: formData.grupoSanguineo || "",
-    factorRh: formData.factorRh || "",
-    alergias: formData.alergias || "",
-    enfermedadesCronicas: formData.enfermedadesCronicas || "",
-    medicamentosActuales: formData.medicamentosActuales || "",
-    contactoEmergencia: formData.contactoEmergencia || "",
-    telefonoEmergencia: formData.telefonoEmergencia || "",
+      profesion:
+        formData.profesion === "OTRO"
+          ? formData.otraProfesion
+          : formData.profesion || "",
 
-    prevision: formData.seguroMedico || "",
+      especialidad: formData.especialidad || "",
+      subespecialidad: formData.subespecialidad || "",
+      universidad: formData.universidad || "",
 
-    numeroLicencia: formData.numeroLicencia || "",
+      anioGraduacion: Number(formData.anioGraduacion) || null,
 
-    profesion:
-      formData.profesion === "OTRO"
-        ? formData.otraProfesion
-        : formData.profesion || "",
+      experienciaAnios: formData.experienciaAnios || null,
 
-    especialidad: formData.especialidad || "",
-    subespecialidad: formData.subespecialidad || "",
-    universidad: formData.universidad || "",
+      institucion: formData.institucion || "",
+      horasSemanales: formData.horasSemanales || "",
+    };
 
-    anioGraduacion: Number(formData.anioGraduacion) || null,
-
-    experienciaAnios:
-      formData.experienciaAnios || null,
-
-    institucion: formData.institucion || "",
-    horasSemanales: formData.horasSemanales || ""
-  };
-
-  try {
-
-    const data = await request(
-      "/auth/register",
-      {
+    try {
+      const data = await request("/auth/register", {
         method: "POST",
         body: usuarioFinal,
+      });
+
+      console.log(data);
+
+      // Guardar tokens en memoria volátil
+
+      if (!data || !data.accessToken) {
+        console.log("Respuesta inválida:", data);
+        alert("Registro falló: respuesta inválida del servidor");
+        return;
       }
-    );
 
-    console.log(data);
+      setMemoryItem("accessToken", data.accessToken);
+      setMemoryItem("refreshToken", data.refreshToken);
+      setMemoryItem("expiresIn", data.expiresIn);
+      //alert("Usuario registrado correctamente");
+      if (formData.tipoUsuario === "PACIENTE") {
+        navigate("/dashboardPaciente");
+      } else if (formData.tipoUsuario === "TUTOR") {
+        navigate("/dashboardTutor");
+      } else if (formData.tipoUsuario === "PROFESIONAL") {
+        navigate("/dashboard-profesional");
+      }
+    } catch (error) {
+      console.error(error);
 
-    // Guardar tokens en memoria volátil
-
-    if (!data || !data.accessToken) {
-      console.log("Respuesta inválida:", data);
-      alert("Registro falló: respuesta inválida del servidor");
-      return;
+      alert("No se pudo conectar con el servidor");
     }
-
-    setMemoryItem("accessToken", data.accessToken);
-    setMemoryItem("refreshToken", data.refreshToken);
-    setMemoryItem("expiresIn", data.expiresIn);
-    //alert("Usuario registrado correctamente");
-    if (formData.tipoUsuario === "PACIENTE") {
-
-      navigate("/dashboardPaciente");
-
-    } else if (formData.tipoUsuario === "TUTOR") {
-
-      navigate("/dashboardTutor");
-
-    } else if (formData.tipoUsuario === "PROFESIONAL") {
-
-      navigate("/dashboardProfesional");
-    }
-
-  } catch (error) {
-
-    console.error(error);
-
-    alert("No se pudo conectar con el servidor");
-  }
-};
-
+  };
 
   return (
     <div className="auth-container">
-
-      <Formulario
-        title="Registro"
-        buttonText=""
-        onSubmit={handleRegistro}
-      >
-
-        <h5 className="text-center mb-4">
-          Paso {paso} de 4
-        </h5>
+      <Formulario title="Registro" buttonText="" onSubmit={handleRegistro}>
+        <h5 className="text-center mb-4">Paso {paso} de 4</h5>
 
         {/* PASO 1 */}
 
         {paso === 1 && (
           <>
-
             <Form.Group className="mb-3">
               <Form.Label>Usuario</Form.Label>
               <Form.Control
@@ -347,12 +315,10 @@ const handleRegistro = async (e) => {
             </Form.Group>
 
             <div className="d-flex justify-content-end mt-4">
-
               <button
                 type="button"
                 className="btn btn-primary"
                 onClick={() => {
-
                   if (
                     !formData.username ||
                     !formData.email ||
@@ -378,9 +344,7 @@ const handleRegistro = async (e) => {
               >
                 Siguiente
               </button>
-
             </div>
-
           </>
         )}
 
@@ -388,7 +352,6 @@ const handleRegistro = async (e) => {
 
         {paso === 2 && (
           <>
-
             <Form.Group className="mb-3">
               <Form.Label>RUT</Form.Label>
               <Form.Control
@@ -415,55 +378,35 @@ const handleRegistro = async (e) => {
                 name="genero"
                 value={formData.genero}
                 onChange={(e) => {
-
                   const value = e.target.value;
 
                   if (value !== "OTRO") {
-
                     setFormData({
                       ...formData,
                       genero: value,
-                      otroGenero: ""
+                      otroGenero: "",
                     });
-
                   } else {
-
                     setFormData({
                       ...formData,
-                      genero: "OTRO"
+                      genero: "OTRO",
                     });
-
                   }
                 }}
               >
-  <option value="">
-    Seleccione
-  </option>
+                <option value="">Seleccione</option>
 
-  <option value="MASCULINO">
-    Masculino
-  </option>
+                <option value="MASCULINO">Masculino</option>
 
-  <option value="FEMENINO">
-    Femenino
-  </option>
+                <option value="FEMENINO">Femenino</option>
 
-  <option value="N/A">
-    Prefiero no decirlo
-  </option>
+                <option value="N/A">Prefiero no decirlo</option>
 
-  <option value="OTRO">
-    Otro
-  </option>
-
-</Form.Select>
-{formData.genero === "OTRO" && (
-
+                <option value="OTRO">Otro</option>
+              </Form.Select>
+              {formData.genero === "OTRO" && (
                 <Form.Group className="mb-3">
-
-                  <Form.Label>
-                    Especifique el género
-                  </Form.Label>
+                  <Form.Label>Especifique el género</Form.Label>
 
                   <Form.Control
                     name="otroGenero"
@@ -471,13 +414,11 @@ const handleRegistro = async (e) => {
                     onChange={(e) =>
                       setFormData({
                         ...formData,
-                        otroGenero: e.target.value
+                        otroGenero: e.target.value,
                       })
                     }
                   />
-
                 </Form.Group>
-
               )}
             </Form.Group>
 
@@ -485,16 +426,14 @@ const handleRegistro = async (e) => {
               <Form.Label>Teléfono</Form.Label>
 
               <div className="d-flex">
-
                 <span
                   className="form-control"
                   style={{
                     width: "80px",
-                    background: "#eee"
+                    background: "#eee",
                   }}
                 >
                   +569
-
                 </span>
 
                 <Form.Control
@@ -505,11 +444,10 @@ const handleRegistro = async (e) => {
                   onChange={(e) =>
                     setFormData({
                       ...formData,
-                      telefono: e.target.value.replace(/\D/g, "")
+                      telefono: e.target.value.replace(/\D/g, ""),
                     })
                   }
                 />
-
               </div>
             </Form.Group>
 
@@ -524,7 +462,6 @@ const handleRegistro = async (e) => {
             </Form.Group>
 
             <div className="d-flex justify-content-between mt-4">
-
               <button
                 type="button"
                 className="btn btn-secondary"
@@ -537,578 +474,456 @@ const handleRegistro = async (e) => {
                 type="button"
                 className="btn btn-primary"
                 onClick={() => {
-
                   if (
                     !formData.numeroDocumento ||
                     !formData.fechaNacimiento ||
                     !formData.genero ||
-                    (
-                      formData.genero === "OTRO" &&
-                      !formData.otroGenero
-                    )||
+                    (formData.genero === "OTRO" && !formData.otroGenero) ||
                     !formData.direccion ||
-                      !formData.telefono
+                    !formData.telefono
                   ) {
-                alert("Complete todos los campos");
-              return;
+                    alert("Complete todos los campos");
+                    return;
                   }
 
-              setPaso(3);
+                  setPaso(3);
                 }}
               >
-              Siguiente
-            </button>
-
-          </div>
-
-      </>
+                Siguiente
+              </button>
+            </div>
+          </>
         )}
 
-      {/* PASO 3 */}
+        {/* PASO 3 */}
 
-      {paso === 3 && (
-        <>
+        {paso === 3 && (
+          <>
+            <Form.Group className="mb-3">
+              <Form.Label>Tipo de usuario</Form.Label>
 
-          <Form.Group className="mb-3">
-            <Form.Label>Tipo de usuario</Form.Label>
+              <Form.Select
+                name="tipoUsuario"
+                value={formData.tipoUsuario}
+                onChange={handleChange}
+              >
+                <option value="">Seleccione un tipo de usuario</option>
 
-            <Form.Select
-              name="tipoUsuario"
-              value={formData.tipoUsuario}
-              onChange={handleChange}
-            >
-              <option value="">
-                Seleccione un tipo de usuario
-              </option>
+                <option value="PACIENTE">Paciente</option>
 
-              <option value="PACIENTE">
-                Paciente
-              </option>
+                <option value="TUTOR">Tutor</option>
 
-              <option value="TUTOR">
-                Tutor
-              </option>
+                <option value="PROFESIONAL">Profesional</option>
+              </Form.Select>
+            </Form.Group>
 
-              <option value="PROFESIONAL">
-                Profesional
-              </option>
+            {/* TUTOR */}
 
-            </Form.Select>
-          </Form.Group>
-
-          {/* TUTOR */}
-
-          {formData.tipoUsuario === "TUTOR" && (
-            <>
-
-              <Form.Group className="mb-3">
-                <Form.Label>
-                  RUT del paciente
-                </Form.Label>
-
-                <Form.Control
-                  name="rutPaciente"
-                  value={formData.rutPaciente}
-                  onChange={handleChange}
-                />
-              </Form.Group>
-
-            </>
-          )}
-
-          {/* PACIENTE */}
-
-          {formData.tipoUsuario === "PACIENTE" && (
-            <>
-
-              <Form.Group className="mb-3">
-                <Form.Label>
-                  Grupo sanguíneo
-                </Form.Label>
-
-                <Form.Select
-                  name="grupoSanguineo"
-                  onChange={handleChange}
-                  value={formData.grupoSanguineo}
-                >
-                  <option value="">
-                    Seleccione
-                  </option>
-
-                  <option>O</option>
-                  <option>A</option>
-                  <option>B</option>
-                  <option>AB</option>
-                  <option>No lo sé</option>
-                </Form.Select>
-              </Form.Group>
-
-              <Form.Group className="mb-3">
-                <Form.Label>
-                  Factor RH
-                </Form.Label>
-
-                <Form.Select
-                  name="factorRh"
-                  onChange={handleChange}
-                  value={formData.factorRh}
-                >
-                  <option value="">
-                    Seleccione
-                  </option>
-
-                  <option>+</option>
-                  <option>-</option>
-                  <option>N/A</option>
-                </Form.Select>
-              </Form.Group>
-
-              <Form.Group className="mb-3">
-                <Form.Label>
-                  Alergias
-                </Form.Label>
-
-                <Form.Control
-                  name="alergias"
-                  onChange={handleChange}
-                  value={formData.alergias}
-                />
-              </Form.Group>
-
-              <Form.Group className="mb-3">
-                <Form.Label>
-                  Enfermedades crónicas
-                </Form.Label>
-
-                <Form.Control
-                  name="enfermedadesCronicas"
-                  onChange={handleChange}
-                  value={formData.enfermedadesCronicas}
-                />
-              </Form.Group>
-
-              <Form.Group className="mb-3">
-                <Form.Label>
-                  Medicamentos actuales
-                </Form.Label>
-
-                <Form.Control
-                  name="medicamentosActuales"
-                  onChange={handleChange}
-                  value={formData.medicamentosActuales}
-                />
-              </Form.Group>
-
-              <Form.Group className="mb-3">
-                <Form.Label>
-                  Contacto de emergencia
-                </Form.Label>
-
-                <Form.Control
-                  name="contactoEmergencia"
-                  onChange={handleChange}
-                  value={formData.contactoEmergencia}
-                />
-              </Form.Group>
-
-              <Form.Group className="mb-3">
-                <Form.Label>Teléfono de Emergencia</Form.Label>
-
-                <div className="d-flex">
-
-                  <span
-                    className="form-control"
-                    style={{
-                      width: "80px",
-                      background: "#eee"
-                    }}
-                  >
-                    +569
-                  </span>
+            {formData.tipoUsuario === "TUTOR" && (
+              <>
+                <Form.Group className="mb-3">
+                  <Form.Label>RUT del paciente</Form.Label>
 
                   <Form.Control
-                    type="text"
-                    placeholder="12345678"
-                    maxLength={8}
-                    value={formData.telefonoEmergencia}
-                    onChange={(e) =>
-                      setFormData({
-                        ...formData,
-                        telefonoEmergencia: e.target.value.replace(/\D/g, "")
-                      })
-                    }
+                    name="rutPaciente"
+                    value={formData.rutPaciente}
+                    onChange={handleChange}
                   />
+                </Form.Group>
+              </>
+            )}
 
-                </div>
-              </Form.Group>
+            {/* PACIENTE */}
 
-              <Form.Group className="mb-3">
-                <Form.Label>
-                  Tipo de previsión
-                </Form.Label>
-                <Form.Select
-                  name="seguroMedico"
-                  onChange={handleChange}
-                  value={formData.seguroMedico}
-                >
-                  <option value="">
-                    Seleccione
-                  </option>
+            {formData.tipoUsuario === "PACIENTE" && (
+              <>
+                <Form.Group className="mb-3">
+                  <Form.Label>Grupo sanguíneo</Form.Label>
 
-                  <option>Fonasa</option>
-                  <option>Isapre</option>
-                  <option>Capredena/Dipreca</option>
-                  <option>Particular/Sin Previsión</option>
-                </Form.Select>
-              </Form.Group>
+                  <Form.Select
+                    name="grupoSanguineo"
+                    onChange={handleChange}
+                    value={formData.grupoSanguineo}
+                  >
+                    <option value="">Seleccione</option>
 
+                    <option>O</option>
+                    <option>A</option>
+                    <option>B</option>
+                    <option>AB</option>
+                    <option>No lo sé</option>
+                  </Form.Select>
+                </Form.Group>
 
-            </>
-          )}
+                <Form.Group className="mb-3">
+                  <Form.Label>Factor RH</Form.Label>
 
-          {/* PROFESIONAL */}
+                  <Form.Select
+                    name="factorRh"
+                    onChange={handleChange}
+                    value={formData.factorRh}
+                  >
+                    <option value="">Seleccione</option>
 
-          {formData.tipoUsuario === "PROFESIONAL" && (
-            <>
+                    <option>+</option>
+                    <option>-</option>
+                    <option>N/A</option>
+                  </Form.Select>
+                </Form.Group>
 
-              <Form.Group className="mb-3">
-                <Form.Label>
-                  Número de licencia
-                </Form.Label>
+                <Form.Group className="mb-3">
+                  <Form.Label>Alergias</Form.Label>
 
-                <Form.Control
-                  name="numeroLicencia"
-                  value={formData.numeroLicencia}
-                  onChange={handleChange}
-                />
-              </Form.Group>
+                  <Form.Control
+                    name="alergias"
+                    onChange={handleChange}
+                    value={formData.alergias}
+                  />
+                </Form.Group>
 
-              <Form.Group className="mb-3">
-                <Form.Label>
-                  Profesión
-                </Form.Label>
+                <Form.Group className="mb-3">
+                  <Form.Label>Enfermedades crónicas</Form.Label>
 
-                <Form.Select
-  name="profesion"
-  value={formData.profesion}
-  onChange={(e) => {
+                  <Form.Control
+                    name="enfermedadesCronicas"
+                    onChange={handleChange}
+                    value={formData.enfermedadesCronicas}
+                  />
+                </Form.Group>
 
-    const value = e.target.value;
+                <Form.Group className="mb-3">
+                  <Form.Label>Medicamentos actuales</Form.Label>
 
-    if (value !== "OTRO") {
+                  <Form.Control
+                    name="medicamentosActuales"
+                    onChange={handleChange}
+                    value={formData.medicamentosActuales}
+                  />
+                </Form.Group>
 
-      setFormData({
-        ...formData,
-        profesion: value,
-        otraProfesion: ""
-      });
+                <Form.Group className="mb-3">
+                  <Form.Label>Contacto de emergencia</Form.Label>
 
-    } else {
+                  <Form.Control
+                    name="contactoEmergencia"
+                    onChange={handleChange}
+                    value={formData.contactoEmergencia}
+                  />
+                </Form.Group>
 
-      setFormData({
-        ...formData,
-        profesion: "OTRO"
-      });
+                <Form.Group className="mb-3">
+                  <Form.Label>Teléfono de Emergencia</Form.Label>
 
-    }
-  }}
->
-  <option value="">
-    Seleccione
-  </option>
-
-  <option>Médico</option>
-  <option>Enfermero/a</option>
-  <option>Kinesiólogo/a</option>
-  <option>Nutricionista</option>
-  <option>Psicólogo/a</option>
-  <option>Fonoaudiólogo/a</option>
-  <option>Terapeuta ocupacional</option>
-  <option>TENS</option>
-
-  <option value="OTRO">
-    Otro
-  </option>
-
-</Form.Select>
-{formData.profesion === "OTRO" && (
-
-                  <Form.Group className="mb-3 mt_3">
-
-                    <Form.Label>
-                      Especifique la profesión
-                    </Form.Label>
+                  <div className="d-flex">
+                    <span
+                      className="form-control"
+                      style={{
+                        width: "80px",
+                        background: "#eee",
+                      }}
+                    >
+                      +569
+                    </span>
 
                     <Form.Control
-                      name="otraProfesion"
-                      value={formData.otraProfesion}
+                      type="text"
+                      placeholder="12345678"
+                      maxLength={8}
+                      value={formData.telefonoEmergencia}
                       onChange={(e) =>
                         setFormData({
                           ...formData,
-                          otraProfesion: e.target.value
+                          telefonoEmergencia: e.target.value.replace(/\D/g, ""),
                         })
                       }
                     />
+                  </div>
+                </Form.Group>
 
-                  </Form.Group>
+                <Form.Group className="mb-3">
+                  <Form.Label>Tipo de previsión</Form.Label>
+                  <Form.Select
+                    name="seguroMedico"
+                    onChange={handleChange}
+                    value={formData.seguroMedico}
+                  >
+                    <option value="">Seleccione</option>
 
-                )}
-              </Form.Group>
+                    <option>Fonasa</option>
+                    <option>Isapre</option>
+                    <option>Capredena/Dipreca</option>
+                    <option>Particular/Sin Previsión</option>
+                  </Form.Select>
+                </Form.Group>
+              </>
+            )}
 
-              <Form.Group className="mb-3">
-                <Form.Label>
-                  Especialidad
-                </Form.Label>
+            {/* PROFESIONAL */}
 
-                <Form.Control
-                  name="especialidad"
-                  value={formData.especialidad}
-                  onChange={handleChange}
-                />
-              </Form.Group>
+            {formData.tipoUsuario === "PROFESIONAL" && (
+              <>
+                <Form.Group className="mb-3">
+                  <Form.Label>Número de licencia</Form.Label>
 
-              <Form.Group className="mb-3">
-                <Form.Label>
-                  Subespecialidad
-                </Form.Label>
+                  <Form.Control
+                    name="numeroLicencia"
+                    value={formData.numeroLicencia}
+                    onChange={handleChange}
+                  />
+                </Form.Group>
 
-                <Form.Control
-                  name="subespecialidad"
-                  value={formData.subespecialidad}
-                  onChange={handleChange}
-                />
-              </Form.Group>
+                <Form.Group className="mb-3">
+                  <Form.Label>Profesión</Form.Label>
 
-              <Form.Group className="mb-3">
-                <Form.Label>
-                  Universidad
-                </Form.Label>
+                  <Form.Select
+                    name="profesion"
+                    value={formData.profesion}
+                    onChange={(e) => {
+                      const value = e.target.value;
 
-                <Form.Control
-                  name="universidad"
-                  value={formData.universidad}
-                  onChange={handleChange}
-                />
-              </Form.Group>
+                      if (value !== "OTRO") {
+                        setFormData({
+                          ...formData,
+                          profesion: value,
+                          otraProfesion: "",
+                        });
+                      } else {
+                        setFormData({
+                          ...formData,
+                          profesion: "OTRO",
+                        });
+                      }
+                    }}
+                  >
+                    <option value="">Seleccione</option>
 
-              <Form.Group className="mb-3">
-                <Form.Label>
-                  Año de graduación
-                </Form.Label>
+                    <option>Médico</option>
+                    <option>Enfermero/a</option>
+                    <option>Kinesiólogo/a</option>
+                    <option>Nutricionista</option>
+                    <option>Psicólogo/a</option>
+                    <option>Fonoaudiólogo/a</option>
+                    <option>Terapeuta ocupacional</option>
+                    <option>TENS</option>
 
-                <Form.Select
-                  name="anioGraduacion"
-                  value={formData.anioGraduacion}
-                  onChange={handleChange}
-                >
-                  <option value="">
-                    Seleccione
-                  </option>
+                    <option value="OTRO">Otro</option>
+                  </Form.Select>
+                  {formData.profesion === "OTRO" && (
+                    <Form.Group className="mb-3 mt_3">
+                      <Form.Label>Especifique la profesión</Form.Label>
 
-                  {Array.from({ length: 50 }, (_, i) => {
-                    const year = new Date().getFullYear() - i;
+                      <Form.Control
+                        name="otraProfesion"
+                        value={formData.otraProfesion}
+                        onChange={(e) =>
+                          setFormData({
+                            ...formData,
+                            otraProfesion: e.target.value,
+                          })
+                        }
+                      />
+                    </Form.Group>
+                  )}
+                </Form.Group>
 
-                    return (
-                      <option key={year}>
-                        {year}
-                      </option>
-                    );
-                  })}
-                </Form.Select>
-              </Form.Group>
+                <Form.Group className="mb-3">
+                  <Form.Label>Especialidad</Form.Label>
 
-              <Form.Group className="mb-3">
-                <Form.Label>
-                  Años de experiencia
-                </Form.Label>
+                  <Form.Control
+                    name="especialidad"
+                    value={formData.especialidad}
+                    onChange={handleChange}
+                  />
+                </Form.Group>
 
-                <Form.Select
-                  name="experienciaAnios"
-                  value={formData.experienciaAnios}
-                  onChange={handleChange}
-                >
-                  <option value="">
-                    Seleccione
-                  </option>
+                <Form.Group className="mb-3">
+                  <Form.Label>Subespecialidad</Form.Label>
 
-                  {[...Array(71).keys()].map((n) => (
-                    <option key={n}>
-                      {n}
-                    </option>
-                  ))}
-                </Form.Select>
-              </Form.Group>
+                  <Form.Control
+                    name="subespecialidad"
+                    value={formData.subespecialidad}
+                    onChange={handleChange}
+                  />
+                </Form.Group>
 
-              <Form.Group className="mb-3">
-                <Form.Label>
-                  Institución
-                </Form.Label>
+                <Form.Group className="mb-3">
+                  <Form.Label>Universidad</Form.Label>
 
-                <Form.Control
-                  name="institucion"
-                  value={formData.institucion}
-                  onChange={handleChange}
-                />
-              </Form.Group>
+                  <Form.Control
+                    name="universidad"
+                    value={formData.universidad}
+                    onChange={handleChange}
+                  />
+                </Form.Group>
 
-              <Form.Group className="mb-3">
-                <Form.Label>
-                  Horas semanales
-                </Form.Label>
+                <Form.Group className="mb-3">
+                  <Form.Label>Año de graduación</Form.Label>
 
-                <Form.Select
-                  name="horasSemanales"
-                  value={formData.horasSemanales}
-                  onChange={handleChange}
-                >
-                  <option value="">
-                    Seleccione
-                  </option>
+                  <Form.Select
+                    name="anioGraduacion"
+                    value={formData.anioGraduacion}
+                    onChange={handleChange}
+                  >
+                    <option value="">Seleccione</option>
 
-                  {[10, 20, 22, 30, 40, 44, 45].map((h) => (
-                    <option key={h}>
-                      {h}
-                    </option>
-                  ))}
-                </Form.Select>
-              </Form.Group>
+                    {Array.from({ length: 50 }, (_, i) => {
+                      const year = new Date().getFullYear() - i;
 
-            </>
-          )}
+                      return <option key={year}>{year}</option>;
+                    })}
+                  </Form.Select>
+                </Form.Group>
 
-          <div className="d-flex justify-content-between mt-4">
+                <Form.Group className="mb-3">
+                  <Form.Label>Años de experiencia</Form.Label>
 
-            <button
-              type="button"
-              className="btn btn-secondary"
-              onClick={() => setPaso(2)}
-            >
-              Volver
-            </button>
+                  <Form.Select
+                    name="experienciaAnios"
+                    value={formData.experienciaAnios}
+                    onChange={handleChange}
+                  >
+                    <option value="">Seleccione</option>
 
-            <button
-              type="button"
-              className="btn btn-primary"
-              onClick={() => {
+                    {[...Array(71).keys()].map((n) => (
+                      <option key={n}>{n}</option>
+                    ))}
+                  </Form.Select>
+                </Form.Group>
 
-                if (!formData.tipoUsuario) {
-                  alert("Seleccione un tipo de usuario");
-                  return;
+                <Form.Group className="mb-3">
+                  <Form.Label>Institución</Form.Label>
+
+                  <Form.Control
+                    name="institucion"
+                    value={formData.institucion}
+                    onChange={handleChange}
+                  />
+                </Form.Group>
+
+                <Form.Group className="mb-3">
+                  <Form.Label>Horas semanales</Form.Label>
+
+                  <Form.Select
+                    name="horasSemanales"
+                    value={formData.horasSemanales}
+                    onChange={handleChange}
+                  >
+                    <option value="">Seleccione</option>
+
+                    {[10, 20, 22, 30, 40, 44, 45].map((h) => (
+                      <option key={h}>{h}</option>
+                    ))}
+                  </Form.Select>
+                </Form.Group>
+              </>
+            )}
+
+            <div className="d-flex justify-content-between mt-4">
+              <button
+                type="button"
+                className="btn btn-secondary"
+                onClick={() => setPaso(2)}
+              >
+                Volver
+              </button>
+
+              <button
+                type="button"
+                className="btn btn-primary"
+                onClick={() => {
+                  if (!formData.tipoUsuario) {
+                    alert("Seleccione un tipo de usuario");
+                    return;
+                  }
+
+                  if (
+                    formData.tipoUsuario === "TUTOR" &&
+                    !formData.rutPaciente
+                  ) {
+                    alert("Ingrese el RUT del paciente");
+                    return;
+                  }
+
+                  if (
+                    formData.tipoUsuario === "PACIENTE" &&
+                    (!formData.grupoSanguineo ||
+                      !formData.factorRh ||
+                      !formData.contactoEmergencia ||
+                      !formData.telefonoEmergencia ||
+                      !formData.alergias ||
+                      !formData.enfermedadesCronicas ||
+                      !formData.medicamentosActuales ||
+                      !formData.seguroMedico)
+                  ) {
+                    alert("Complete todos los datos del paciente");
+                    return;
+                  }
+
+                  if (
+                    formData.tipoUsuario === "PROFESIONAL" &&
+                    (!formData.numeroLicencia ||
+                      !formData.profesion ||
+                      (formData.profesion === "OTRO" &&
+                        !formData.otraProfesion) ||
+                      !formData.especialidad ||
+                      !formData.universidad ||
+                      !formData.anioGraduacion ||
+                      !formData.experienciaAnios ||
+                      !formData.institucion ||
+                      !formData.horasSemanales)
+                  ) {
+                    alert("Complete todos los datos del profesional");
+                    return;
+                  }
+
+                  setPaso(4);
+                }}
+              >
+                Siguiente
+              </button>
+            </div>
+          </>
+        )}
+
+        {/* PASO 4 */}
+
+        {paso === 4 && (
+          <>
+            <div className="consentimiento-box mb-3">
+              <h6>Consentimiento informado</h6>
+
+              <p>{obtenerConsentimiento()}</p>
+            </div>
+            <Form.Group className="mb-3">
+              <Form.Check
+                type="checkbox"
+                label="Acepto los términos y condiciones"
+                onChange={(e) =>
+                  setFormData({
+                    ...formData,
+                    aceptaTerminos: e.target.checked,
+                  })
                 }
+              />
+            </Form.Group>
 
-                if (
-                  formData.tipoUsuario === "TUTOR" &&
-                  !formData.rutPaciente
-                ) {
-                  alert("Ingrese el RUT del paciente");
-                  return;
-                }
+            <div className="d-flex justify-content-between mt-4">
+              <button
+                type="button"
+                className="btn btn-secondary"
+                onClick={() => setPaso(3)}
+              >
+                Volver
+              </button>
 
-                if (
-                  formData.tipoUsuario === "PACIENTE" &&
-                  (
-                    !formData.grupoSanguineo ||
-                    !formData.factorRh ||
-                    !formData.contactoEmergencia ||
-                    !formData.telefonoEmergencia ||
-                    !formData.alergias ||
-                    !formData.enfermedadesCronicas ||
-                    !formData.medicamentosActuales ||
-                    !formData.seguroMedico
-                  )
-                ) {
-                  alert("Complete todos los datos del paciente");
-                  return;
-                }
-
-                if (
-                  formData.tipoUsuario === "PROFESIONAL" &&
-                  (
-                    !formData.numeroLicencia ||
-                    !formData.profesion ||
-                    (
-                      formData.profesion === "OTRO" &&
-                      !formData.otraProfesion
-                    ) ||
-                    !formData.especialidad ||
-                    !formData.universidad ||
-                    !formData.anioGraduacion ||
-                    !formData.experienciaAnios ||
-                    !formData.institucion ||
-                    !formData.horasSemanales
-                  )
-                ) {
-                  alert("Complete todos los datos del profesional");
-                  return;
-                }
-
-                setPaso(4);
-              }}
-            >
-              Siguiente
-            </button>
-
-          </div>
-
-        </>
-      )}
-
-      {/* PASO 4 */}
-
-      {paso === 4 && (
-        <>
-          <div className="consentimiento-box mb-3">
-
-            <h6>
-              Consentimiento informado
-            </h6>
-
-            <p>
-              {obtenerConsentimiento()}
-            </p>
-
-          </div>
-          <Form.Group className="mb-3">
-
-            <Form.Check
-
-              type="checkbox"
-              label="Acepto los términos y condiciones"
-              onChange={(e) =>
-                setFormData({
-                  ...formData,
-                  aceptaTerminos: e.target.checked
-                })
-              }
-            />
-
-          </Form.Group>
-
-          <div className="d-flex justify-content-between mt-4">
-
-            <button
-              type="button"
-              className="btn btn-secondary"
-              onClick={() => setPaso(3)}
-            >
-              Volver
-            </button>
-
-            <button
-              type="submit"
-              className="btn btn-success"
-            >
-              Crear cuenta
-            </button>
-
-          </div>
-
-        </>
-      )}
-
-    </Formulario>
-
-    </div >
+              <button type="submit" className="btn btn-success">
+                Crear cuenta
+              </button>
+            </div>
+          </>
+        )}
+      </Formulario>
+    </div>
   );
 };
 

@@ -33,7 +33,7 @@ const Login = () => {
       if (tipo === "PACIENTE") {
         navigate("/dashboardPacienteNormal", { replace: true });
       } else if (tipo === "PROFESIONAL") {
-        navigate("/dashboardProfesional", { replace: true });
+        navigate("/dashboard-profesional", { replace: true });
       } else if (tipo === "TUTOR") {
         navigate("/dashboardTutor", { replace: true });
       } else {
