@@ -82,6 +82,12 @@ const Registro = () => {
     return regex.test(email);
   };
 
+  const validarRut = (rut) => {
+    const rutLimpio = rut.replace(/\./g, "").replace(/-/g, "");
+
+    return rutLimpio.length >= 8 && rutLimpio.length <= 9;
+  };
+
   const pacienteAsociado = null;
 
   const obtenerConsentimiento = () => {
@@ -483,6 +489,11 @@ const Registro = () => {
                     !formData.telefono
                   ) {
                     alert("Complete todos los campos");
+                    return;
+                  }
+
+                  if (!validarRut(formData.numeroDocumento)) {
+                    alert("Ingrese un RUT chileno válido");
                     return;
                   }
 
