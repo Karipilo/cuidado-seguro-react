@@ -1,14 +1,18 @@
-import React, { useState, useEffect } from "react";
+import { useEffect, useState } from "react";
+import { Badge, Card, Col, Container, Row } from "react-bootstrap";
 import { useNavigate } from "react-router-dom";
-import { Container, Row, Col, Card, Badge } from "react-bootstrap";
 import DashboardLayout from "../components/dashboard/DashboardLayout";
 import MessageSection from "../components/dashboard/MessageSection";
+import { getMemoryJSON } from "../utils/memoryStore";
 
-import "../styles/dashboard.css";
-import SignosVitales from "../components/profesional/SignosVitales";
-import HistorialClinico from "../components/profesional/HistorialClinico";
+import ExamenesClinicos from "../components/profesional/ExamenesClinicos";
 import HistorialEvoluciones from "../components/profesional/HistorialEvoluciones";
 import HistorialIndicaciones from "../components/profesional/HistorialIndicaciones";
+import ResumenClinico from "../components/profesional/ResumenClinico";
+import SignosVitales from "../components/profesional/SignosVitales";
+import "../styles/dashboard.css";
+import { request } from "../utils/api";
+
 const DashboardTutor = () => {
   const navigate = useNavigate();
 
@@ -19,7 +23,7 @@ const DashboardTutor = () => {
   const [pacienteActivo, setPacienteActivo] = useState(null);
 
   useEffect(() => {
-    const sesion = JSON.parse(localStorage.getItem("sesion"));
+    const sesion = getMemoryJSON("sesion");
 
     if (!sesion) {
       navigate("/login");
@@ -36,33 +40,15 @@ const DashboardTutor = () => {
     if (sesion.userInfo?.pacientesRuts?.length > 0) {
       const obtenerPaciente = async () => {
         try {
-          const token = localStorage.getItem("token");
+          const token = sesion?.accessToken;
 
-          const rutPaciente = sesion.userInfo.pacientesRuts[0];
+          const rutPaciente = sesion.userInfo.pacientesRuts[0]
+            .replace(/\./g, "")
+            .trim();
 
-          console.log("TOKEN:", token);
-          console.log("RUT:", rutPaciente);
-
-          const response = await fetch(
-            `http://localhost:8090/bff/pacientes/rut/${rutPaciente}`,
-            {
-              headers: {
-                Authorization: `Bearer ${token}`,
-              },
-            },
-          );
-
-          if (!response.ok) {
-            const errorText = await response.text();
-
-            console.error("ERROR BACKEND:", errorText);
-
-            throw new Error(errorText);
-          }
-
-          console.log("STATUS:", response.status);
-
-          const data = await response.json();
+          const data = await request(`/pacientes/rut/${rutPaciente}`, {
+            token,
+          });
 
           console.log("PACIENTE:", data);
 
@@ -92,8 +78,7 @@ const DashboardTutor = () => {
             <h2 className="dashboard-title">Panel del Tutor</h2>
 
             <p className="dashboard-subtitle">
-              Aquí puedes ver la información de tu paciente y comunicarte con su
-              equipo de salud.
+              Bienvenido, {tutor?.userInfo?.nombreCompleto}
             </p>
           </div>
 
@@ -112,19 +97,19 @@ const DashboardTutor = () => {
 
                 <div className="dashboard-info-group">
                   <p>
-                    <strong>Nombre:</strong> {tutor?.nombre} {tutor?.apellido}
+                    <strong>Nombre:</strong> {tutor?.userInfo?.nombreCompleto}
                   </p>
 
                   <p>
-                    <strong>Correo:</strong> {tutor?.email}
+                    <strong>Correo:</strong> {tutor?.userInfo?.email}
                   </p>
 
                   <p>
-                    <strong>Teléfono:</strong> +569 {tutor?.telefono}
+                    <strong>Teléfono:</strong> No registrado
                   </p>
 
                   <p>
-                    <strong>Dirección:</strong> {tutor?.direccion}
+                    <strong>Dirección:</strong> No registrada
                   </p>
                 </div>
               </Card.Body>
@@ -158,27 +143,28 @@ const DashboardTutor = () => {
                       </p>
 
                       <p>
-                        <strong>Grupo sanguíneo:</strong> {p.grupoSanguineo}
+                        <strong>Grupo sanguíneo:</strong> No registrado
                       </p>
 
                       <p>
-                        <strong>Factor RH:</strong> {p.factorRh}
+                        <strong>Factor RH:</strong> No registrado
                       </p>
 
                       <p>
-                        <strong>Alergias:</strong> {p.alergias}
+                        <strong>Alergias:</strong> {p.alergias || "No registra"}
                       </p>
 
                       <p>
-                        <strong>Enfermedades:</strong> {p.enfermedadesCronicas}
+                        <strong>Enfermedades:</strong>{" "}
+                        {p.diagnostico || "No registra"}
                       </p>
 
                       <p>
-                        <strong>Medicamentos:</strong> {p.medicamentosActuales}
+                        <strong>Medicamentos:</strong> No registrados
                       </p>
 
                       <p>
-                        <strong>Previsión:</strong> {p.seguroMedico}
+                        <strong>Previsión:</strong> No registrada
                       </p>
                     </div>
                   </Card.Body>
@@ -188,85 +174,29 @@ const DashboardTutor = () => {
           </Col>
         </Row>
 
+        <Row></Row>
+
         <Row>
-          <Col lg={12} className="mb-4">
-            <Card className="dashboard-modern-card">
-              <Card.Body>
-                <Card.Title className="dashboard-card-title">
-                  Información clínica resumida
-                </Card.Title>
+          <Col lg={6} className="mb-4">
+            <HistorialEvoluciones paciente={pacienteActivo} />
+          </Col>
 
-                <div className="dashboard-info-group">
-                  <p>
-                    <strong>Grupo sanguíneo:</strong>{" "}
-                    {pacienteActivo?.grupoSanguineo}
-                  </p>
-
-                  <p>
-                    <strong>Factor RH:</strong> {pacienteActivo?.factorRh}
-                  </p>
-
-                  <p>
-                    <strong>Alergias:</strong> {pacienteActivo?.alergias}
-                  </p>
-
-                  <p>
-                    <strong>Enfermedades crónicas:</strong>{" "}
-                    {pacienteActivo?.enfermedadesCronicas}
-                  </p>
-
-                  <p>
-                    <strong>Medicamentos actuales:</strong>{" "}
-                    {pacienteActivo?.medicamentosActuales}
-                  </p>
-
-                  <p>
-                    <strong>Previsión:</strong> {pacienteActivo?.seguroMedico}
-                  </p>
-                </div>
-              </Card.Body>
-            </Card>
+          <Col lg={6} className="mb-4">
+            <HistorialIndicaciones paciente={pacienteActivo} />
           </Col>
         </Row>
 
         <Row>
           <Col lg={12} className="mb-4">
-            <SignosVitales paciente={pacienteActivo} soloLectura={true} />
+            <SignosVitales paciente={pacienteActivo} />
           </Col>
         </Row>
 
         <Row>
           <Col lg={12} className="mb-4">
-            <HistorialClinico
-              evoluciones={pacienteActivo?.evoluciones || []}
-              soloLectura={true}
-            />
+            <ExamenesClinicos paciente={pacienteActivo} />
           </Col>
         </Row>
-
-        <Row>
-          <Col lg={12} className="mb-4">
-            <HistorialEvoluciones
-              paciente={pacienteActivo}
-              modo="tutor"
-              soloLectura={true}
-            />
-          </Col>
-        </Row>
-
-        <Row>
-          <Col lg={12} className="mb-4">
-            <HistorialIndicaciones
-              paciente={pacienteActivo}
-              soloLectura={true}
-            />
-          </Col>
-        </Row>
-        {/* MENSAJES */}
-
-        <div id="mensajes">
-          <MessageSection />
-        </div>
       </Container>
     </DashboardLayout>
   );

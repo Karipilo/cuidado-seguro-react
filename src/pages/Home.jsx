@@ -1,92 +1,113 @@
 import React from "react";
 import { useNavigate } from "react-router-dom";
 import { Container, Row, Col } from "react-bootstrap";
-import "bootstrap/dist/css/bootstrap.min.css";
+import { Heart, ShieldCheck, Hospital } from "react-bootstrap-icons";
 import imagenhome from "../images/imagenhome.png";
-import corazon from "../images/corazon.png";
-import equipo from "../images/equipo-medico.png";
-import seguridad from "../images/security-shield_8631499.png";
-const Home = () => {
 
-  // hook para navegación entre páginas
+const Home = () => {
   const navigate = useNavigate();
 
+  const features = [
+    {
+      icon: ShieldCheck,
+      label: "Atención segura y personalizada",
+      color: "var(--primary)",
+    },
+    {
+      icon: Hospital,
+      label: "Equipo médico especializado",
+      color: "var(--success)",
+    },
+    {
+      icon: Heart,
+      label: "Cuidado integral para cada paciente",
+      color: "var(--secondary)",
+    },
+  ];
+
   return (
-    <Container className="py-5">
+    <main>
+      <section className="hero-section" aria-label="Inicio — Cuidado Seguro">
+        <Container>
+          <Row className="align-items-center g-5">
 
-      {/* sección principal del home */}
-      <Row className="align-items-center">
+            {/* Columna izquierda */}
+            <Col md={6}>
+              <div className="hero-text">
 
-        {/* columna izquierda */}
-        <Col md={6}>
+                <span className="hero-badge">Plataforma de salud digital</span>
 
-          {/* título principal */}
-          <h1 className="fw-bold mb-4">
-            Cuidado Seguro
-          </h1>
+                <h1 className="hero-title">
+                  Cuidado <span className="text-highlight">Seguro</span>
+                </h1>
 
-          {/* descripción del sistema */}
-          <p className="text-muted mb-4">
-            Plataforma digital para la gestión de pacientes, facilitando la comunicación
-            y coordinación entre pacientes, tutores y el equipo médico.
-          </p>
+                <p className="hero-subtitle">
+                  Gestiona de forma segura la salud de tus pacientes.
+                  La plataforma conecta a pacientes, tutores y profesionales
+                  en un solo lugar, mejorando la comunicación y el seguimiento clínico.
+                </p>
 
-          {/* características */}
-          <div className="features-box">
+                <div className="hero-actions">
+                  <button
+                    className="btn btn-primary-custom btn-lg-custom"
+                    onClick={() => navigate("/registro")}
+                  >
+                    Comenzar ahora
+                  </button>
+                  <button
+                    className="btn btn-ghost-custom btn-lg-custom"
+                    onClick={() => navigate("/nosotros")}
+                  >
+                    Conocer más
+                  </button>
+                </div>
 
-            {/* item 1 */}
-            <div className="feature-item">
-              <img src={seguridad} alt="seguridad" className="icono-home" />
-              <span>Atención segura y personalizada</span>
-            </div>
+                {/* Features */}
+                <div className="features-label">Características</div>
+                <div className="features-box">
+                  {features.map(({ icon: ICON, label, color }, i) => (
+                    <div className="feature-item" key={i}>
+                      <span
+                        className="feature-icon"
+                        style={{ color, background: `${color}15` }}
+                      >
+                        <ICON size={20} />
+                      </span>
+                      <span className="feature-text">{label}</span>
+                    </div>
+                  ))}
+                </div>
 
-            {/* item 2 */}
-            <div className="feature-item">
-              <img src={equipo} alt="equipo" className="icono-home" />
-              <span>Equipo médico especializado</span>
-            </div>
+              </div>
+            </Col>
 
-            {/* item 3 */}
-            <div className="feature-item">
-              <img src={corazon} alt="corazon" className="icono-home" />
-              <span>Cuidado integral para cada paciente</span>
-            </div>
+            {/* Columna derecha */}
+            <Col md={6} className="mt-5 mt-md-0">
+              <div className="hero-imagen position-relative overflow-hidden rounded-4">
+                <img
+                  src={imagenhome}
+                  alt="Equipo médico"
+                  className="img-fluid"
+                />
 
-          </div>
+                {/* Floating card — top */}
+                <div className="card-info card-top">
+                  <strong className="numero">+500</strong>
+                  <p className="texto-card">Pacientes registrados</p>
+                </div>
 
-        </Col>
+                {/* Floating card — bottom */}
+                <div className="card-info card-bottom">
+                  <strong className="titulo-card">24 / 7</strong>
+                  <p className="texto-card">Monitoreo continuo</p>
+                </div>
+              </div>
+            </Col>
 
-        {/* columna derecha */}
-        <Col md={6} className="mt-5 mt-md-0">
-
-          {/* contenedor visual de la imagen */}
-          <div className="hero-imagen position-relative overflow-hidden">
-
-            {/* imagen principal */}
-            <img
-              src={imagenhome}
-              alt="equipo medico"
-              className="img-fluid"
-            />
-
-            {/* tarjeta superior */}
-            <div className="card-info card-top">
-              <strong className="numero">+230</strong>
-              <p className="texto-card">Pacientes institucionalizados</p>
-            </div>
-
-            <div className="card-info card-bottom">
-              <strong className="titulo-card">Cuidado 24/7</strong>
-              <p className="texto-card">Monitoreo y atención continua</p>
-            </div>
-
-          </div>
-
-        </Col>
-
-      </Row>
-
-    </Container>
+          </Row>
+        </Container>
+      </section>
+    </main>
   );
 };
 

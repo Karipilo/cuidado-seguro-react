@@ -1,14 +1,22 @@
+/* ====================================
+   Navbar
+   ==================================== */
 
-/* NAVBAR GENERAL */
 .custom-navbar {
-  background-color: white;
-  padding: 12px 0;
+  background: var(--surface) !important;
+  padding: 14px 0;
+  border-bottom: 1px solid var(--border-light);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  min-height: 68px;
 }
 
-/* LOGO */
+/* ── Logo ── */
 .logo {
   width: 40px;
   height: 40px;
+  border-radius: var(--radius-sm);
+  object-fit: contain;
 }
 
 .brand {
@@ -16,48 +24,102 @@
   align-items: center;
   gap: 10px;
   cursor: pointer;
+  text-decoration: none;
+  color: var(--text-primary);
+}
+
+.brand:hover {
+  color: var(--text-primary);
 }
 
 .brand-text {
-  font-weight: 600;
-  font-size: 18px;
+  font-weight: var(--font-weight-bold);
+  font-size: var(--text-lg);
+  color: var(--text-primary);
+  letter-spacing: -0.3px;
 }
 
-/* MENU */
-.nav-center .nav-link {
-  font-weight: 500;
-  color: #333;
+/* ── Nav Links ── */
+.nav-center {
+  gap: var(--space-xs);
 }
 
-.nav-center .nav-link:hover {
-  color: #5F9EA0;
+.nav-link-custom {
+  color: var(--text-secondary) !important;
+  font-weight: var(--font-weight-medium);
+  font-size: var(--text-sm);
+  padding: 8px 16px !important;
+  border-radius: var(--radius-full);
+  transition: all var(--transition-fast);
+  cursor: pointer;
 }
 
-/* USUARIO */
-.user-text {
-  margin-right: 10px;
-  font-weight: 500;
+.nav-link-custom:hover {
+  color: var(--primary) !important;
+  background: var(--primary-50);
 }
 
-/* BOTONES */
+.nav-link-custom.active {
+  color: var(--primary) !important;
+  background: var(--primary-50);
+  font-weight: var(--font-weight-semibold);
+}
+
+/* ── Right Nav ── */
+.nav-right {
+  display: flex;
+  align-items: center;
+  gap: var(--space-sm);
+}
+
+.user-greeting {
+  font-size: var(--text-sm);
+  color: var(--text-secondary);
+  font-weight: var(--font-weight-medium);
+  white-space: nowrap;
+}
+
+/* ── Button: Panel ── */
 .btn-panel {
-  background-color: #5F9EA0;
+  background: var(--primary-gradient) !important;
   border: none;
+  color: var(--white) !important;
+  border-radius: var(--radius-full);
+  padding: 8px 18px;
+  font-weight: var(--font-weight-semibold);
+  font-size: var(--text-sm);
+  transition: all var(--transition-smooth);
 }
 
 .btn-panel:hover {
-  background-color: #4e8b8d;
+  box-shadow: var(--shadow-primary);
+  transform: translateY(-1px);
 }
 
+/* ── Button: Logout ── */
 .btn-logout {
-  background-color: #dc3545;
+  background: var(--danger) !important;
   border: none;
+  color: var(--white) !important;
+  border-radius: var(--radius-full);
+  padding: 8px 18px;
+  font-weight: var(--font-weight-semibold);
+  font-size: var(--text-sm);
+  transition: all var(--transition-fast);
 }
 
 .btn-logout:hover {
-  background-color: #bb2d3b;
+  background: #b02a37 !important;
 }
 
+/* ── Spacing ── */
 .nav-right button {
-  margin-left: 8px;
+  margin-left: var(--space-xs);
+}
+
+/* ── Admin link ── */
+.nav-link-admin {
+  font-size: var(--text-xs);
+  color: var(--text-tertiary) !important;
+  letter-spacing: 0.5px;
 }

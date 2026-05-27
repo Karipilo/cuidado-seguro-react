@@ -1,14 +1,15 @@
-import React, {
+import {
     useState
 } from "react";
 
 import {
-    Card,
-    Form,
     Button,
-    Row,
-    Col
+    Card,
+    Col,
+    Form,
+    Row
 } from "react-bootstrap";
+import { getMemoryJSON } from "../../utils/memoryStore";
 
 const FormularioEvolucion = ({
     paciente,
@@ -49,11 +50,7 @@ const FormularioEvolucion = ({
         }
 
         const sesion =
-            JSON.parse(
-                localStorage.getItem(
-                    "sesion"
-                )
-            );
+            getMemoryJSON("sesion");
 
         const nuevaEvolucion = {
 

@@ -1,7 +1,7 @@
-import React, { useState, useEffect } from 'react';
-import Card from '../ui/Card';
+import { useEffect, useState } from 'react';
+import { getMemoryItem, setMemoryItem } from '../../utils/memoryStore';
 import Button from '../ui/Button';
-import Input from '../ui/Input';
+import Card from '../ui/Card';
 
 /**
  * Componente para gestionar notas clínicas
@@ -22,11 +22,11 @@ const ClinicalNotes = ({ patient, professional, className = '' }) => {
     loadNotes();
   }, [patient?.id]);
 
-  // Cargar notas desde localStorage
+  // Cargar notas desde memoria volátil
   const loadNotes = () => {
     if (!patient?.id) return;
 
-    const storedNotes = localStorage.getItem(`clinical_notes_${patient.id}`);
+    const storedNotes = getMemoryItem(`clinical_notes_${patient.id}`);
     if (storedNotes) {
       setNotes(JSON.parse(storedNotes));
     } else {
@@ -113,10 +113,10 @@ const ClinicalNotes = ({ patient, professional, className = '' }) => {
         pacienteId: patient.id
       };
 
-      // Guardar en localStorage
+      // Guardar en memoria volátil
       const updatedNotes = [note, ...notes];
       setNotes(updatedNotes);
-      localStorage.setItem(`clinical_notes_${patient.id}`, JSON.stringify(updatedNotes));
+      setMemoryItem(`clinical_notes_${patient.id}`, JSON.stringify(updatedNotes));
 
       // Limpiar formulario
       setNewNote({
