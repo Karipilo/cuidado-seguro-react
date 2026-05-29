@@ -50,8 +50,6 @@ const DashboardTutor = () => {
             token,
           });
 
-          console.log("PACIENTE:", data);
-
           setPacientes([data]);
 
           setPacienteActivo(data);
@@ -105,11 +103,11 @@ const DashboardTutor = () => {
                   </p>
 
                   <p>
-                    <strong>Teléfono:</strong> No registrado
+                    <strong>Teléfono:</strong> {tutor?.userInfo?.telefono}
                   </p>
 
                   <p>
-                    <strong>Dirección:</strong> No registrada
+                    <strong>Dirección:</strong> {tutor?.userInfo?.direccion}
                   </p>
                 </div>
               </Card.Body>
@@ -143,28 +141,23 @@ const DashboardTutor = () => {
                       </p>
 
                       <p>
-                        <strong>Grupo sanguíneo:</strong> No registrado
+                        <strong>Grupo sanguíneo:</strong> {p.grupoSanguineo}
                       </p>
 
                       <p>
-                        <strong>Factor RH:</strong> No registrado
+                        <strong>Factor RH:</strong> {p.factorRh}
                       </p>
 
                       <p>
-                        <strong>Alergias:</strong> {p.alergias || "No registra"}
+                        <strong>Alergias:</strong> {p.alergias}
                       </p>
 
                       <p>
-                        <strong>Enfermedades:</strong>{" "}
-                        {p.diagnostico || "No registra"}
+                        <strong>Medicamentos:</strong> {p.medicamentos}
                       </p>
 
                       <p>
-                        <strong>Medicamentos:</strong> No registrados
-                      </p>
-
-                      <p>
-                        <strong>Previsión:</strong> No registrada
+                        <strong>Previsión:</strong> {p.prevision}
                       </p>
                     </div>
                   </Card.Body>
