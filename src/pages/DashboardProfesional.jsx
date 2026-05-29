@@ -95,12 +95,21 @@ const buscarPaciente = async () => {
       { token }
     );
 
-    const encontrado = fichas.find(
-      (f) => f.rutPaciente === rutBusqueda
-    );
+    //console.log("FICHAS:", fichas);
+    //console.log("TIPO:", typeof fichas);
 
+    const encontrado = fichas.find((f) => {
+      
+
+  return (
+    String(f.rutPaciente).trim() ===
+    String(rutBusqueda).trim()
+  );
+});
+console.log("ENCONTRADO:", encontrado);
+
+    
     if (!encontrado) {
-
       alert("Paciente no encontrado");
 
       return;
