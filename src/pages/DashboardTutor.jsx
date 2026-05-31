@@ -50,6 +50,8 @@ const DashboardTutor = () => {
             token,
           });
 
+          console.log("PACIENTE COMPLETO:", JSON.stringify(data, null, 2));
+
           setPacientes([data]);
 
           setPacienteActivo(data);
@@ -141,24 +143,33 @@ const DashboardTutor = () => {
                       </p>
 
                       <p>
-                        <strong>Grupo sanguíneo:</strong> {p.grupoSanguineo}
+                        <strong>Correo:</strong> {p.email}
                       </p>
 
                       <p>
-                        <strong>Factor RH:</strong> {p.factorRh}
+                        <strong>Teléfono:</strong>{" "}
+                        {p.telefono }
                       </p>
 
                       <p>
-                        <strong>Alergias:</strong> {p.alergias}
+                        <strong>Dirección:</strong>{" "}
+                        {p.direccion}
                       </p>
 
                       <p>
-                        <strong>Medicamentos:</strong> {p.medicamentos}
+                        <strong>Fecha de nacimiento:</strong>{" "}
+                        {p.fechaNacimiento }
                       </p>
 
                       <p>
-                        <strong>Previsión:</strong> {p.prevision}
+                        <strong>Género:</strong> {p.genero }
                       </p>
+
+                      <p>
+                        <strong>Alergias:</strong> {p.alergias }
+                      </p>
+
+        
                     </div>
                   </Card.Body>
                 </Card>
