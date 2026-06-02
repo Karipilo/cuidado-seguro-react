@@ -231,6 +231,7 @@ const Registro = () => {
     };
 
     try {
+      usuarioFinal.numeroDocumento = usuarioFinal.numeroDocumento.replace(/\./g, "").trim();
       const data = await request("/auth/register", {
         method: "POST",
         body: usuarioFinal,
