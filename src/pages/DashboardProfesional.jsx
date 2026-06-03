@@ -12,12 +12,13 @@ import SignosVitales from "../components/profesional/SignosVitales";
 import TabsClinicas from "../components/profesional/TabsClinicas";
 import "../styles/dashboard.css";
 import FormularioFichaClinica from "../components/profesional/FormularioFichaClinica";
-
+import { Alert } from "react-bootstrap";
 import AccionesRapidas from "../components/profesional/AccionesRapidas";
 import ExamenesClinicos from "../components/profesional/ExamenesClinicos";
 import FormularioSignosVitales from "../components/profesional/FormularioSignosVitales";
 import { getMemoryJSON, setMemoryJSON } from "../utils/memoryStore";
 import { request } from "../utils/api";
+import PerfilProfesional from "../components/profesional/PerfilProfesional";
 
 const DashboardProfesional = () => {
   const navigate = useNavigate();
@@ -39,6 +40,8 @@ const DashboardProfesional = () => {
   const ultimoRegistro = paciente?.antropometria?.length
     ? paciente.antropometria[paciente.antropometria.length - 1]
     : null;
+
+  const [modo, setModo] = useState("ver");
 
   const indicacionesPaciente = indicaciones.filter(
     (i) => i.rutPaciente === paciente?.numeroDocumento,
@@ -151,36 +154,33 @@ const DashboardProfesional = () => {
   };
   /* GUARDAR EVOLUCION */
 
-  const guardarEvolucion = () => {
-    if (!evolucion) {
-      alert("Debe escribir una evolución");
+  const guardarEvolucion = async () => {
+     console.log("ENTRO A GUARDAR EVOLUCION");
+    try {
+      if (!evolucion) {
+        alert("Debe escribir una evolución");
+        return;
+      }
 
-      return;
+      await request("/evoluciones", {
+        method: "POST",
+        token: profesional?.accessToken,
+        body: {
+          fecha: new Date().toLocaleString(),
+          descripcion: evolucion,
+          observaciones: "",
+          pacienteId: paciente?.id,
+        },
+      });
+
+      alert("Evolución guardada en BD");
+
+      setEvolucion("");
+    } catch (error) {
+      console.error("ERROR EVOLUCION:", error);
+
+      alert("Error guardando evolución");
     }
-
-    const evoluciones = getMemoryJSON("evoluciones", []);
-
-    const indicaciones = getMemoryJSON("indicaciones", []);
-
-    const indicacionesPaciente = indicaciones.filter(
-      (i) => i.rutPaciente === paciente?.numeroDocumento,
-    );
-
-    evoluciones.push({
-      rutPaciente: paciente.numeroDocumento,
-      texto: evolucion,
-      fecha: new Date().toLocaleString(),
-      profesional: `${profesional.nombres}
-    ${profesional.apellidos}`,
-
-      profesion: profesional.profesion,
-    });
-
-    setMemoryJSON("evoluciones", evoluciones);
-
-    alert("Evolución guardada");
-
-    setEvolucion("");
   };
 
   const guardarIndicacion = () => {
@@ -238,10 +238,79 @@ const DashboardProfesional = () => {
                   <PacienteResumen paciente={paciente} />
                 </div>
 
+                <Row className="mb-4">
+                  <Col className="d-flex gap-2">
+                    <Button
+                      variant={modo === "ver" ? "primary" : "outline-primary"}
+                      onClick={() => setModo("ver")}
+                    >
+                      Ver Información
+                    </Button>
+
+                    <Button
+                      variant={
+                        modo === "agregar" ? "success" : "outline-success"
+                      }
+                      onClick={() => setModo("agregar")}
+                    >
+                      Agregar Información
+                    </Button>
+
+                    <Button
+                      variant={
+                        modo === "editar" ? "warning" : "outline-warning"
+                      }
+                      onClick={() => setModo("editar")}
+                    >
+                      Modificar Información
+                    </Button>
+                  </Col>
+                </Row>
+
+                {/* BOTONES */}
+
+                {modo === "ver" && (
+                  <Card className="dashboard-modern-card mb-4">
+                    <Card.Body>
+                      <h5>Información General</h5>
+
+                      {modo === "agregar" && (
+                        <Alert variant="success" className="mb-4">
+                          Selecciona una pestaña clínica para agregar nueva
+                          información al paciente.
+                        </Alert>
+                      )}
+
+                      {modo === "editar" && (
+                        <Alert variant="warning" className="mb-4">
+                          Modo edición activado. Aquí podrás modificar registros
+                          existentes.
+                        </Alert>
+                      )}
+
+                      <p>
+                        <strong>Diagnóstico:</strong> {paciente?.diagnostico}
+                      </p>
+
+                      <p>
+                        <strong>Alergias:</strong> {paciente?.alergias}
+                      </p>
+
+                      <p>
+                        <strong>Observaciones:</strong>{" "}
+                        {paciente?.observaciones}
+                      </p>
+                    </Card.Body>
+                  </Card>
+                )}
                 {/* TABS CLINICAS */}
 
                 <Row className="mt-4">
-                  <Col lg={8}>
+                  <Col lg={3}>
+                    <PerfilProfesional profesional={profesional} />
+                  </Col>
+
+                  <Col lg={6}>
                     <TabsClinicas
                       fichaClinicaComponent={
                         <FormularioFichaClinica
@@ -252,9 +321,7 @@ const DashboardProfesional = () => {
                       resumenComponent={
                         <Card className="dashboard-modern-card">
                           <Card.Body>
-                            <Card.Title className="dashboard-card-title">
-                              Resumen clínico
-                            </Card.Title>
+                            <Card.Title>Resumen clínico</Card.Title>
 
                             <p>Paciente actualmente en seguimiento clínico.</p>
                           </Card.Body>

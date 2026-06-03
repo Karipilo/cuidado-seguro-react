@@ -1,74 +1,87 @@
 import React from "react";
 import { Badge, Form, Button } from "react-bootstrap";
 
-const HeaderProfesional = ({ profesional, rutBusqueda, setRutBusqueda, buscarPaciente }) => {
+const HeaderProfesional = ({
+  profesional,
+  rutBusqueda,
+  setRutBusqueda,
+  buscarPaciente
+}) => {
+  return (
+    <div className="dashboard-header-profesional mb-4">
 
-    return (
+      <div>
 
-        <div className="dashboard-header-profesional mb-4">
+        <h2 className="dashboard-main-title mb-3">
+          Panel Clínico
+        </h2>
 
-            <div>
+        <h4 className="mb-1">
+          {profesional?.userInfo?.nombreCompleto}
+        </h4>
 
-                <h2 className="dashboard-main-title mb-3">
+        <p className="mb-1">
+          {profesional?.userInfo?.tipoUsuario}
+        </p>
 
-                    Panel Clínico
+        <small className="text-light">
+          Bienvenido al sistema clínico de Cuidado Seguro
+        </small>
 
-                </h2>
+      </div>
 
-                <h4 className="mb-1">
+      <div className="header-right-section">
 
-                    {profesional?.nombres}
-                    {" "}
-                    {profesional?.apellidos}
+        <Badge
+          bg="info"
+          className="dashboard-status-badge mb-3"
+        >
+          Profesional Activo
+        </Badge>
 
-                </h4>
+        <div className="header-search-container">
 
-                <p className="mb-0">
+          <Form.Control
+            type="text"
+            placeholder="Ingrese RUT del paciente..."
+            value={rutBusqueda}
+            onChange={(e) =>
+              setRutBusqueda(e.target.value)
+            }
+            className="header-search-input"
+          />
 
-                    {profesional?.profesion}
+          <Button
+            className="header-search-button"
+            onClick={buscarPaciente}
+          >
+            Buscar
+          </Button>
 
-                </p>
-
-            </div>
-
-            <div className="header-right-section">
-
-                <Badge
-                    bg="info"
-                    className="dashboard-status-badge"
-                >
-
-                    Profesional activo
-
-                </Badge>
-
-                <div className="header-search-container">
-
-                    <Form.Control
-                        type="text"
-                        placeholder="Buscar paciente por RUT..."
-                        value={rutBusqueda}
-                        onChange={(e) =>
-                            setRutBusqueda(e.target.value)
-                        }
-                        className="header-search-input"
-                    />
-
-                    <Button
-                        className="header-search-button"
-                        onClick={buscarPaciente}
-                    >
-
-                        Buscar
-
-                    </Button>
-
-                </div>
-
-            </div>
         </div>
 
-    );
+        <div className="d-flex gap-2 mt-3">
+
+          <Button
+            variant="outline-light"
+            size="sm"
+          >
+            Mi Perfil
+          </Button>
+
+          <Button
+            variant="light"
+            size="sm"
+          >
+            Editar Perfil
+          </Button>
+
+        </div>
+
+      </div>
+
+    </div>
+  );
 };
 
 export default HeaderProfesional;
