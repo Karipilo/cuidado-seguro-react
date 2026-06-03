@@ -231,13 +231,15 @@ const Registro = () => {
     };
 
     try {
-      usuarioFinal.numeroDocumento = usuarioFinal.numeroDocumento.replace(/\./g, "").trim();
+      usuarioFinal.numeroDocumento = usuarioFinal.numeroDocumento
+        .replace(/\./g, "")
+        .trim();
       const data = await request("/auth/register", {
         method: "POST",
         body: usuarioFinal,
       });
-
-      console.log(data);
+      console.log("DATA:", data);
+      console.log("USERINFO:", JSON.stringify(profesional?.userInfo, null, 2));
 
       // Guardar tokens en memoria volátil
 
