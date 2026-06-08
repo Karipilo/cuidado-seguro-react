@@ -18,7 +18,6 @@ import ExamenesClinicos from "../components/profesional/ExamenesClinicos";
 import FormularioSignosVitales from "../components/profesional/FormularioSignosVitales";
 import { getMemoryJSON, setMemoryJSON } from "../utils/memoryStore";
 import { request } from "../utils/api";
-import PerfilProfesional from "../components/profesional/PerfilProfesional";
 import ResumenClinico from "../components/profesional/ResumenClinico";
 import FormularioAntropometria from "../components/profesional/FormularioAntropometria";
 const DashboardProfesional = () => {
@@ -237,7 +236,7 @@ const DashboardProfesional = () => {
         />
 
         <Row className="justify-content-center">
-          <Col lg={10}>
+          <Col lg={12}>
             {paciente && (
               <>
                 {/* DATOS PACIENTE */}
@@ -246,79 +245,15 @@ const DashboardProfesional = () => {
                   <PacienteResumen paciente={paciente} />
                 </div>
 
-                <Row className="mb-4">
-                  <Col className="d-flex gap-2">
-                    <Button
-                      variant={modo === "ver" ? "primary" : "outline-primary"}
-                      onClick={() => setModo("ver")}
-                    >
-                      Ver Información
-                    </Button>
-
-                    <Button
-                      variant={
-                        modo === "agregar" ? "success" : "outline-success"
-                      }
-                      onClick={() => setModo("agregar")}
-                    >
-                      Agregar Información
-                    </Button>
-
-                    <Button
-                      variant={
-                        modo === "editar" ? "warning" : "outline-warning"
-                      }
-                      onClick={() => setModo("editar")}
-                    >
-                      Modificar Información
-                    </Button>
-                  </Col>
-                </Row>
+                
 
                 {/* BOTONES */}
 
-                {modo === "ver" && (
-                  <Card className="dashboard-modern-card mb-4">
-                    <Card.Body>
-                      <h5>Información General</h5>
-
-                      {modo === "agregar" && (
-                        <Alert variant="success" className="mb-4">
-                          Selecciona una pestaña clínica para agregar nueva
-                          información al paciente.
-                        </Alert>
-                      )}
-
-                      {modo === "editar" && (
-                        <Alert variant="warning" className="mb-4">
-                          Modo edición activado. Aquí podrás modificar registros
-                          existentes.
-                        </Alert>
-                      )}
-
-                      <p>
-                        <strong>Diagnóstico:</strong> {paciente?.diagnostico}
-                      </p>
-
-                      <p>
-                        <strong>Alergias:</strong> {paciente?.alergias}
-                      </p>
-
-                      <p>
-                        <strong>Observaciones:</strong>{" "}
-                        {paciente?.observaciones}
-                      </p>
-                    </Card.Body>
-                  </Card>
-                )}
                 {/* TABS CLINICAS */}
 
                 <Row className="mt-4">
-                  <Col lg={3}>
-                    <PerfilProfesional profesional={profesional} />
-                  </Col>
+                  <Col lg={12}>
 
-                  <Col lg={6}>
                     <TabsClinicas
                       fichaClinicaComponent={
                         <FormularioFichaClinica
@@ -406,10 +341,6 @@ const DashboardProfesional = () => {
                         </Card>
                       }
                     />
-                  </Col>
-
-                  <Col lg={4}>
-                    <AccionesRapidas />
                   </Col>
                 </Row>
               </>
