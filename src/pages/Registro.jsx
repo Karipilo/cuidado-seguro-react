@@ -234,12 +234,14 @@ const Registro = () => {
       usuarioFinal.numeroDocumento = usuarioFinal.numeroDocumento
         .replace(/\./g, "")
         .trim();
+        
       const data = await request("/auth/register", {
         method: "POST",
         body: usuarioFinal,
       });
+
+      console.log("Payload enviado:", usuarioFinal);
       console.log("DATA:", data);
-      console.log("USERINFO:", JSON.stringify(profesional?.userInfo, null, 2));
 
       // Guardar tokens en memoria volátil
 

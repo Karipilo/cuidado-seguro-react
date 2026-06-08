@@ -19,7 +19,8 @@ import FormularioSignosVitales from "../components/profesional/FormularioSignosV
 import { getMemoryJSON, setMemoryJSON } from "../utils/memoryStore";
 import { request } from "../utils/api";
 import PerfilProfesional from "../components/profesional/PerfilProfesional";
-
+import ResumenClinico from "../components/profesional/ResumenClinico";
+import FormularioAntropometria from "../components/profesional/FormularioAntropometria";
 const DashboardProfesional = () => {
   const navigate = useNavigate();
 
@@ -49,6 +50,7 @@ const DashboardProfesional = () => {
 
   useEffect(() => {
     const sesion = getMemoryJSON("sesion");
+    console.log("SESION:", sesion);
 
     if (!sesion) {
       navigate("/login");
@@ -73,6 +75,9 @@ const DashboardProfesional = () => {
 
         return;
       }
+      const evoluciones = await request("/evoluciones", { token });
+
+      console.log(JSON.stringify(evoluciones, null, 2));
 
       /* =========================
        OBTENER FICHAS CLÍNICAS
@@ -86,15 +91,18 @@ const DashboardProfesional = () => {
       const encontrado = fichas.find((f) => {
         return String(f.rutPaciente).trim() === String(rutBusqueda).trim();
       });
-      console.log("ENCONTRADO:", encontrado);
-
       if (!encontrado) {
         alert("Paciente no encontrado");
-
         return;
       }
 
-      console.log("PACIENTE ENCONTRADO:", encontrado);
+      console.log("ENCONTRADO:", encontrado);
+
+      const evolucionesPaciente = evoluciones.filter(
+        (e) => e.pacienteId === encontrado.id,
+      );
+
+      console.log("EVOLUCIONES PACIENTE:", evolucionesPaciente);
 
       /* =========================
        OBTENER MEDICAMENTOS
@@ -129,22 +137,16 @@ const DashboardProfesional = () => {
 
       setPaciente({
         id: encontrado.id,
-
         numeroDocumento: encontrado.rutPaciente,
-
         nombres: encontrado.nombrePaciente,
-
         edad: encontrado.edad,
-
         genero: encontrado.genero,
-
         alergias: encontrado.alergias,
-
         diagnostico: encontrado.diagnostico,
-
         observaciones: encontrado.observaciones,
-
         medicamentosActuales: medicamentosTexto,
+
+        evoluciones: evolucionesPaciente,
       });
     } catch (error) {
       console.error("Error buscando paciente:", error);
@@ -155,31 +157,38 @@ const DashboardProfesional = () => {
   /* GUARDAR EVOLUCION */
 
   const guardarEvolucion = async () => {
-     console.log("ENTRO A GUARDAR EVOLUCION");
     try {
       if (!evolucion) {
         alert("Debe escribir una evolución");
         return;
       }
-
+      console.log("EVOLUCION ENVIADA:", {
+        fecha: new Date().toLocaleString(),
+        profesional: profesional?.nombreCompleto,
+        descripcion: evolucion,
+        observaciones: "",
+        pacienteId: paciente?.id,
+      });
+      console.log("PROFESIONAL COMPLETO:", profesional);
       await request("/evoluciones", {
         method: "POST",
         token: profesional?.accessToken,
         body: {
           fecha: new Date().toLocaleString(),
+          profesional: `${profesional?.userInfo?.nombreCompleto} (${profesional?.userInfo?.profesion})`,
           descripcion: evolucion,
           observaciones: "",
           pacienteId: paciente?.id,
         },
       });
 
+      await buscarPaciente();
+
       alert("Evolución guardada en BD");
 
       setEvolucion("");
     } catch (error) {
       console.error("ERROR EVOLUCION:", error);
-
-      alert("Error guardando evolución");
     }
   };
 
@@ -199,10 +208,9 @@ const DashboardProfesional = () => {
 
       fecha: new Date().toLocaleString(),
 
-      profesional: `${profesional.nombres}
-            ${profesional.apellidos}`,
+      profesional: `${profesional?.userInfo?.nombreCompleto} (${profesional?.userInfo?.profesion})`,
 
-      profesion: profesional.profesion,
+      profesion: profesional?.userInfo?.profesion,
     });
 
     setMemoryJSON("indicaciones", indicaciones);
@@ -318,17 +326,18 @@ const DashboardProfesional = () => {
                           setPaciente={setPaciente}
                         />
                       }
-                      resumenComponent={
-                        <Card className="dashboard-modern-card">
-                          <Card.Body>
-                            <Card.Title>Resumen clínico</Card.Title>
-
-                            <p>Paciente actualmente en seguimiento clínico.</p>
-                          </Card.Body>
-                        </Card>
-                      }
+                      resumenComponent={<ResumenClinico paciente={paciente} />}
                       antropometriaComponent={
-                        <Antropometria paciente={paciente} />
+                        <>
+                          <FormularioAntropometria
+                            paciente={paciente}
+                            setPaciente={setPaciente}
+                          />
+
+                          <div className="mt-4">
+                            <Antropometria paciente={paciente} />
+                          </div>
+                        </>
                       }
                       signosVitalesComponent={
                         <>

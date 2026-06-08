@@ -1,160 +1,99 @@
-import React, {
-    useState
-} from "react";
+import React, { useState } from "react";
+import { Card, Row, Col, Form, Button } from "react-bootstrap";
+import { getMemoryJSON } from "../../utils/memoryStore";
 
-import {
-    Card,
-    Row,
-    Col,
-    Form,
-    Button
-} from "react-bootstrap";
+const FormularioAntropometria = ({ paciente, setPaciente }) => {
+  const [formulario, setFormulario] = useState({
+    peso: "",
+    altura: "",
+  });
 
-const FormularioAntropometria = ({
-    paciente,
-    setPaciente
-}) => {
+  const handleChange = (e) => {
+    setFormulario({
+      ...formulario,
+      [e.target.name]: e.target.value,
+    });
+  };
 
-    const [formulario, setFormulario] =
-        useState({
+  const guardarAntropometria = () => {
+    if (!formulario.peso || !formulario.altura) {
+      alert("Complete todos los campos");
+      return;
+    }
 
-            peso: "",
-            altura: ""
+    const peso = Number(formulario.peso);
 
-        });
+    const altura = Number(formulario.altura);
 
-    const handleChange = (e) => {
+    const imc = Number((peso / (altura * altura)).toFixed(2));
 
-        setFormulario({
+    const sesion = getMemoryJSON("sesion");
 
-            ...formulario,
-            [e.target.name]: e.target.value
+    const profesional = sesion?.userInfo?.nombreCompleto || "Profesional";
 
-        });
+    const nuevoRegistro = {
+      peso,
+      altura,
+      imc,
+      fecha: new Date().toLocaleString(),
+      profesional,
     };
 
-    const guardarAntropometria = () => {
-
-        if (
-            !formulario.peso ||
-            !formulario.altura
-        ) {
-
-            alert(
-                "Complete todos los campos"
-            );
-
-            return;
-        }
-
-        const nuevoRegistro = {
-
-            peso:
-                Number(formulario.peso),
-
-            altura:
-                Number(formulario.altura),
-
-            fecha:
-                new Date().toLocaleString()
-
-        };
-
-        const pacienteActualizado = {
-
-            ...paciente,
-
-            antropometria: [
-
-                ...(paciente.antropometria || []),
-
-                nuevoRegistro
-
-            ]
-
-        };
-
-        setPaciente(
-            pacienteActualizado
-        );
-
-        alert(
-            "Antropometría guardada"
-        );
-
-        setFormulario({
-
-            peso: "",
-            altura: ""
-
-        });
+    const pacienteActualizado = {
+      ...paciente,
+      antropometria: [...(paciente.antropometria || []), nuevoRegistro],
     };
 
-    return (
+    setPaciente(pacienteActualizado);
 
-        <Card className="dashboard-modern-card mb-4">
+    alert("Antropometría guardada");
 
-            <Card.Body>
+    setFormulario({
+      peso: "",
+      altura: "",
+    });
+  };
 
-                <Card.Title
-                    className="dashboard-card-title"
-                >
+  return (
+    <Card className="dashboard-modern-card mb-4">
+      <Card.Body>
+        <Card.Title className="dashboard-card-title">
+          Registrar Antropometría
+        </Card.Title>
 
-                    Registrar Antropometría
+        <Row className="g-3">
+          <Col md={6}>
+            <Form.Label>Peso (kg)</Form.Label>
 
-                </Card.Title>
+            <Form.Control
+              name="peso"
+              value={formulario.peso}
+              onChange={handleChange}
+              placeholder="Ej: 82"
+            />
+          </Col>
 
-                <Row className="g-3">
+          <Col md={6}>
+            <Form.Label>Altura (m)</Form.Label>
 
-                    <Col md={6}>
+            <Form.Control
+              name="altura"
+              value={formulario.altura}
+              onChange={handleChange}
+              placeholder="Ej: 1.72"
+            />
+          </Col>
+        </Row>
 
-                        <Form.Label>
-
-                            Peso (kg)
-
-                        </Form.Label>
-
-                        <Form.Control
-                            name="peso"
-                            value={formulario.peso}
-                            onChange={handleChange}
-                            placeholder="Ej: 82"
-                        />
-
-                    </Col>
-
-                    <Col md={6}>
-
-                        <Form.Label>
-
-                            Altura (m)
-
-                        </Form.Label>
-
-                        <Form.Control
-                            name="altura"
-                            value={formulario.altura}
-                            onChange={handleChange}
-                            placeholder="Ej: 1.72"
-                        />
-
-                    </Col>
-
-                </Row>
-
-                <Button
-                    className="mt-4 btn-dashboard-primary"
-                    onClick={guardarAntropometria}
-                >
-
-                    Guardar antropometría
-
-                </Button>
-
-            </Card.Body>
-
-        </Card>
-    );
+        <Button
+          className="mt-4 btn-dashboard-primary"
+          onClick={guardarAntropometria}
+        >
+          Guardar antropometría
+        </Button>
+      </Card.Body>
+    </Card>
+  );
 };
 
 export default FormularioAntropometria;
