@@ -23,7 +23,7 @@ const ResumenClinico = ({ paciente, onGuardar }) => {
   paciente?.signosVitales?.forEach((registro) => {
     resumen.push({
       tipo: "Signos Vitales",
-      fecha: registro.fecha,
+      fecha: "Fecha y hora: " + registro.fechaRegistro,
       profesional: registro.profesional,
       detalle: `PA: ${registro.presion}\nFC: ${registro.frecuencia}\nTemp: ${registro.temperatura}\nSat: ${registro.saturacion}`,
     });
@@ -59,7 +59,7 @@ IMC: ${imc}`,
 
     resumen.push({
       tipo: "Evolución",
-      fecha: "Fecha y hora: " + registro.fecha,
+      fecha: "Fecha y hora: " + registro.fechaRegistro,
       profesional: registro.profesional,
       detalle: registro.descripcion,
     });
@@ -68,7 +68,7 @@ IMC: ${imc}`,
   paciente?.indicaciones?.forEach((registro) => {
     resumen.push({
       tipo: "Indicación",
-      fecha: "Fecha y hora: " + registro.fecha,
+      fecha: "Fecha y hora: " + registro.fechaRegistro,
       profesional: registro.profesional,
       detalle: registro.indicacion,
     });
@@ -77,11 +77,18 @@ IMC: ${imc}`,
   paciente?.examenes?.forEach((registro) => {
     resumen.push({
       tipo: "Examen",
-      fecha: registro.fecha,
+      fecha: "Fecha y hora: " + registro.fecha,
       profesional: registro.profesional,
-      detalle: `${registro.examen}\nEstado: ${registro.estado}`,
+      detalle: `${registro.nombre}
+
+Estado: ${registro.estado}
+
+${registro.resultado ? `Resultado: ${registro.resultado}` : ""}
+
+${registro.observacion ? `Observación: ${registro.observacion}` : ""}`,
     });
   });
+
   console.log("RESUMEN COMPLETO:", resumen);
   const resumenOrdenado = resumen.reverse();
   console.log("RESUMEN ORDENADO:", resumenOrdenado);

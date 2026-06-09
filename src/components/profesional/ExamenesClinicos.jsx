@@ -33,7 +33,7 @@ const ExamenesClinicos = ({ paciente }) => {
                 return (
                   <div key={index} className="examen-item">
                     <div>
-                      <h6 className="mb-1">{examen.examen}</h6>
+                      <h6 className="mb-1 fw-bold">{examen.nombre}</h6>
 
                       <small className="text-muted d-block">
                         Fecha: {examen.fecha}
@@ -43,17 +43,18 @@ const ExamenesClinicos = ({ paciente }) => {
                         Profesional: {examen.profesional}
                       </small>
 
-                      {examen.resultado && (
+                      {examen.observacion && (
                         <small className="text-muted d-block">
-                          Resultado: {examen.resultado}
+                          Observación: {examen.observacion}
                         </small>
                       )}
 
-                      {examen.observaciones && (
-                        <small className="text-muted d-block">
-                          Observaciones: {examen.observaciones}
+                      {examen.resultado && (
+                        <small className="text-success d-block mt-2">
+                          Resultado: {examen.resultado}
                         </small>
                       )}
+                      
                     </div>
 
                     <Badge bg={obtenerColor()}>{examen.estado}</Badge>
