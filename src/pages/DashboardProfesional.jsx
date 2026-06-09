@@ -20,6 +20,8 @@ import { getMemoryJSON, setMemoryJSON } from "../utils/memoryStore";
 import { request } from "../utils/api";
 import ResumenClinico from "../components/profesional/ResumenClinico";
 import FormularioAntropometria from "../components/profesional/FormularioAntropometria";
+import FormularioSolicitudExamenes from "../components/profesional/FormularioSolicitudExamenes";
+
 const DashboardProfesional = () => {
   const navigate = useNavigate();
 
@@ -100,13 +102,23 @@ const DashboardProfesional = () => {
         { token },
       );
 
+      const examenes = await request("/examenes", {
+        token,
+      });
+
+      console.log("EXAMENES:", examenes);
+
+      const examenesPaciente = examenes.filter(
+        (e) => e.ficha?.id === encontrado.id,
+      );
+
+      console.log("EXAMENES PACIENTE:", examenesPaciente);
+
       const indicaciones = await request("/indicaciones", {
         token,
       });
 
       console.log("INDICACIONES:", indicaciones);
-
-      
 
       const indicacionesPaciente = indicaciones.filter(
         (i) => i.ficha?.id === encontrado.id,
@@ -173,6 +185,7 @@ const DashboardProfesional = () => {
         signosVitales: signosVitales,
         evoluciones: evolucionesPaciente,
         indicaciones: indicacionesPaciente,
+        examenes: examenesPaciente,
       });
     } catch (error) {
       console.error("Error buscando paciente:", error);
@@ -341,6 +354,18 @@ const DashboardProfesional = () => {
                             </Button>
                           </Card.Body>
                         </Card>
+                      }
+                      examenesClinicosComponent={
+                        <>
+                          <FormularioSolicitudExamenes
+                            paciente={paciente}
+                            setPaciente={setPaciente}
+                          />
+
+                          <div className="mt-4">
+                            <ExamenesClinicos paciente={paciente} />
+                          </div>
+                        </>
                       }
                       indicacionesComponent={
                         <Card className="dashboard-modern-card">
