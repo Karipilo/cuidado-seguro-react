@@ -100,6 +100,13 @@ const DashboardProfesional = () => {
       const antropometrias = await request(`/antropometrias/${encontrado.id}`, {
         token,
       });
+
+      const signosVitales = await request(
+        `/signos-vitales/ficha/${encontrado.id}`,
+        { token },
+      );
+
+      console.log("SIGNOS VITALES:", signosVitales);
       console.log("TIPO:", typeof antropometrias);
       console.log("ES ARRAY:", Array.isArray(antropometrias));
       console.log("RESPUESTA ANTROPOMETRIAS:");
@@ -155,6 +162,7 @@ const DashboardProfesional = () => {
         observaciones: encontrado.observaciones,
         medicamentosActuales: medicamentosTexto,
         antropometria: antropometrias,
+        signosVitales: signosVitales,
         evoluciones: evolucionesPaciente,
       });
     } catch (error) {

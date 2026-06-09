@@ -243,7 +243,7 @@
 /* ── Vital Signs Grid ── */
 .signos-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  grid-template-columns: repeat(4, 1fr);
   gap: var(--space-md);
   margin-bottom: var(--space-xl);
 }
@@ -251,12 +251,16 @@
 .signo-card {
   background: var(--surface);
   border-radius: var(--radius-xl);
-  padding: var(--space-lg);
+  padding: 24px;
+  min-height: 140px;
+
   display: flex;
   align-items: center;
-  gap: var(--space-md);
+  gap: 16px;
+
   box-shadow: var(--shadow-sm);
   border: 1px solid var(--border-light);
+
   transition: all var(--transition-base);
 }
 
@@ -266,34 +270,35 @@
 }
 
 .signo-icon {
-  width: 56px;
-  height: 56px;
+  width: 60px;
+  height: 60px;
   border-radius: var(--radius-lg);
+
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 28px;
+
+  font-size: 32px;
   flex-shrink: 0;
 }
 
-.signo-card .signo-label {
-  font-size: var(--text-xs);
-  color: var(--text-tertiary);
-  text-transform: uppercase;
-  letter-spacing: 0.5px;
-  font-weight: var(--font-weight-semibold);
-  margin-bottom: 2px;
+.signo-info {
+  flex: 1;
 }
 
-.signo-value {
-  font-size: var(--text-xl);
-  font-weight: var(--font-weight-bold);
+.signo-info small {
+  display: block;
+  color: var(--text-tertiary);
+  font-size: 0.85rem;
+  margin-bottom: 8px;
+}
+
+.signo-info h3 {
+  margin: 0;
+  font-size: 2rem;
+  font-weight: 700;
   color: var(--text-primary);
-}
-
-.signo-card small {
-  font-size: var(--text-xs);
-  color: var(--text-tertiary);
+  line-height: 1.1;
 }
 
 /* ── Search ── */
