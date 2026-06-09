@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { Card, Row, Col, Form, Button } from "react-bootstrap";
 import { getMemoryJSON } from "../../utils/memoryStore";
+import { request } from "../../utils/api";
 
 const FormularioAntropometria = ({ paciente, setPaciente }) => {
   const [formulario, setFormulario] = useState({
@@ -15,43 +16,60 @@ const FormularioAntropometria = ({ paciente, setPaciente }) => {
     });
   };
 
-  const guardarAntropometria = () => {
-    if (!formulario.peso || !formulario.altura) {
-      alert("Complete todos los campos");
-      return;
+  const guardarAntropometria = async () => {
+    try {
+      if (!formulario.peso || !formulario.altura) {
+        alert("Complete todos los campos");
+        return;
+      }
+
+      const peso = Number(formulario.peso);
+      const altura = Number(formulario.altura);
+
+      const sesion = getMemoryJSON("sesion");
+
+      console.log("PACIENTE:", paciente);
+
+      const nuevaAntropometria = await request(
+        `/antropometrias/${paciente.id}`,
+        {
+          method: "POST",
+          token: sesion?.accessToken,
+          body: {
+            peso,
+            altura,
+          },
+        }
+      );
+
+      console.log(
+        "ANTROPOMETRIA GUARDADA:",
+        nuevaAntropometria
+      );
+
+      setPaciente((prev) => ({
+        ...prev,
+        antropometria: [
+          ...(prev.antropometria || []),
+          nuevaAntropometria,
+        ],
+      }));
+
+      alert("Antropometría guardada en BD");
+
+      setFormulario({
+        peso: "",
+        altura: "",
+      });
+
+    } catch (error) {
+      console.error(
+        "ERROR GUARDANDO ANTROPOMETRIA:",
+        error
+      );
+
+      alert("No se pudo guardar la antropometría");
     }
-
-    const peso = Number(formulario.peso);
-
-    const altura = Number(formulario.altura);
-
-    const imc = Number((peso / (altura * altura)).toFixed(2));
-
-    const sesion = getMemoryJSON("sesion");
-
-    const profesional = sesion?.userInfo?.nombreCompleto || "Profesional";
-
-    const nuevoRegistro = {
-      peso,
-      altura,
-      imc,
-      fecha: new Date().toLocaleString(),
-      profesional,
-    };
-
-    const pacienteActualizado = {
-      ...paciente,
-      antropometria: [...(paciente.antropometria || []), nuevoRegistro],
-    };
-
-    setPaciente(pacienteActualizado);
-
-    alert("Antropometría guardada");
-
-    setFormulario({
-      peso: "",
-      altura: "",
-    });
   };
 
   return (

@@ -76,8 +76,6 @@ const DashboardProfesional = () => {
       }
       const evoluciones = await request("/evoluciones", { token });
 
-      console.log(JSON.stringify(evoluciones, null, 2));
-
       /* =========================
        OBTENER FICHAS CLÍNICAS
     ========================== */
@@ -95,7 +93,19 @@ const DashboardProfesional = () => {
         return;
       }
 
+      console.log(JSON.stringify(evoluciones, null, 2));
+
       console.log("ENCONTRADO:", encontrado);
+      console.log("ID ENCONTRADO:", encontrado.id);
+      const antropometrias = await request(`/antropometrias/${encontrado.id}`, {
+        token,
+      });
+      console.log("TIPO:", typeof antropometrias);
+      console.log("ES ARRAY:", Array.isArray(antropometrias));
+      console.log("RESPUESTA ANTROPOMETRIAS:");
+      console.log(antropometrias);
+      console.log(typeof antropometrias);
+      console.log("ANTROPOMETRIAS:", antropometrias);
 
       const evolucionesPaciente = evoluciones.filter(
         (e) => e.pacienteId === encontrado.id,
@@ -144,7 +154,7 @@ const DashboardProfesional = () => {
         diagnostico: encontrado.diagnostico,
         observaciones: encontrado.observaciones,
         medicamentosActuales: medicamentosTexto,
-
+        antropometria: antropometrias,
         evoluciones: evolucionesPaciente,
       });
     } catch (error) {
@@ -245,15 +255,12 @@ const DashboardProfesional = () => {
                   <PacienteResumen paciente={paciente} />
                 </div>
 
-                
-
                 {/* BOTONES */}
 
                 {/* TABS CLINICAS */}
 
                 <Row className="mt-4">
                   <Col lg={12}>
-
                     <TabsClinicas
                       fichaClinicaComponent={
                         <FormularioFichaClinica

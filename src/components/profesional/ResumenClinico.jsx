@@ -33,25 +33,21 @@ const ResumenClinico = ({ paciente, onGuardar }) => {
     JSON.stringify(paciente?.antropometria, null, 2),
   );
 
-  if (paciente?.antropometria?.length > 0) {
-    const registro = paciente.antropometria[paciente.antropometria.length - 1];
+  paciente?.antropometria?.forEach((registro) => {
+  const imc =
+    registro.altura && registro.peso
+      ? (registro.peso / (registro.altura * registro.altura)).toFixed(1)
+      : "No calculado";
 
-    console.log("ULTIMA ANTROPOMETRIA:", registro);
-
-    const imc =
-      registro.altura && registro.peso
-        ? (registro.peso / (registro.altura * registro.altura)).toFixed(1)
-        : "No calculado";
-
-    resumen.push({
-      tipo: "Antropometría",
-      fecha: registro.fecha,
-      profesional: registro.profesional,
-      detalle: `Peso: ${registro.peso} kg
+  resumen.push({
+    tipo: "Antropometría",
+    fecha: "Fecha y hora: " + registro.fechaRegistro,
+    detalle: `Peso: ${registro.peso} kg
 Altura: ${registro.altura} m
 IMC: ${imc}`,
-    });
-  }
+  });
+});
+
 
   console.log("RESUMEN DESPUES ANTROPOMETRIA:", resumen);
 
@@ -64,7 +60,7 @@ IMC: ${imc}`,
 
     resumen.push({
       tipo: "Evolución",
-      fecha: registro.fecha,
+      fecha: "Fecha y hora: " + registro.fecha,
       profesional: registro.profesional,
       detalle: registro.descripcion,
     });
@@ -73,7 +69,7 @@ IMC: ${imc}`,
   paciente?.indicaciones?.forEach((registro) => {
     resumen.push({
       tipo: "Indicación",
-      fecha: registro.fecha,
+      fecha: "Fecha y hora: " + registro.fecha,
       profesional: registro.profesional,
       detalle: `${registro.medicamento}\n${registro.dosis}\n${registro.frecuencia}`,
     });
@@ -86,6 +82,8 @@ IMC: ${imc}`,
       profesional: registro.profesional,
       detalle: `${registro.examen}\nEstado: ${registro.estado}`,
     });
+
+  
   });
   console.log("RESUMEN COMPLETO:", resumen);
   const resumenOrdenado = resumen.reverse();

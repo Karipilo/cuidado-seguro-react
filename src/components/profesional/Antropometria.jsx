@@ -1,164 +1,102 @@
 import React from "react";
 
-import {
-    Card,
-    Row,
-    Col,
-    Badge
-} from "react-bootstrap";
+import { Card, Row, Col, Badge } from "react-bootstrap";
 
 const Antropometria = ({ paciente }) => {
+  console.log("PACIENTE ANTROPOMETRIA:", paciente?.antropometria);
+  const ultimoRegistro =
+    paciente?.antropometria?.[paciente.antropometria.length - 1];
 
-    const ultimoRegistro =
+  console.log("ULTIMO REGISTRO:", ultimoRegistro);
 
-        paciente?.antropometria?.[
-        paciente.antropometria.length - 1
-        ];
+  console.log("DATOS:", {
+    peso: ultimoRegistro?.peso,
+    altura: ultimoRegistro?.altura,
+  });
+  
+  const datos = {
+    peso: ultimoRegistro?.peso || "--",
+    altura: ultimoRegistro?.altura || "--",
+  };
 
-    const datos = {
+  const imc = ultimoRegistro
+    ? (datos.peso / (datos.altura * datos.altura)).toFixed(1)
+    : "--";
 
-        peso:
-            ultimoRegistro?.peso || "--",
+  const obtenerEstadoIMC = () => {
+    if (!ultimoRegistro) {
+      return {
+        texto: "Sin registro",
+        color: "secondary",
+      };
+    }
 
-        altura:
-            ultimoRegistro?.altura || "--"
+    if (imc < 18.5) {
+      return {
+        texto: "Bajo peso",
+        color: "warning",
+      };
+    }
 
+    if (imc < 25) {
+      return {
+        texto: "Normal",
+        color: "success",
+      };
+    }
+
+    if (imc < 30) {
+      return {
+        texto: "Sobrepeso",
+        color: "warning",
+      };
+    }
+
+    return {
+      texto: "Obesidad",
+      color: "danger",
     };
+  };
 
-    const imc =
-        (
-            datos.peso /
-            (datos.altura * datos.altura)
-        ).toFixed(1);
+  const estadoIMC = obtenerEstadoIMC();
 
-    const obtenerEstadoIMC = () => {
+  return (
+    <Card className="dashboard-modern-card mb-4">
+      <Card.Body>
+        <Card.Title className="dashboard-card-title">Antropometría</Card.Title>
 
-        if (imc < 18.5) {
+        <Row>
+          <Col md={4}>
+            <div className="antropometria-item">
+              <small className="text-muted">Peso</small>
 
-            return {
-                texto: "Bajo peso",
-                color: "warning"
-            };
-        }
+              <h4>{datos.peso} kg</h4>
+            </div>
+          </Col>
 
-        if (imc < 25) {
+          <Col md={4}>
+            <div className="antropometria-item">
+              <small className="text-muted">Altura</small>
 
-            return {
-                texto: "Normal",
-                color: "success"
-            };
-        }
+              <h4>{datos.altura} m</h4>
+            </div>
+          </Col>
 
-        if (imc < 30) {
+          <Col md={4}>
+            <div className="antropometria-item">
+              <small className="text-muted">IMC</small>
 
-            return {
-                texto: "Sobrepeso",
-                color: "warning"
-            };
-        }
+              <div className="d-flex align-items-center gap-2">
+                <h4 className="mb-0">{imc}</h4>
 
-        return {
-            texto: "Obesidad",
-            color: "danger"
-        };
-    };
-
-    const estadoIMC =
-        obtenerEstadoIMC();
-
-    return (
-
-        <Card className="dashboard-modern-card mb-4">
-
-            <Card.Body>
-
-                <Card.Title
-                    className="dashboard-card-title"
-                >
-
-                    Antropometría
-
-                </Card.Title>
-
-                <Row>
-
-                    <Col md={4}>
-
-                        <div className="antropometria-item">
-
-                            <small className="text-muted">
-
-                                Peso
-
-                            </small>
-
-                            <h4>
-
-                                {datos.peso} kg
-
-                            </h4>
-
-                        </div>
-
-                    </Col>
-
-                    <Col md={4}>
-
-                        <div className="antropometria-item">
-
-                            <small className="text-muted">
-
-                                Altura
-
-                            </small>
-
-                            <h4>
-
-                                {datos.altura} m
-
-                            </h4>
-
-                        </div>
-
-                    </Col>
-
-                    <Col md={4}>
-
-                        <div className="antropometria-item">
-
-                            <small className="text-muted">
-
-                                IMC
-
-                            </small>
-
-                            <div className="d-flex align-items-center gap-2">
-
-                                <h4 className="mb-0">
-
-                                    {imc}
-
-                                </h4>
-
-                                <Badge bg={estadoIMC.color}>
-
-                                    {estadoIMC.texto}
-
-                                </Badge>
-
-                            </div>
-
-                        </div>
-
-                    </Col>
-
-                </Row>
-
-            </Card.Body>
-
-        </Card>
-
-    );
+                <Badge bg={estadoIMC.color}>{estadoIMC.texto}</Badge>
+              </div>
+            </div>
+          </Col>
+        </Row>
+      </Card.Body>
+    </Card>
+  );
 };
 
 export default Antropometria;
