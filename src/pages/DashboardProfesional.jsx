@@ -35,17 +35,11 @@ const DashboardProfesional = () => {
 
   const evoluciones = getMemoryJSON("evoluciones", []);
 
-  const indicaciones = getMemoryJSON("indicaciones", []);
-
   const ultimoRegistro = paciente?.antropometria?.length
     ? paciente.antropometria[paciente.antropometria.length - 1]
     : null;
 
   const [modo, setModo] = useState("ver");
-
-  const indicacionesPaciente = indicaciones.filter(
-    (i) => i.rutPaciente === paciente?.numeroDocumento,
-  );
 
   useEffect(() => {
     const sesion = getMemoryJSON("sesion");
@@ -106,6 +100,20 @@ const DashboardProfesional = () => {
         { token },
       );
 
+      const indicaciones = await request("/indicaciones", {
+        token,
+      });
+
+      console.log("INDICACIONES:", indicaciones);
+
+      
+
+      const indicacionesPaciente = indicaciones.filter(
+        (i) => i.ficha?.id === encontrado.id,
+      );
+
+      console.log("INDICACIONES PACIENTE:", indicacionesPaciente);
+
       console.log("SIGNOS VITALES:", signosVitales);
       console.log("TIPO:", typeof antropometrias);
       console.log("ES ARRAY:", Array.isArray(antropometrias));
@@ -164,6 +172,7 @@ const DashboardProfesional = () => {
         antropometria: antropometrias,
         signosVitales: signosVitales,
         evoluciones: evolucionesPaciente,
+        indicaciones: indicacionesPaciente,
       });
     } catch (error) {
       console.error("Error buscando paciente:", error);
@@ -209,32 +218,35 @@ const DashboardProfesional = () => {
     }
   };
 
-  const guardarIndicacion = () => {
-    if (!indicacion) {
-      alert("Debe escribir una indicación");
+  const guardarIndicacion = async () => {
+    try {
+      if (!indicacion) {
+        alert("Debe escribir una indicación");
+        return;
+      }
 
-      return;
+      await request("/indicaciones", {
+        method: "POST",
+        token: profesional?.accessToken,
+        body: {
+          fecha: new Date().toLocaleString(),
+          profesional: `${profesional?.userInfo?.nombreCompleto} (${profesional?.userInfo?.profesion})`,
+          indicacion: indicacion,
+          ficha: {
+            id: paciente.id,
+          },
+        },
+      });
+
+      await buscarPaciente();
+
+      alert("Indicación guardada en BD");
+
+      setIndicacion("");
+    } catch (error) {
+      console.error(error);
+      alert("Error al guardar indicación");
     }
-
-    const indicaciones = getMemoryJSON("indicaciones", []);
-
-    indicaciones.push({
-      rutPaciente: paciente.numeroDocumento,
-
-      texto: indicacion,
-
-      fecha: new Date().toLocaleString(),
-
-      profesional: `${profesional?.userInfo?.nombreCompleto} (${profesional?.userInfo?.profesion})`,
-
-      profesion: profesional?.userInfo?.profesion,
-    });
-
-    setMemoryJSON("indicaciones", indicaciones);
-
-    alert("Indicación guardada");
-
-    setIndicacion("");
   };
 
   if (!profesional) {

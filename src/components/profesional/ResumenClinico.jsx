@@ -34,20 +34,19 @@ const ResumenClinico = ({ paciente, onGuardar }) => {
   );
 
   paciente?.antropometria?.forEach((registro) => {
-  const imc =
-    registro.altura && registro.peso
-      ? (registro.peso / (registro.altura * registro.altura)).toFixed(1)
-      : "No calculado";
+    const imc =
+      registro.altura && registro.peso
+        ? (registro.peso / (registro.altura * registro.altura)).toFixed(1)
+        : "No calculado";
 
-  resumen.push({
-    tipo: "Antropometría",
-    fecha: "Fecha y hora: " + registro.fechaRegistro,
-    detalle: `Peso: ${registro.peso} kg
+    resumen.push({
+      tipo: "Antropometría",
+      fecha: "Fecha y hora: " + registro.fechaRegistro,
+      detalle: `Peso: ${registro.peso} kg
 Altura: ${registro.altura} m
 IMC: ${imc}`,
+    });
   });
-});
-
 
   console.log("RESUMEN DESPUES ANTROPOMETRIA:", resumen);
 
@@ -71,7 +70,7 @@ IMC: ${imc}`,
       tipo: "Indicación",
       fecha: "Fecha y hora: " + registro.fecha,
       profesional: registro.profesional,
-      detalle: `${registro.medicamento}\n${registro.dosis}\n${registro.frecuencia}`,
+      detalle: registro.indicacion,
     });
   });
 
@@ -82,8 +81,6 @@ IMC: ${imc}`,
       profesional: registro.profesional,
       detalle: `${registro.examen}\nEstado: ${registro.estado}`,
     });
-
-  
   });
   console.log("RESUMEN COMPLETO:", resumen);
   const resumenOrdenado = resumen.reverse();
