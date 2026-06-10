@@ -8,6 +8,8 @@ const ExamenesClinicos = ({ paciente, onActualizarPaciente }) => {
 
   const [resultados, setResultados] = useState({});
 
+  const [editando, setEditando] = useState({});
+
   const guardarResultado = async (examen) => {
     try {
       const sesion = getMemoryJSON("sesion");
@@ -28,6 +30,34 @@ const ExamenesClinicos = ({ paciente, onActualizarPaciente }) => {
       console.error(error);
 
       alert("Error al guardar resultado");
+    }
+  };
+
+  const actualizarResultado = async (examen) => {
+    try {
+      const sesion = getMemoryJSON("sesion");
+
+      await request(`/examenes/${examen.id}`, {
+        method: "PUT",
+        token: sesion?.accessToken,
+        body: {
+          ...examen,
+          resultado: resultados[examen.id],
+        },
+      });
+
+      alert("Resultado actualizado");
+
+      onActualizarPaciente();
+
+      setEditando({
+        ...editando,
+        [examen.id]: false,
+      });
+    } catch (error) {
+      console.error(error);
+
+      alert("Error al actualizar resultado");
     }
   };
 
@@ -76,9 +106,47 @@ const ExamenesClinicos = ({ paciente, onActualizarPaciente }) => {
                       )}
 
                       {examen.resultado && (
-                        <small className="text-success d-block mt-2">
-                          Resultado: {examen.resultado}
-                        </small>
+                        <>
+                          <small className="text-success d-block mt-2">
+                            Resultado: {examen.resultado}
+                          </small>
+
+                          <button
+                            className="btn btn-outline-primary btn-sm mt-2"
+                            onClick={() =>
+                              setEditando({
+                                ...editando,
+                                [examen.id]: true,
+                              })
+                            }
+                          >
+                            Editar resultado
+                          </button>
+                        </>
+                      )}
+                      {editando[examen.id] && (
+                        <div className="mt-3">
+                          <textarea
+                            className="form-control"
+                            rows="3"
+                            value={
+                              resultados[examen.id] ?? examen.resultado ?? ""
+                            }
+                            onChange={(e) =>
+                              setResultados({
+                                ...resultados,
+                                [examen.id]: e.target.value,
+                              })
+                            }
+                          />
+
+                          <button
+                            className="btn btn-success mt-2"
+                            onClick={() => actualizarResultado(examen)}
+                          >
+                            Guardar cambios
+                          </button>
+                        </div>
                       )}
                     </div>
 
