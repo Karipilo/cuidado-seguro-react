@@ -4,6 +4,7 @@ import { Button, Card, Col, Form, Row } from "react-bootstrap";
 import { getMemoryJSON } from "../../utils/memoryStore";
 import { request } from "../../utils/api";
 
+
 const FormularioSignosVitales = ({ paciente, setPaciente }) => {
   const [formulario, setFormulario] = useState({
     sistolica: "",
@@ -36,7 +37,7 @@ const FormularioSignosVitales = ({ paciente, setPaciente }) => {
       const sesion = getMemoryJSON("sesion");
 
       console.log("PACIENTE:", paciente);
-
+      console.log("SESION COMPLETA:", sesion);
       const nuevosSignos = await request(
         `/signos-vitales/${paciente.id}`,
         {

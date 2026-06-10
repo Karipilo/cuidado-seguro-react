@@ -1,115 +1,133 @@
-import { useState } from "react";
-import { Button, Card, Form } from "react-bootstrap";
-import { getMemoryJSON } from "../../utils/memoryStore";
-import { request } from "../../utils/api";
+import { Card } from "react-bootstrap";
 
-const FormularioFichaClinica = ({ paciente, setPaciente }) => {
-  const [formulario, setFormulario] = useState({
-    diagnostico: paciente?.diagnostico || "",
+const FormularioFichaClinica = ({ paciente }) => {
+  const profesionales = new Set();
 
-    alergias: paciente?.alergias || "",
-
-    observaciones: paciente?.observaciones || "",
+  paciente?.evoluciones?.forEach((item) => {
+    if (item.profesional) profesionales.add(item.profesional);
   });
 
-  const handleChange = (e) => {
-    setFormulario({
-      ...formulario,
+  paciente?.indicaciones?.forEach((item) => {
+    if (item.profesional) profesionales.add(item.profesional);
+  });
 
-      [e.target.name]: e.target.value,
+  paciente?.examenes?.forEach((item) => {
+    if (item.profesional) profesionales.add(item.profesional);
+  });
+
+  paciente?.signosVitales?.forEach((item) => {
+    if (item.profesional) profesionales.add(item.profesional);
+  });
+
+  const actividades = [];
+  paciente?.evoluciones?.forEach((item) => {
+    actividades.push({
+      tipo: "Evolución",
+      profesional: item.profesional,
+      fecha: item.fechaRegistro || item.fecha,
+      detalle: item.descripcion,
     });
-  };
+  });
 
-  const guardarFicha = async () => {
-    try {
-      const sesion = getMemoryJSON("sesion");
+  paciente?.indicaciones?.forEach((item) => {
+    actividades.push({
+      tipo: "Indicación",
+      profesional: item.profesional,
+      fecha: item.fechaRegistro || item.fecha,
+      detalle: item.indicacion,
+    });
+  });
+  paciente?.examenes?.forEach((item) => {
+    actividades.push({
+      tipo: "Examen",
+      profesional: item.profesional,
+      fecha: item.fechaRegistro || item.fecha,
+      detalle: item.nombre,
+    });
+  });
 
-      const token = sesion?.accessToken;
+  paciente?.signosVitales?.forEach((item) => {
+    actividades.push({
+      tipo: "Signos Vitales",
+      profesional: item.profesional,
+      fecha: item.fechaRegistro || item.fecha,
+      detalle: item.presion,
+    });
+  });
 
-      await request(
-        `/fichas/rut/${paciente.numeroDocumento}`,
-
-        {
-          method: "PUT",
-
-          token,
-
-          body: {
-            diagnostico: formulario.diagnostico,
-
-            alergias: formulario.alergias,
-
-            observaciones: formulario.observaciones,
-
-            edad: paciente.edad,
-
-            genero: paciente.genero,
-          },
-        },
-      );
-
-      setPaciente({
-        ...paciente,
-
-        diagnostico: formulario.diagnostico,
-
-        alergias: formulario.alergias,
-
-        observaciones: formulario.observaciones,
-      });
-
-      alert("Ficha clínica actualizada");
-    } catch (error) {
-      console.error(error);
-
-      alert("Error al actualizar ficha clínica");
-    }
-  };
-
+  const ultimaActividad =
+    actividades.length > 0 ? actividades[actividades.length - 1] : null;
   return (
     <Card className="dashboard-modern-card">
       <Card.Body>
-        <Card.Title className="dashboard-card-title">
-          Editar Ficha Clínica
-        </Card.Title>
+        <Card.Title className="dashboard-card-title">Ficha Clínica</Card.Title>
 
-        <Form.Group className="mb-3">
-          <Form.Label>Diagnóstico</Form.Label>
+        <div className="mt-4">
+          <Card className="mb-3 shadow-sm">
+            <Card.Body>
+              <Card.Title>Última Actividad Clínica</Card.Title>
 
-          <Form.Control
-            as="textarea"
-            rows={3}
-            name="diagnostico"
-            value={formulario.diagnostico}
-            onChange={handleChange}
-          />
-        </Form.Group>
+              {ultimaActividad ? (
+                <>
+                  <h6>{ultimaActividad.tipo}</h6>
 
-        <Form.Group className="mb-3">
-          <Form.Label>Alergias</Form.Label>
+                  <p className="mb-1">
+                    <strong>Profesional:</strong>{" "}
+                    {ultimaActividad.profesional || "No registrado"}
+                  </p>
 
-          <Form.Control
-            name="alergias"
-            value={formulario.alergias}
-            onChange={handleChange}
-          />
-        </Form.Group>
+                  <p className="mb-1">
+                    <strong>Fecha:</strong>{" "}
+                    {ultimaActividad.fecha || "No disponible"}
+                  </p>
 
-        <Form.Group className="mb-3">
-          <Form.Label>Observaciones</Form.Label>
+                  <p className="mb-0">
+                    <strong>Detalle:</strong>{" "}
+                    {ultimaActividad.detalle || "Sin detalle"}
+                  </p>
+                </>
+              ) : (
+                <p className="text-muted mb-0">
+                  No existen actividades registradas.
+                </p>
+              )}
+            </Card.Body>
+          </Card>
 
-          <Form.Control
-            as="textarea"
-            rows={4}
-            name="observaciones"
-            value={formulario.observaciones}
-            onChange={handleChange}
-          />
-        </Form.Group>
+          <Card className="mb-3 shadow-sm">
+            <Card.Body>
+              <Card.Title>Profesionales Participantes</Card.Title>
 
-        <Button className="btn-dashboard-primary" onClick={guardarFicha}>
-          Guardar cambios
-        </Button>
+              {[...profesionales].length > 0 ? (
+                [...profesionales].map((profesional, index) => (
+                  <p key={index} className="mb-2">
+                    👨‍⚕️ {profesional}
+                  </p>
+                ))
+              ) : (
+                <p className="text-muted mb-0">
+                  No existen profesionales registrados.
+                </p>
+              )}
+            </Card.Body>
+          </Card>
+
+          <Card className="shadow-sm">
+            <Card.Body>
+              <Card.Title>Resumen Estadístico</Card.Title>
+
+              <p>🩺 Evoluciones: {paciente?.evoluciones?.length || 0}</p>
+
+              <p>📋 Indicaciones: {paciente?.indicaciones?.length || 0}</p>
+
+              <p>🧪 Exámenes: {paciente?.examenes?.length || 0}</p>
+
+              <p>📏 Antropometría: {paciente?.antropometria?.length || 0}</p>
+
+              <p>❤️ Signos Vitales: {paciente?.signosVitales?.length || 0}</p>
+            </Card.Body>
+          </Card>
+        </div>
       </Card.Body>
     </Card>
   );
