@@ -326,7 +326,7 @@ const DashboardProfesional = () => {
                           </div>
 
                           <div className="mt-4">
-                            <ExamenesClinicos />
+                            <ExamenesClinicos paciente={paciente} onActualizarPaciente={buscarPaciente} />
                           </div>
                         </>
                       }
@@ -363,7 +363,7 @@ const DashboardProfesional = () => {
                           />
 
                           <div className="mt-4">
-                            <ExamenesClinicos paciente={paciente} />
+                            <ExamenesClinicos paciente={paciente} onActualizarPaciente={buscarPaciente} />
                           </div>
                         </>
                       }
