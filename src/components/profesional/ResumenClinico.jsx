@@ -50,13 +50,24 @@ const ResumenClinico = ({ paciente, onGuardar }) => {
         return "primary";
     }
   };
+  const formatearFecha = (fecha) => {
+    if (!fecha) return "No disponible";
 
+    // Formato ISO de Spring Boot
+    if (fecha.includes("T")) {
+      return new Date(fecha).toLocaleString("es-CL");
+    }
+
+    return fecha;
+  };
   const resumen = [];
 
   paciente?.signosVitales?.forEach((registro) => {
     resumen.push({
       tipo: "Signos Vitales",
-      fecha: "Fecha y hora: " + registro.fechaRegistro,
+      fecha:
+        "Fecha y hora: " +
+        formatearFecha(registro.fechaRegistro || registro.fecha),
       profesional: registro.profesional,
       detalle: `PA: ${registro.presion}\nFC: ${registro.frecuencia}\nTemp: ${registro.temperatura}\nSat: ${registro.saturacion}`,
     });
@@ -74,7 +85,9 @@ const ResumenClinico = ({ paciente, onGuardar }) => {
 
     resumen.push({
       tipo: "Antropometría",
-      fecha: "Fecha y hora: " + registro.fechaRegistro,
+      fecha:
+        "Fecha y hora: " +
+        formatearFecha(registro.fechaRegistro || registro.fecha),
       detalle: `Peso: ${registro.peso} kg
 Altura: ${registro.altura} m
 IMC: ${imc}`,
@@ -92,7 +105,9 @@ IMC: ${imc}`,
 
     resumen.push({
       tipo: "Evolución",
-      fecha: "Fecha y hora: " + registro.fechaRegistro,
+      fecha:
+        "Fecha y hora: " +
+        formatearFecha(registro.fechaRegistro || registro.fecha),
       profesional: registro.profesional,
       detalle: registro.descripcion,
     });
@@ -101,7 +116,9 @@ IMC: ${imc}`,
   paciente?.indicaciones?.forEach((registro) => {
     resumen.push({
       tipo: "Indicación",
-      fecha: "Fecha y hora: " + registro.fechaRegistro,
+      fecha:
+        "Fecha y hora: " +
+        formatearFecha(registro.fechaRegistro || registro.fecha),
       profesional: registro.profesional,
       detalle: registro.indicacion,
     });
@@ -110,7 +127,9 @@ IMC: ${imc}`,
   paciente?.examenes?.forEach((registro) => {
     resumen.push({
       tipo: "Examen",
-      fecha: "Fecha y hora: " + registro.fecha,
+      fecha:
+        "Fecha y hora: " +
+        formatearFecha(registro.fechaRegistro || registro.fecha),
       profesional: registro.profesional,
       detalle: `${registro.nombre}
 
@@ -168,7 +187,6 @@ ${registro.observacion ? `Observación: ${registro.observacion}` : ""}`,
   console.log("RESUMEN ORDENADO:", resumenOrdenado);
   return (
     <Card className="dashboard-modern-card">
-    
       <Card.Body
         style={{
           maxHeight: "750px",

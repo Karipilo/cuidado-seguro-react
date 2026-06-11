@@ -4,7 +4,6 @@ import { Button, Card, Col, Form, Row } from "react-bootstrap";
 import { getMemoryJSON } from "../../utils/memoryStore";
 import { request } from "../../utils/api";
 
-
 const FormularioSignosVitales = ({ paciente, setPaciente }) => {
   const [formulario, setFormulario] = useState({
     sistolica: "",
@@ -35,39 +34,28 @@ const FormularioSignosVitales = ({ paciente, setPaciente }) => {
       }
 
       const sesion = getMemoryJSON("sesion");
+      console.log("SESION COMPLETA:", sesion);
 
       console.log("PACIENTE:", paciente);
       console.log("SESION COMPLETA:", sesion);
-      const nuevosSignos = await request(
-        `/signos-vitales/${paciente.id}`,
-        {
-          method: "POST",
-          token: sesion?.accessToken,
-          body: {
-            presion: `${formulario.sistolica}/${formulario.diastolica} mmHg`,
-            frecuencia: Number(formulario.frecuencia),
-            temperatura: Number(formulario.temperatura),
-            saturacion: Number(formulario.saturacion),
-            profesional:
-              sesion?.usuario?.nombre ||
-              sesion?.nombre ||
-              "Profesional",
-            fecha: new Date().toLocaleString(),
-          },
-        }
-      );
+      const nuevosSignos = await request(`/signos-vitales/${paciente.id}`, {
+        method: "POST",
+        token: sesion?.accessToken,
+        body: {
+          presion: `${formulario.sistolica}/${formulario.diastolica} mmHg`,
+          frecuencia: Number(formulario.frecuencia),
+          temperatura: Number(formulario.temperatura),
+          saturacion: Number(formulario.saturacion),
+          profesional: `${sesion?.userInfo?.nombreCompleto} (${sesion?.userInfo?.profesion})`,
+          fecha: new Date().toLocaleString(),
+        },
+      });
 
-      console.log(
-        "SIGNOS VITALES GUARDADOS:",
-        nuevosSignos
-      );
+      console.log("SIGNOS VITALES GUARDADOS:", nuevosSignos);
 
       setPaciente((prev) => ({
         ...prev,
-        signosVitales: [
-          ...(prev.signosVitales || []),
-          nuevosSignos,
-        ],
+        signosVitales: [...(prev.signosVitales || []), nuevosSignos],
       }));
 
       alert("Signos vitales guardados en BD");
@@ -79,12 +67,8 @@ const FormularioSignosVitales = ({ paciente, setPaciente }) => {
         temperatura: "",
         saturacion: "",
       });
-
     } catch (error) {
-      console.error(
-        "ERROR GUARDANDO SIGNOS VITALES:",
-        error
-      );
+      console.error("ERROR GUARDANDO SIGNOS VITALES:", error);
 
       alert("No se pudieron guardar los signos vitales");
     }
@@ -136,9 +120,7 @@ const FormularioSignosVitales = ({ paciente, setPaciente }) => {
           </Col>
 
           <Col md={6}>
-            <Form.Label className="fw-semibold mb-2">
-              Temperatura
-            </Form.Label>
+            <Form.Label className="fw-semibold mb-2">Temperatura</Form.Label>
 
             <Form.Control
               name="temperatura"
@@ -162,10 +144,7 @@ const FormularioSignosVitales = ({ paciente, setPaciente }) => {
           </Col>
         </Row>
 
-        <Button
-          className="mt-4 btn-dashboard-primary"
-          onClick={guardarSignos}
-        >
+        <Button className="mt-4 btn-dashboard-primary" onClick={guardarSignos}>
           Guardar signos vitales
         </Button>
       </Card.Body>

@@ -1,23 +1,32 @@
-import { Card } from "react-bootstrap";
+import { Card, Button } from "react-bootstrap";
+import { useState } from "react";
 
 const FormularioFichaClinica = ({ paciente }) => {
+  const [profesionalSeleccionado, setProfesionalSeleccionado] = useState(null);
   const profesionales = new Set();
+  const conteoProfesionales = {};
 
-  paciente?.evoluciones?.forEach((item) => {
-    if (item.profesional) profesionales.add(item.profesional);
-  });
+  const registrarProfesional = (nombre) => {
+    if (!nombre) return;
 
-  paciente?.indicaciones?.forEach((item) => {
-    if (item.profesional) profesionales.add(item.profesional);
-  });
+    profesionales.add(nombre);
 
-  paciente?.examenes?.forEach((item) => {
-    if (item.profesional) profesionales.add(item.profesional);
-  });
+    conteoProfesionales[nombre] = (conteoProfesionales[nombre] || 0) + 1;
+  };
 
-  paciente?.signosVitales?.forEach((item) => {
-    if (item.profesional) profesionales.add(item.profesional);
-  });
+  paciente?.evoluciones?.forEach((item) =>
+    registrarProfesional(item.profesional),
+  );
+
+  paciente?.indicaciones?.forEach((item) =>
+    registrarProfesional(item.profesional),
+  );
+
+  paciente?.examenes?.forEach((item) => registrarProfesional(item.profesional));
+
+  paciente?.signosVitales?.forEach((item) =>
+    registrarProfesional(item.profesional),
+  );
 
   const actividades = [];
   paciente?.evoluciones?.forEach((item) => {
@@ -57,6 +66,23 @@ const FormularioFichaClinica = ({ paciente }) => {
 
   const ultimaActividad =
     actividades.length > 0 ? actividades[actividades.length - 1] : null;
+  const evolucionesProfesional = paciente?.evoluciones || [];
+
+  const indicacionesProfesional =
+    paciente?.indicaciones?.filter(
+      (item) => item.profesional === profesionalSeleccionado,
+    ) || [];
+
+  const examenesProfesional =
+    paciente?.examenes?.filter(
+      (item) => item.profesional === profesionalSeleccionado,
+    ) || [];
+
+  console.log("PROFESIONAL SELECCIONADO:", profesionalSeleccionado);
+
+  console.log("EVOLUCIONES:", paciente?.evoluciones);
+
+  console.log("EVOLUCIONES FILTRADAS:", evolucionesProfesional);
   return (
     <Card className="dashboard-modern-card">
       <Card.Body>
@@ -100,21 +126,47 @@ const FormularioFichaClinica = ({ paciente }) => {
 
               {[...profesionales].length > 0 ? (
                 [...profesionales].map((profesional, index) => (
-                  <p key={index} className="mb-2">
+                  <Button
+                    key={index}
+                    variant="outline-primary"
+                    className="w-100 text-start mb-2"
+                    onClick={() => setProfesionalSeleccionado(profesional)}
+                  >
                     👨‍⚕️ {profesional}
-                  </p>
+                    <span className="float-end">
+                      {conteoProfesionales[profesional]} registros
+                    </span>
+                  </Button>
                 ))
               ) : (
-                <p className="text-muted mb-0">
-                  No existen profesionales registrados.
-                </p>
+                <p>No existen profesionales registrados.</p>
               )}
             </Card.Body>
           </Card>
+          {profesionalSeleccionado && (
+            <Card className="mb-3 shadow-sm">
+              <Card.Body>
+                <Card.Title>Actividad del Profesional</Card.Title>
 
+                <hr />
+
+                <h6>🩺 Evoluciones</h6>
+                {evolucionesProfesional.map((item, index) => (
+                  <div key={index} className="border rounded p-2 mb-2 bg-light">
+                    <small className="text-muted">{item.fecha}</small>
+
+                    <p className="mb-0">{item.descripcion}</p>
+                  </div>
+                ))}
+
+                
+              </Card.Body>
+            </Card>
+          )}
           <Card className="shadow-sm">
             <Card.Body>
               <Card.Title>Resumen Estadístico</Card.Title>
+              <p>👨‍⚕️ Profesionales Participantes: {profesionales.size}</p>
 
               <p>🩺 Evoluciones: {paciente?.evoluciones?.length || 0}</p>
 
