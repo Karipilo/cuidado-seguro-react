@@ -1,168 +1,189 @@
-import React from "react";
+import React, { useState } from "react";
+import { Card, Badge } from "react-bootstrap";
+import { request } from "../../utils/api";
+import { getMemoryJSON } from "../../utils/memoryStore";
 
-import {
-    Card,
-    Badge
-} from "react-bootstrap";
+const ExamenesClinicos = ({ paciente, onActualizarPaciente }) => {
+  console.log("EXAMENES PACIENTE:", paciente?.examenes);
 
-const ExamenesClinicos = ({
-    paciente
-}) => {
+  const [resultados, setResultados] = useState({});
 
-    return (
+  const [editando, setEditando] = useState({});
 
-        <Card className="dashboard-modern-card mb-4">
+  const guardarResultado = async (examen) => {
+    try {
+      const sesion = getMemoryJSON("sesion");
 
-            <Card.Body>
+      await request(`/examenes/${examen.id}`, {
+        method: "PUT",
+        token: sesion?.accessToken,
+        body: {
+          ...examen,
+          estado: "Completado",
+          resultado: resultados[examen.id] || "",
+        },
+      });
 
-                <Card.Title
-                    className="dashboard-card-title"
-                >
+      onActualizarPaciente();
+      alert("Resultado guardado");
+    } catch (error) {
+      console.error(error);
 
-                    Exámenes Clínicos
+      alert("Error al guardar resultado");
+    }
+  };
 
-                </Card.Title>
+  const actualizarResultado = async (examen) => {
+    try {
+      const sesion = getMemoryJSON("sesion");
 
-                <div className="examenes-lista">
+      await request(`/examenes/${examen.id}`, {
+        method: "PUT",
+        token: sesion?.accessToken,
+        body: {
+          ...examen,
+          resultado: resultados[examen.id],
+        },
+      });
 
-                    {
-                        paciente?.examenes?.length > 0 ? (
+      alert("Resultado actualizado");
 
-                            paciente.examenes
-                                .slice()
-                                .reverse()
-                                .map(
-                                    (
-                                        examen,
-                                        index
-                                    ) => {
+      onActualizarPaciente();
 
-                                        const obtenerColor = () => {
+      setEditando({
+        ...editando,
+        [examen.id]: false,
+      });
+    } catch (error) {
+      console.error(error);
 
-                                            if (
-                                                examen.estado ===
-                                                "Completado"
-                                            ) {
+      alert("Error al actualizar resultado");
+    }
+  };
 
-                                                return "success";
-                                            }
+  return (
+    <Card className="dashboard-modern-card mb-4">
+      <Card.Body>
+        <Card.Title className="dashboard-card-title">
+          Exámenes Clínicos
+        </Card.Title>
 
-                                            if (
-                                                examen.estado ===
-                                                "En proceso"
-                                            ) {
+        <div className="examenes-lista">
+          {paciente?.examenes?.length > 0 ? (
+            paciente.examenes
+              .slice()
+              .reverse()
+              .map((examen, index) => {
+                const obtenerColor = () => {
+                  if (examen.estado === "Completado") {
+                    return "success";
+                  }
 
-                                                return "warning";
-                                            }
+                  if (examen.estado === "En proceso") {
+                    return "warning";
+                  }
 
-                                            return "secondary";
-                                        };
+                  return "secondary";
+                };
 
-                                        return (
+                return (
+                  <div key={index} className="examen-item">
+                    <div>
+                      <h6 className="mb-1 fw-bold">{examen.nombre}</h6>
 
-                                            <div
-                                                key={index}
-                                                className="examen-item"
-                                            >
+                      <small className="text-muted d-block">
+                        Fecha: {examen.fecha}
+                      </small>
 
-                                                <div>
+                      <small className="text-muted d-block">
+                        Profesional: {examen.profesional}
+                      </small>
 
-                                                    <h6 className="mb-1">
+                      {examen.observacion && (
+                        <small className="text-muted d-block">
+                          Observación: {examen.observacion}
+                        </small>
+                      )}
 
-                                                        {
-                                                            examen.examen
-                                                        }
+                      {examen.resultado && (
+                        <>
+                          <small className="text-success d-block mt-2">
+                            Resultado: {examen.resultado}
+                          </small>
 
-                                                    </h6>
+                          <button
+                            className="btn btn-outline-primary btn-sm mt-2"
+                            onClick={() =>
+                              setEditando({
+                                ...editando,
+                                [examen.id]: true,
+                              })
+                            }
+                          >
+                            Editar resultado
+                          </button>
+                        </>
+                      )}
+                      {editando[examen.id] && (
+                        <div className="mt-3">
+                          <textarea
+                            className="form-control"
+                            rows="3"
+                            value={
+                              resultados[examen.id] ?? examen.resultado ?? ""
+                            }
+                            onChange={(e) =>
+                              setResultados({
+                                ...resultados,
+                                [examen.id]: e.target.value,
+                              })
+                            }
+                          />
 
-                                                    <small className="text-muted d-block">
+                          <button
+                            className="btn btn-success mt-2"
+                            onClick={() => actualizarResultado(examen)}
+                          >
+                            Guardar cambios
+                          </button>
+                        </div>
+                      )}
+                    </div>
 
-                                                        Fecha:
-                                                        {" "}
-                                                        {
-                                                            examen.fecha
-                                                        }
+                    <Badge bg={obtenerColor()}>{examen.estado}</Badge>
+                    {examen.estado !== "Completado" && (
+                      <div className="mt-3">
+                        <textarea
+                          className="form-control"
+                          rows="3"
+                          placeholder="Ingrese resultado del examen..."
+                          value={resultados[examen.id] || ""}
+                          onChange={(e) =>
+                            setResultados({
+                              ...resultados,
+                              [examen.id]: e.target.value,
+                            })
+                          }
+                        />
 
-                                                    </small>
-
-                                                    <small className="text-muted d-block">
-
-                                                        Profesional:
-                                                        {" "}
-                                                        {
-                                                            examen.profesional
-                                                        }
-
-                                                    </small>
-
-                                                    {
-                                                        examen.resultado && (
-
-                                                            <small className="text-muted d-block">
-
-                                                                Resultado:
-                                                                {" "}
-                                                                {
-                                                                    examen.resultado
-                                                                }
-
-                                                            </small>
-
-                                                        )
-                                                    }
-
-                                                    {
-                                                        examen.observaciones && (
-
-                                                            <small className="text-muted d-block">
-
-                                                                Observaciones:
-                                                                {" "}
-                                                                {
-                                                                    examen.observaciones
-                                                                }
-
-                                                            </small>
-
-                                                        )
-                                                    }
-
-                                                </div>
-
-                                                <Badge
-                                                    bg={obtenerColor()}
-                                                >
-
-                                                    {
-                                                        examen.estado
-                                                    }
-
-                                                </Badge>
-
-                                            </div>
-
-                                        );
-                                    }
-                                )
-
-                        ) : (
-
-                            <p>
-
-                                No existen exámenes registrados.
-
-                            </p>
-
-                        )
-                    }
-
-                </div>
-
-            </Card.Body>
-
-        </Card>
-
-    );
+                        <button
+                          className="btn btn-success mt-2"
+                          onClick={() => guardarResultado(examen)}
+                        >
+                          Guardar resultado
+                        </button>
+                      </div>
+                    )}
+                  </div>
+                );
+              })
+          ) : (
+            <p>No existen exámenes registrados.</p>
+          )}
+        </div>
+      </Card.Body>
+    </Card>
+  );
 };
 
 export default ExamenesClinicos;

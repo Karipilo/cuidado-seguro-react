@@ -31,7 +31,7 @@ const NavbarComponent = () => {
     } else if (tipo === "TUTOR") {
       navigate("/dashboardTutor");
     } else if (tipo === "PROFESIONAL") {
-      navigate("/dashboardProfesional");
+      navigate("/dashboard-Profesional");
     }
   };
 

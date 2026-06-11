@@ -45,28 +45,21 @@ const PacienteResumen = ({ paciente }) => {
 
           <Col md={4}>
             <div className="paciente-info-card">
-              <small className="text-muted">Diagnóstico</small>
+              <small className="text-muted">Peso actual</small>
 
-              <h5>{paciente?.diagnostico || "Sin diagnóstico"}</h5>
+              <h5>
+                {paciente?.antropometria?.length > 0
+                  ? `${paciente.antropometria[paciente.antropometria.length - 1].peso} kg`
+                  : "No registrado"}
+              </h5>
             </div>
           </Col>
 
-          <Col md={6}>
+          <Col md={12}>
             <div className="paciente-info-card">
               <small className="text-muted">Alergias</small>
 
               <h5>{paciente?.alergias || "Sin alergias"}</h5>
-            </div>
-          </Col>
-
-          <Col md={6}>
-            <div className="paciente-info-card">
-              <small className="text-muted">Medicamentos actuales</small>
-
-              <h5>
-                {paciente?.medicamentosActuales ||
-                  "Sin medicamentos registrados"}
-              </h5>
             </div>
           </Col>
         </Row>

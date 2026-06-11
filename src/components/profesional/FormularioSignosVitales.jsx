@@ -1,210 +1,176 @@
-import {
-    useState
-} from "react";
+import { useState } from "react";
+import { Button, Card, Col, Form, Row } from "react-bootstrap";
 
-import {
-    Button,
-    Card,
-    Col,
-    Form,
-    Row
-} from "react-bootstrap";
-import { setMemoryJSON } from "../../utils/memoryStore";
+import { getMemoryJSON } from "../../utils/memoryStore";
+import { request } from "../../utils/api";
 
-const FormularioSignosVitales = ({
-    paciente,
-    setPaciente
-}) => {
 
-    const [formulario, setFormulario] =
-        useState({
+const FormularioSignosVitales = ({ paciente, setPaciente }) => {
+  const [formulario, setFormulario] = useState({
+    sistolica: "",
+    diastolica: "",
+    frecuencia: "",
+    temperatura: "",
+    saturacion: "",
+  });
 
-            sistolica: "",
-            diastolica: "",
-            frecuencia: "",
-            temperatura: "",
-            saturacion: ""
+  const handleChange = (e) => {
+    setFormulario({
+      ...formulario,
+      [e.target.name]: e.target.value,
+    });
+  };
 
-        });
+  const guardarSignos = async () => {
+    try {
+      if (
+        !formulario.sistolica ||
+        !formulario.diastolica ||
+        !formulario.frecuencia ||
+        !formulario.temperatura ||
+        !formulario.saturacion
+      ) {
+        alert("Complete todos los campos");
+        return;
+      }
 
-    const handleChange = (e) => {
+      const sesion = getMemoryJSON("sesion");
 
-        setFormulario({
-
-            ...formulario,
-            [e.target.name]: e.target.value
-
-        });
-    };
-
-    const guardarSignos = () => {
-
-        if (
-            !formulario.sistolica ||
-            !formulario.diastolica ||
-            !formulario.frecuencia ||
-            !formulario.temperatura ||
-            !formulario.saturacion
-        ) {
-
-            alert(
-                "Complete todos los campos"
-            );
-
-            return;
+      console.log("PACIENTE:", paciente);
+      console.log("SESION COMPLETA:", sesion);
+      const nuevosSignos = await request(
+        `/signos-vitales/${paciente.id}`,
+        {
+          method: "POST",
+          token: sesion?.accessToken,
+          body: {
+            presion: `${formulario.sistolica}/${formulario.diastolica} mmHg`,
+            frecuencia: Number(formulario.frecuencia),
+            temperatura: Number(formulario.temperatura),
+            saturacion: Number(formulario.saturacion),
+            profesional:
+              sesion?.usuario?.nombre ||
+              sesion?.nombre ||
+              "Profesional",
+            fecha: new Date().toLocaleString(),
+          },
         }
+      );
 
-        const nuevoRegistro = {
+      console.log(
+        "SIGNOS VITALES GUARDADOS:",
+        nuevosSignos
+      );
 
-            presion:
-                `${formulario.sistolica}/${formulario.diastolica} mmHg`,
+      setPaciente((prev) => ({
+        ...prev,
+        signosVitales: [
+          ...(prev.signosVitales || []),
+          nuevosSignos,
+        ],
+      }));
 
-            frecuencia:
-                `${formulario.frecuencia} lpm`,
+      alert("Signos vitales guardados en BD");
 
-            temperatura:
-                `${formulario.temperatura} °C`,
+      setFormulario({
+        sistolica: "",
+        diastolica: "",
+        frecuencia: "",
+        temperatura: "",
+        saturacion: "",
+      });
 
-            saturacion:
-                `${formulario.saturacion} %`,
+    } catch (error) {
+      console.error(
+        "ERROR GUARDANDO SIGNOS VITALES:",
+        error
+      );
 
-            fecha:
-                new Date().toLocaleString()
+      alert("No se pudieron guardar los signos vitales");
+    }
+  };
 
-        };
+  return (
+    <Card className="dashboard-modern-card mb-4">
+      <Card.Body>
+        <Card.Title className="dashboard-card-title">
+          Registrar Signos Vitales
+        </Card.Title>
 
-        const pacienteActualizado = {
+        <Row className="g-3">
+          <Col md={6}>
+            <div>
+              <Form.Label className="fw-semibold mb-2">
+                Presión Arterial
+              </Form.Label>
 
-            ...paciente,
+              <div className="d-flex gap-2">
+                <Form.Control
+                  name="sistolica"
+                  placeholder="Sistólica"
+                  value={formulario.sistolica}
+                  onChange={handleChange}
+                />
 
-            signosVitales: [
+                <Form.Control
+                  name="diastolica"
+                  placeholder="Diastólica"
+                  value={formulario.diastolica}
+                  onChange={handleChange}
+                />
+              </div>
+            </div>
+          </Col>
 
-                ...(paciente.signosVitales || []),
+          <Col md={6}>
+            <Form.Label className="fw-semibold mb-2">
+              Frecuencia Cardíaca
+            </Form.Label>
 
-                nuevoRegistro
+            <Form.Control
+              name="frecuencia"
+              placeholder="lpm"
+              value={formulario.frecuencia}
+              onChange={handleChange}
+            />
+          </Col>
 
-            ]
+          <Col md={6}>
+            <Form.Label className="fw-semibold mb-2">
+              Temperatura
+            </Form.Label>
 
-        };
+            <Form.Control
+              name="temperatura"
+              placeholder="°C"
+              value={formulario.temperatura}
+              onChange={handleChange}
+            />
+          </Col>
 
-        setPaciente(pacienteActualizado);
+          <Col md={6}>
+            <Form.Label className="fw-semibold mb-2">
+              Saturación de Oxígeno
+            </Form.Label>
 
-        setMemoryJSON("pacienteActivo", pacienteActualizado);
+            <Form.Control
+              name="saturacion"
+              placeholder="%"
+              value={formulario.saturacion}
+              onChange={handleChange}
+            />
+          </Col>
+        </Row>
 
-        alert(
-            "Signos vitales guardados"
-        );
-
-        setFormulario({
-
-            sistolica: "",
-            diastolica: "",
-            frecuencia: "",
-            temperatura: "",
-            saturacion: ""
-
-        });
-    };
-
-    return (
-
-        <Card className="dashboard-modern-card mb-4">
-
-            <Card.Body>
-
-                <Card.Title
-                    className="dashboard-card-title"
-                >
-
-                    Registrar Signos Vitales
-
-                </Card.Title>
-
-                <Row className="g-3">
-
-                    <Col md={6}>
-
-                        <div>
-
-                            <Form.Label className="fw-semibold mb-2">
-
-                                Presión Arterial
-
-                            </Form.Label>
-
-                            <div className="d-flex gap-2">
-
-                                <Form.Control
-                                    name="sistolica"
-                                    placeholder="Sistólica"
-                                    value={formulario.sistolica}
-                                    onChange={handleChange}
-                                />
-
-                                <Form.Control
-                                    name="diastolica"
-                                    placeholder="Diastólica"
-                                    value={formulario.diastolica}
-                                    onChange={handleChange}
-                                />
-
-                            </div>
-
-                        </div>
-
-                    </Col>
-
-                    <Col md={6}>
-
-                        <Form.Label className="fw-semibold mb-2">
-
-                            Frecuencia Cardíaca
-
-                        </Form.Label>
-
-                        <Form.Control
-                            name="frecuencia"
-                            placeholder="lpm"
-                            value={formulario.frecuencia}
-                            onChange={handleChange}
-                        />
-
-                    </Col>
-
-                    <Col md={6}>
-
-                        <Form.Label className="fw-semibold mb-2">
-
-                            Temperatura
-
-                        </Form.Label>
-
-                        <Form.Control
-                            name="temperatura"
-                            placeholder="°C"
-                            value={formulario.temperatura}
-                            onChange={handleChange}
-                        />
-
-                    </Col>
-
-
-                </Row>
-
-                <Button
-                    className="mt-4 btn-dashboard-primary"
-                    onClick={guardarSignos}
-                >
-
-                    Guardar signos vitales
-
-                </Button>
-
-            </Card.Body>
-
-        </Card>
-
-    );
+        <Button
+          className="mt-4 btn-dashboard-primary"
+          onClick={guardarSignos}
+        >
+          Guardar signos vitales
+        </Button>
+      </Card.Body>
+    </Card>
+  );
 };
 
 export default FormularioSignosVitales;

@@ -18,7 +18,9 @@ import ExamenesClinicos from "../components/profesional/ExamenesClinicos";
 import FormularioSignosVitales from "../components/profesional/FormularioSignosVitales";
 import { getMemoryJSON, setMemoryJSON } from "../utils/memoryStore";
 import { request } from "../utils/api";
-import PerfilProfesional from "../components/profesional/PerfilProfesional";
+import ResumenClinico from "../components/profesional/ResumenClinico";
+import FormularioAntropometria from "../components/profesional/FormularioAntropometria";
+import FormularioSolicitudExamenes from "../components/profesional/FormularioSolicitudExamenes";
 
 const DashboardProfesional = () => {
   const navigate = useNavigate();
@@ -35,20 +37,15 @@ const DashboardProfesional = () => {
 
   const evoluciones = getMemoryJSON("evoluciones", []);
 
-  const indicaciones = getMemoryJSON("indicaciones", []);
-
   const ultimoRegistro = paciente?.antropometria?.length
     ? paciente.antropometria[paciente.antropometria.length - 1]
     : null;
 
   const [modo, setModo] = useState("ver");
 
-  const indicacionesPaciente = indicaciones.filter(
-    (i) => i.rutPaciente === paciente?.numeroDocumento,
-  );
-
   useEffect(() => {
     const sesion = getMemoryJSON("sesion");
+    console.log("SESION:", sesion);
 
     if (!sesion) {
       navigate("/login");
@@ -73,6 +70,7 @@ const DashboardProfesional = () => {
 
         return;
       }
+      const evoluciones = await request("/evoluciones", { token });
 
       /* =========================
        OBTENER FICHAS CLÍNICAS
@@ -86,15 +84,61 @@ const DashboardProfesional = () => {
       const encontrado = fichas.find((f) => {
         return String(f.rutPaciente).trim() === String(rutBusqueda).trim();
       });
-      console.log("ENCONTRADO:", encontrado);
-
       if (!encontrado) {
         alert("Paciente no encontrado");
-
         return;
       }
 
-      console.log("PACIENTE ENCONTRADO:", encontrado);
+      console.log(JSON.stringify(evoluciones, null, 2));
+
+      console.log("ENCONTRADO:", encontrado);
+      console.log("ID ENCONTRADO:", encontrado.id);
+      const antropometrias = await request(`/antropometrias/${encontrado.id}`, {
+        token,
+      });
+
+      const signosVitales = await request(
+        `/signos-vitales/ficha/${encontrado.id}`,
+        { token },
+      );
+
+      const examenes = await request("/examenes", {
+        token,
+      });
+
+      console.log("EXAMENES:", examenes);
+
+      const examenesPaciente = examenes.filter(
+        (e) => e.ficha?.id === encontrado.id,
+      );
+
+      console.log("EXAMENES PACIENTE:", examenesPaciente);
+
+      const indicaciones = await request("/indicaciones", {
+        token,
+      });
+
+      console.log("INDICACIONES:", indicaciones);
+
+      const indicacionesPaciente = indicaciones.filter(
+        (i) => i.ficha?.id === encontrado.id,
+      );
+
+      console.log("INDICACIONES PACIENTE:", indicacionesPaciente);
+
+      console.log("SIGNOS VITALES:", signosVitales);
+      console.log("TIPO:", typeof antropometrias);
+      console.log("ES ARRAY:", Array.isArray(antropometrias));
+      console.log("RESPUESTA ANTROPOMETRIAS:");
+      console.log(antropometrias);
+      console.log(typeof antropometrias);
+      console.log("ANTROPOMETRIAS:", antropometrias);
+
+      const evolucionesPaciente = evoluciones.filter(
+        (e) => e.pacienteId === encontrado.id,
+      );
+
+      console.log("EVOLUCIONES PACIENTE:", evolucionesPaciente);
 
       /* =========================
        OBTENER MEDICAMENTOS
@@ -129,22 +173,19 @@ const DashboardProfesional = () => {
 
       setPaciente({
         id: encontrado.id,
-
         numeroDocumento: encontrado.rutPaciente,
-
         nombres: encontrado.nombrePaciente,
-
         edad: encontrado.edad,
-
         genero: encontrado.genero,
-
         alergias: encontrado.alergias,
-
         diagnostico: encontrado.diagnostico,
-
         observaciones: encontrado.observaciones,
-
         medicamentosActuales: medicamentosTexto,
+        antropometria: antropometrias,
+        signosVitales: signosVitales,
+        evoluciones: evolucionesPaciente,
+        indicaciones: indicacionesPaciente,
+        examenes: examenesPaciente,
       });
     } catch (error) {
       console.error("Error buscando paciente:", error);
@@ -155,61 +196,70 @@ const DashboardProfesional = () => {
   /* GUARDAR EVOLUCION */
 
   const guardarEvolucion = async () => {
-     console.log("ENTRO A GUARDAR EVOLUCION");
     try {
       if (!evolucion) {
         alert("Debe escribir una evolución");
         return;
       }
-
+      console.log("EVOLUCION ENVIADA:", {
+        fecha: new Date().toLocaleString(),
+        profesional: profesional?.nombreCompleto,
+        descripcion: evolucion,
+        observaciones: "",
+        pacienteId: paciente?.id,
+      });
+      console.log("PROFESIONAL COMPLETO:", profesional);
       await request("/evoluciones", {
         method: "POST",
         token: profesional?.accessToken,
         body: {
           fecha: new Date().toLocaleString(),
+          profesional: `${profesional?.userInfo?.nombreCompleto} (${profesional?.userInfo?.profesion})`,
           descripcion: evolucion,
           observaciones: "",
           pacienteId: paciente?.id,
         },
       });
 
+      await buscarPaciente();
+
       alert("Evolución guardada en BD");
 
       setEvolucion("");
     } catch (error) {
       console.error("ERROR EVOLUCION:", error);
-
-      alert("Error guardando evolución");
     }
   };
 
-  const guardarIndicacion = () => {
-    if (!indicacion) {
-      alert("Debe escribir una indicación");
+  const guardarIndicacion = async () => {
+    try {
+      if (!indicacion) {
+        alert("Debe escribir una indicación");
+        return;
+      }
 
-      return;
+      await request("/indicaciones", {
+        method: "POST",
+        token: profesional?.accessToken,
+        body: {
+          fecha: new Date().toLocaleString(),
+          profesional: `${profesional?.userInfo?.nombreCompleto} (${profesional?.userInfo?.profesion})`,
+          indicacion: indicacion,
+          ficha: {
+            id: paciente.id,
+          },
+        },
+      });
+
+      await buscarPaciente();
+
+      alert("Indicación guardada en BD");
+
+      setIndicacion("");
+    } catch (error) {
+      console.error(error);
+      alert("Error al guardar indicación");
     }
-
-    const indicaciones = getMemoryJSON("indicaciones", []);
-
-    indicaciones.push({
-      rutPaciente: paciente.numeroDocumento,
-
-      texto: indicacion,
-
-      fecha: new Date().toLocaleString(),
-
-      profesional: `${profesional.nombres}
-            ${profesional.apellidos}`,
-
-      profesion: profesional.profesion,
-    });
-
-    setMemoryJSON("indicaciones", indicaciones);
-
-    alert("Indicación guardada");
-
-    setIndicacion("");
   };
 
   if (!profesional) {
@@ -229,7 +279,7 @@ const DashboardProfesional = () => {
         />
 
         <Row className="justify-content-center">
-          <Col lg={10}>
+          <Col lg={12}>
             {paciente && (
               <>
                 {/* DATOS PACIENTE */}
@@ -238,79 +288,12 @@ const DashboardProfesional = () => {
                   <PacienteResumen paciente={paciente} />
                 </div>
 
-                <Row className="mb-4">
-                  <Col className="d-flex gap-2">
-                    <Button
-                      variant={modo === "ver" ? "primary" : "outline-primary"}
-                      onClick={() => setModo("ver")}
-                    >
-                      Ver Información
-                    </Button>
-
-                    <Button
-                      variant={
-                        modo === "agregar" ? "success" : "outline-success"
-                      }
-                      onClick={() => setModo("agregar")}
-                    >
-                      Agregar Información
-                    </Button>
-
-                    <Button
-                      variant={
-                        modo === "editar" ? "warning" : "outline-warning"
-                      }
-                      onClick={() => setModo("editar")}
-                    >
-                      Modificar Información
-                    </Button>
-                  </Col>
-                </Row>
-
                 {/* BOTONES */}
 
-                {modo === "ver" && (
-                  <Card className="dashboard-modern-card mb-4">
-                    <Card.Body>
-                      <h5>Información General</h5>
-
-                      {modo === "agregar" && (
-                        <Alert variant="success" className="mb-4">
-                          Selecciona una pestaña clínica para agregar nueva
-                          información al paciente.
-                        </Alert>
-                      )}
-
-                      {modo === "editar" && (
-                        <Alert variant="warning" className="mb-4">
-                          Modo edición activado. Aquí podrás modificar registros
-                          existentes.
-                        </Alert>
-                      )}
-
-                      <p>
-                        <strong>Diagnóstico:</strong> {paciente?.diagnostico}
-                      </p>
-
-                      <p>
-                        <strong>Alergias:</strong> {paciente?.alergias}
-                      </p>
-
-                      <p>
-                        <strong>Observaciones:</strong>{" "}
-                        {paciente?.observaciones}
-                      </p>
-                    </Card.Body>
-                  </Card>
-                )}
                 {/* TABS CLINICAS */}
 
                 <Row className="mt-4">
-                  <Col lg={3}>
-                    <PerfilProfesional profesional={profesional} />
-                  </Col>
-
-                  <Col lg={6}>
+                  <Col lg={12}>
                     <TabsClinicas
                       fichaClinicaComponent={
                         <FormularioFichaClinica
@@ -318,17 +301,18 @@ const DashboardProfesional = () => {
                           setPaciente={setPaciente}
                         />
                       }
-                      resumenComponent={
-                        <Card className="dashboard-modern-card">
-                          <Card.Body>
-                            <Card.Title>Resumen clínico</Card.Title>
-
-                            <p>Paciente actualmente en seguimiento clínico.</p>
-                          </Card.Body>
-                        </Card>
-                      }
+                      resumenComponent={<ResumenClinico paciente={paciente} />}
                       antropometriaComponent={
-                        <Antropometria paciente={paciente} />
+                        <>
+                          <FormularioAntropometria
+                            paciente={paciente}
+                            setPaciente={setPaciente}
+                          />
+
+                          <div className="mt-4">
+                            <Antropometria paciente={paciente} />
+                          </div>
+                        </>
                       }
                       signosVitalesComponent={
                         <>
@@ -342,7 +326,7 @@ const DashboardProfesional = () => {
                           </div>
 
                           <div className="mt-4">
-                            <ExamenesClinicos />
+                            <ExamenesClinicos paciente={paciente} onActualizarPaciente={buscarPaciente} />
                           </div>
                         </>
                       }
@@ -371,6 +355,18 @@ const DashboardProfesional = () => {
                           </Card.Body>
                         </Card>
                       }
+                      examenesClinicosComponent={
+                        <>
+                          <FormularioSolicitudExamenes
+                            paciente={paciente}
+                            setPaciente={setPaciente}
+                          />
+
+                          <div className="mt-4">
+                            <ExamenesClinicos paciente={paciente} onActualizarPaciente={buscarPaciente} />
+                          </div>
+                        </>
+                      }
                       indicacionesComponent={
                         <Card className="dashboard-modern-card">
                           <Card.Body>
@@ -397,10 +393,6 @@ const DashboardProfesional = () => {
                         </Card>
                       }
                     />
-                  </Col>
-
-                  <Col lg={4}>
-                    <AccionesRapidas />
                   </Col>
                 </Row>
               </>
