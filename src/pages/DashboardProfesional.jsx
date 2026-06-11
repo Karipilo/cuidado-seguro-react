@@ -70,6 +70,20 @@ const DashboardProfesional = () => {
 
         return;
       }
+      console.log("EVOLUCION ENVIADA:", {
+        fecha: new Date().toLocaleString(),
+        profesional: `${profesional?.userInfo?.nombreCompleto} (${profesional?.userInfo?.profesion})`,
+        descripcion: evolucion,
+        observaciones: "",
+        pacienteId: paciente?.id,
+      });
+      console.log("BODY COMPLETO:", {
+        fecha: new Date().toLocaleString(),
+        profesional: `${profesional?.userInfo?.nombreCompleto} (${profesional?.userInfo?.profesion})`,
+        descripcion: evolucion,
+        observaciones: "",
+        pacienteId: paciente?.id,
+      });
       const evoluciones = await request("/evoluciones", { token });
 
       /* =========================
@@ -209,6 +223,18 @@ const DashboardProfesional = () => {
         pacienteId: paciente?.id,
       });
       console.log("PROFESIONAL COMPLETO:", profesional);
+      console.log("PROFESIONAL COMPLETO:", profesional);
+
+      console.log("NOMBRE PROFESIONAL:", profesional?.userInfo?.nombreCompleto);
+
+      console.log("PROFESION:", profesional?.userInfo?.profesion);
+      console.log("BODY EVOLUCION", {
+        fecha: new Date().toLocaleString(),
+        profesional: `${profesional?.userInfo?.nombreCompleto} (${profesional?.userInfo?.profesion})`,
+        descripcion: evolucion,
+        observaciones: "",
+        pacienteId: paciente?.id,
+      });
       await request("/evoluciones", {
         method: "POST",
         token: profesional?.accessToken,
@@ -326,7 +352,10 @@ const DashboardProfesional = () => {
                           </div>
 
                           <div className="mt-4">
-                            <ExamenesClinicos paciente={paciente} onActualizarPaciente={buscarPaciente} />
+                            <ExamenesClinicos
+                              paciente={paciente}
+                              onActualizarPaciente={buscarPaciente}
+                            />
                           </div>
                         </>
                       }
@@ -363,7 +392,10 @@ const DashboardProfesional = () => {
                           />
 
                           <div className="mt-4">
-                            <ExamenesClinicos paciente={paciente} onActualizarPaciente={buscarPaciente} />
+                            <ExamenesClinicos
+                              paciente={paciente}
+                              onActualizarPaciente={buscarPaciente}
+                            />
                           </div>
                         </>
                       }
