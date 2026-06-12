@@ -87,60 +87,10 @@ const HistorialIndicaciones = ({
 
                                         </div>
 
-                                        <h6>
-
-                                            Medicamento
-
-                                        </h6>
-
-                                        <p>
-
+                                        <p className="mb-0">
                                             {
-                                                indicacion.medicamento
+                                                indicacion.indicacion
                                             }
-
-                                        </p>
-
-                                        <h6>
-
-                                            Dosis
-
-                                        </h6>
-
-                                        <p>
-
-                                            {
-                                                indicacion.dosis
-                                            }
-
-                                        </p>
-
-                                        <h6>
-
-                                            Frecuencia
-
-                                        </h6>
-
-                                        <p>
-
-                                            {
-                                                indicacion.frecuencia
-                                            }
-
-                                        </p>
-
-                                        <h6>
-
-                                            Duración
-
-                                        </h6>
-
-                                        <p>
-
-                                            {
-                                                indicacion.duracion
-                                            }
-
                                         </p>
 
                                         {

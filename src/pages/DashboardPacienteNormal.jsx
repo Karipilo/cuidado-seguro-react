@@ -40,6 +40,34 @@ const DashboardPacienteNormal = () => {
         console.log("DATA:", data);
 
         const persona = data?.usuario?.persona || {};
+        const rutLimpio = String(persona?.numeroDocumento || "").replace(/\./g, "").replace(/-/g, "").trim();
+
+        let misMedicamentos = [];
+        let misSignos = [];
+        let misEvoluciones = [];
+        let misIndicaciones = [];
+
+        try {
+          const fichas = await request("/fichas", { token });
+          const miFicha = fichas.find(
+            (f) => String(f.rutPaciente || "").replace(/\./g, "").replace(/-/g, "").trim() === rutLimpio
+          );
+
+          if (miFicha) {
+            misMedicamentos = miFicha.medicamentos || [];
+
+            misSignos = await request(`/signos-vitales/ficha/${miFicha.id}`, { token });
+
+            const todasEvoluciones = await request("/evoluciones", { token });
+            misEvoluciones = todasEvoluciones.filter((e) => e.pacienteId === miFicha.id);
+
+            const todasIndicaciones = await request("/indicaciones", { token });
+            misIndicaciones = todasIndicaciones.filter((i) => i.ficha?.id === miFicha.id);
+          }
+        } catch (err) {
+          console.error("Error al obtener detalles clínicos del paciente:", err);
+        }
+
         const usuarioCompleto = {
           nombres: persona?.nombres || "",
           apellidos: persona?.apellidos || "",
@@ -56,7 +84,11 @@ const DashboardPacienteNormal = () => {
           medicamentosActuales: data?.medicamentosActuales || "",
           contactoEmergencia: data?.contactoEmergencia || "",
           telefonoEmergencia: data?.telefonoEmergencia || "",
-          seguroMedico: data?.prevision || ""
+          seguroMedico: data?.prevision || "",
+          medicamentosRecetados: misMedicamentos,
+          signosVitales: misSignos,
+          evoluciones: misEvoluciones,
+          indicaciones: misIndicaciones
         };
 
         setUser(usuarioCompleto);
@@ -159,6 +191,47 @@ const DashboardPacienteNormal = () => {
                   <p><strong>Contacto:</strong> {user?.contactoEmergencia || "No registrado"}</p>
                   <p><strong>Teléfono:</strong> {user?.telefonoEmergencia || "No registrado"}</p>
                 </div>
+              </Card.Body>
+            </Card>
+          </Col>
+        </Row>
+
+        {/* MEDICAMENTOS RECETADOS POR EL PROFESIONAL */}
+        <Row>
+          <Col lg={12} className="mb-4">
+            <Card className="dashboard-modern-card">
+              <Card.Body>
+                <Card.Title className="dashboard-card-title">Medicamentos recetados por el profesional</Card.Title>
+                {user?.medicamentosRecetados?.length > 0 ? (
+                  <div className="table-responsive">
+                    <table className="table table-hover">
+                      <thead>
+                        <tr>
+                          <th>Medicamento</th>
+                          <th>Dosis</th>
+                          <th>Frecuencia</th>
+                          <th>Duración</th>
+                          <th>Profesional</th>
+                          <th>Observaciones</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        {user.medicamentosRecetados.map((med, index) => (
+                          <tr key={index}>
+                            <td><strong>{med.nombre}</strong></td>
+                            <td>{med.dosis}</td>
+                            <td>{med.frecuencia}</td>
+                            <td>{med.diasTratamiento} días</td>
+                            <td>{med.profesional || "No registrado"}</td>
+                            <td>{med.observaciones || "Sin observaciones"}</td>
+                          </tr>
+                        ))}
+                      </tbody>
+                    </table>
+                  </div>
+                ) : (
+                  <p className="text-muted mb-0">No tienes medicamentos recetados por profesionales.</p>
+                )}
               </Card.Body>
             </Card>
           </Col>

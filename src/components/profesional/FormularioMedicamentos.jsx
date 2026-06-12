@@ -31,13 +31,20 @@ const FormularioMedicamentos = ({ paciente, setPaciente }) => {
       console.log("PACIENTE COMPLETO:", paciente);
       console.log("PACIENTE ID:", paciente?.id);
 
+      const nombreProf = sesion?.userInfo?.nombreCompleto || sesion?.username || "Profesional";
+      const cargoProf = sesion?.userInfo?.profesion ? ` (${sesion.userInfo.profesion})` : "";
+      const profesionalFirma = `${nombreProf}${cargoProf}`;
+
       console.log("MEDICAMENTO A ENVIAR:", {
         nombre: formulario.nombre,
         dosis: formulario.dosis,
         frecuencia: formulario.frecuencia,
         diasTratamiento: Number(formulario.diasTratamiento) || null,
         observaciones: formulario.observaciones,
-        ficha: paciente.id,
+        profesional: profesionalFirma,
+        ficha: {
+          id: paciente.id,
+        },
       });
       const nuevoMedicamento = await request("/medicamentos", {
         method: "POST",
@@ -48,7 +55,10 @@ const FormularioMedicamentos = ({ paciente, setPaciente }) => {
           frecuencia: formulario.frecuencia,
           diasTratamiento: Number(formulario.diasTratamiento) || null,
           observaciones: formulario.observaciones,
-          ficha: paciente.id,
+          profesional: profesionalFirma,
+          ficha: {
+            id: paciente.id,
+          },
         },
       });
 
@@ -168,6 +178,12 @@ const FormularioMedicamentos = ({ paciente, setPaciente }) => {
                 <p className="mb-1">
                   <strong>Días:</strong> {medicamento.diasTratamiento}
                 </p>
+
+                {medicamento.profesional && (
+                  <p className="mb-1 text-muted">
+                    <small><strong>Recetado por:</strong> {medicamento.profesional}</small>
+                  </p>
+                )}
 
                 {medicamento.observaciones && (
                   <p className="mb-0">
