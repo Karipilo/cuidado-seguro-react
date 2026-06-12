@@ -39,6 +39,11 @@ const DashboardPacienteNormal = () => {
 
         console.log("DATA:", data);
 
+        //Agregar logs para revisar la estructura de los datos obtenidos
+        const fichas = await request("/fichas", { token });
+
+        console.log("FICHAS:", fichas);
+
         const persona = data?.usuario?.persona || {};
         const usuarioCompleto = {
           nombres: persona?.nombres || "",
