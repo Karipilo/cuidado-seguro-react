@@ -99,7 +99,7 @@ const HistorialEvoluciones = ({
                                         <p>
 
                                             {
-                                                evolucion.evolucion
+                                                evolucion.descripcion
                                             }
 
                                         </p>

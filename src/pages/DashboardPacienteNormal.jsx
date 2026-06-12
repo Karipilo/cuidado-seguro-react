@@ -39,12 +39,49 @@ const DashboardPacienteNormal = () => {
 
         console.log("DATA:", data);
 
+        //Agregar persona
+        const persona = data?.usuario?.persona || {};
+
         //Agregar logs para revisar la estructura de los datos obtenidos
         const fichas = await request("/fichas", { token });
 
         console.log("FICHAS:", fichas);
 
-        const persona = data?.usuario?.persona || {};
+        const fichaPaciente = fichas.find(
+          (f) => 
+            String(f.rutPaciente).trim() ===
+            String(persona?.numeroDocumento || "")
+              .replace(/\./g, "")
+              .trim()
+      );
+
+      console.log("FICHA PACIENTE:", fichaPaciente);
+
+      let signosVitales = [];
+      let evolucionesPaciente = [];
+
+      if (fichaPaciente?.id) {
+        signosVitales = await request(
+          `/signos-vitales/ficha/${fichaPaciente.id}`,
+          { token }
+        );
+
+        console.log("SIGNOS VITALES:", signosVitales);
+      
+      if (fichaPaciente?.id) {
+        const evoluciones = await request(
+          "/evoluciones",
+          { token }
+        );
+
+        evolucionesPaciente = evoluciones. filter(
+          (e) => e.pacienteId === fichaPaciente.id
+        );
+        console.log("EVOLUCIONES PACIENTE:", evolucionesPaciente);
+      }
+    }
+
+        
         const usuarioCompleto = {
           nombres: persona?.nombres || "",
           apellidos: persona?.apellidos || "",
@@ -61,7 +98,9 @@ const DashboardPacienteNormal = () => {
           medicamentosActuales: data?.medicamentosActuales || "",
           contactoEmergencia: data?.contactoEmergencia || "",
           telefonoEmergencia: data?.telefonoEmergencia || "",
-          seguroMedico: data?.prevision || ""
+          seguroMedico: data?.prevision || "",
+          signosVitales: signosVitales,
+          evoluciones: evolucionesPaciente,
         };
 
         setUser(usuarioCompleto);
