@@ -34,10 +34,11 @@ const FormularioSignosVitales = ({ paciente, setPaciente }) => {
       }
 
       const sesion = getMemoryJSON("sesion");
-      console.log("SESION COMPLETA:", sesion);
 
-      console.log("PACIENTE:", paciente);
       console.log("SESION COMPLETA:", sesion);
+      console.log("PACIENTE:", paciente);
+      console.log("USER INFO:", sesion?.userInfo);
+      console.log("PROFESION:", sesion?.userInfo?.profesion);
       const nuevosSignos = await request(`/signos-vitales/${paciente.id}`, {
         method: "POST",
         token: sesion?.accessToken,
@@ -46,7 +47,7 @@ const FormularioSignosVitales = ({ paciente, setPaciente }) => {
           frecuencia: Number(formulario.frecuencia),
           temperatura: Number(formulario.temperatura),
           saturacion: Number(formulario.saturacion),
-          profesional: `${sesion?.userInfo?.nombreCompleto} (${sesion?.userInfo?.profesion})`,
+          profesional: `${sesion?.userInfo?.nombreCompleto} (${sesion?.userInfo?.tipoProfesion})`,
           fecha: new Date().toLocaleString(),
         },
       });
