@@ -9,6 +9,7 @@ const TabsClinicas = ({
   examenesClinicosComponent,
   evolucionComponent,
   indicacionesComponent,
+  medicamentosComponent,
 }) => {
   const [activeTab, setActiveTab] = useState("resumen");
 
@@ -45,6 +46,10 @@ const TabsClinicas = ({
 
       <Tab eventKey="indicaciones" title="Indicaciones">
         <div className="mt-4">{indicacionesComponent}</div>
+      </Tab>
+
+      <Tab eventKey="medicamentos" title="Medicamentos">
+        <div className="mt-4">{medicamentosComponent}</div>
       </Tab>
     </Tabs>
   );
