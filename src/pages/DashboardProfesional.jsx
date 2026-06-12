@@ -21,6 +21,7 @@ import { request } from "../utils/api";
 import ResumenClinico from "../components/profesional/ResumenClinico";
 import FormularioAntropometria from "../components/profesional/FormularioAntropometria";
 import FormularioSolicitudExamenes from "../components/profesional/FormularioSolicitudExamenes";
+import FormularioMedicamentos from "../components/profesional/FormularioMedicamentos";
 
 const DashboardProfesional = () => {
   const navigate = useNavigate();
@@ -158,9 +159,29 @@ const DashboardProfesional = () => {
        OBTENER MEDICAMENTOS
     ========================== */
 
-      const medicamentos = await request("/medicamentos", { token });
+      let medicamentos = [];
+
+      try {
+        medicamentos = await request("/medicamentos", { token });
+
+        console.log("MEDICAMENTOS DESDE API:", medicamentos);
+      } catch (error) {
+        console.error("ERROR OBTENIENDO MEDICAMENTOS:", error);
+
+        if (error?.response) {
+          console.log("STATUS:", error.response.status);
+          console.log("DATA:", error.response.data);
+        }
+      }
 
       console.log("MEDICAMENTOS:", medicamentos);
+      console.log("MEDICAMENTOS JSON:", JSON.stringify(medicamentos, null, 2));
+
+      medicamentos.forEach((m) => {
+        console.log("MEDICAMENTO COMPLETO:", JSON.stringify(m, null, 2));
+      });
+
+      console.log("ID PACIENTE:", encontrado.id);
 
       /* =========================
        FILTRAR POR ficha_id
@@ -169,6 +190,9 @@ const DashboardProfesional = () => {
       const medicamentosPaciente = medicamentos.filter(
         (m) => m.ficha?.id === encontrado.id,
       );
+      console.log("MEDICAMENTOS DESDE API:", medicamentos);
+      console.log("MEDICAMENTOS FILTRADOS:", medicamentosPaciente);
+      console.log("ID FICHA ENCONTRADO:", encontrado.id);
 
       console.log("MEDICAMENTOS PACIENTE:", medicamentosPaciente);
 
@@ -195,6 +219,7 @@ const DashboardProfesional = () => {
         diagnostico: encontrado.diagnostico,
         observaciones: encontrado.observaciones,
         medicamentosActuales: medicamentosTexto,
+        medicamentos: medicamentosPaciente,
         antropometria: antropometrias,
         signosVitales: signosVitales,
         evoluciones: evolucionesPaciente,
@@ -358,6 +383,12 @@ const DashboardProfesional = () => {
                             />
                           </div>
                         </>
+                      }
+                      medicamentosComponent={
+                        <FormularioMedicamentos
+                          paciente={paciente}
+                          setPaciente={setPaciente}
+                        />
                       }
                       evolucionComponent={
                         <Card id="evolucion" className="dashboard-modern-card">

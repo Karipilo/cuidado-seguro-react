@@ -34,6 +34,9 @@ const ResumenClinico = ({ paciente, onGuardar }) => {
       case "Evolución":
         return "info";
 
+      case "Medicamento":
+        return "primary";
+
       case "Examen":
         return "danger";
 
@@ -124,6 +127,22 @@ IMC: ${imc}`,
     });
   });
 
+  paciente?.medicamentos?.forEach((registro) => {
+    resumen.push({
+      tipo: "Medicamento",
+      fecha: "Tratamiento vigente",
+      detalle: `Medicamento: ${registro.nombre}
+
+Dosis: ${registro.dosis}
+
+Frecuencia: ${registro.frecuencia}
+
+Duración: ${registro.diasTratamiento} días
+
+${registro.observaciones || ""}`,
+    });
+  });
+
   paciente?.examenes?.forEach((registro) => {
     resumen.push({
       tipo: "Examen",
@@ -155,6 +174,8 @@ ${registro.observacion ? `Observación: ${registro.observacion}` : ""}`,
     antropometria: resumen.filter((r) => r.tipo === "Antropometría").length,
 
     signos: resumen.filter((r) => r.tipo === "Signos Vitales").length,
+
+    medicamentos: resumen.filter((r) => r.tipo === "Medicamento").length,
   };
 
   const resumenOrdenado = resumen.reverse();
@@ -178,6 +199,9 @@ ${registro.observacion ? `Observación: ${registro.observacion}` : ""}`,
 
             case "signos":
               return item.tipo === "Signos Vitales";
+
+            case "medicamentos":
+              return item.tipo === "Medicamento";
 
             default:
               return true;
@@ -228,6 +252,11 @@ ${registro.observacion ? `Observación: ${registro.observacion}` : ""}`,
           <Tab
             eventKey="signos"
             title={`Signos Vitales (${contadores.signos})`}
+          />
+
+          <Tab
+            eventKey="medicamentos"
+            title={`Medicamentos (${contadores.medicamentos})`}
           />
         </Tabs>
 
