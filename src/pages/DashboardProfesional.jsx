@@ -180,6 +180,7 @@ const DashboardProfesional = () => {
       medicamentos.forEach((m) => {
         console.log("MEDICAMENTO COMPLETO:", JSON.stringify(m, null, 2));
       });
+      console.log("PACIENTE ENCONTRADO:", encontrado);
 
       console.log("ID PACIENTE:", encontrado.id);
 
@@ -201,8 +202,8 @@ const DashboardProfesional = () => {
     ========================== */
 
       const medicamentosTexto =
-        medicamentosPaciente.length > 0
-          ? medicamentosPaciente.map((m) => m.nombre).join(", ")
+        encontrado.medicamentos?.length > 0
+          ? encontrado.medicamentos.map((m) => m.nombre).join(", ")
           : "Sin medicamentos registrados";
 
       /* =========================
@@ -219,7 +220,7 @@ const DashboardProfesional = () => {
         diagnostico: encontrado.diagnostico,
         observaciones: encontrado.observaciones,
         medicamentosActuales: medicamentosTexto,
-        medicamentos: medicamentosPaciente,
+        medicamentos: encontrado.medicamentos || [],
         antropometria: antropometrias,
         signosVitales: signosVitales,
         evoluciones: evolucionesPaciente,
