@@ -158,6 +158,17 @@ const DashboardPacienteNormal = () => {
     );
   }
 
+  // Revisar qué datos llegan desde el backend
+  console.log(
+    "PACIENTE ACTIVO:",
+    pacienteActivo
+  );
+
+  console.log(
+    "PACIENTE ACTIVO EVOLUCIONES:",
+    pacienteActivo?.evoluciones
+  );
+  
   return (
     <DashboardLayout usuario={user}>
       <Container fluid>
@@ -246,7 +257,9 @@ const DashboardPacienteNormal = () => {
 
         <Row>
           <Col lg={12} className="mb-4">
-            <HistorialClinico />
+            <HistorialClinico
+              evoluciones={pacienteActivo?.evoluciones} 
+            />
           </Col>
         </Row>
       </Container>

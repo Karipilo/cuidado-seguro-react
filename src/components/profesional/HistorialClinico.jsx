@@ -6,6 +6,12 @@ const HistorialClinico = ({
     evoluciones = []
 }) => {
 
+    // Revisar qué datos llegan desde el backend
+    console.log(
+        "HISTORIAL CLÍNICO - EVOLUCIONES:",
+        evoluciones
+    );
+
     return (
 
         <Card className="dashboard-modern-card">
@@ -53,13 +59,13 @@ const HistorialClinico = ({
 
                                             <h6 className="mb-1">
 
-                                                {ev.profesional}
+                                                Evolución Clínica
 
                                             </h6>
 
                                             <small className="text-muted">
 
-                                                {ev.profesion}
+                                                Registro médico
 
                                             </small>
 
@@ -75,9 +81,18 @@ const HistorialClinico = ({
 
                                     <p className="mb-0 mt-3">
 
-                                        {ev.texto}
+                                        {ev.descripcion}
 
                                     </p>
+
+                                    {
+                                        ev.observaciones &&(
+                                            <p className="mt-2 text-muted">
+                                                <strong>Observaciones:</strong> {ev.observaciones} 
+                                                
+                                            </p>
+                                        )
+                                    }
 
                                 </div>
 
