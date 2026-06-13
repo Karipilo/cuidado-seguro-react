@@ -4,7 +4,7 @@ import { Button, Card, Col, Form, Row } from "react-bootstrap";
 import { getMemoryJSON } from "../../utils/memoryStore";
 import { request } from "../../utils/api";
 
-const FormularioMedicamentos = ({ paciente, setPaciente }) => {
+const FormularioMedicamentos = ({ paciente, setPaciente, profesional }) => {
   const [formulario, setFormulario] = useState({
     nombre: "",
     dosis: "",

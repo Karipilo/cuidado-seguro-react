@@ -9,7 +9,7 @@ import {
   DropletHalf,
 } from "react-bootstrap-icons";
 
-const SignosVitales = ({ paciente }) => {
+const SignosVitales = ({ paciente, profesional }) => {
   const ultimoRegistro =
     paciente?.signosVitales?.[paciente.signosVitales.length - 1];
 

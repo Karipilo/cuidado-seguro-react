@@ -55,14 +55,38 @@ const DashboardPacienteNormal = () => {
 
           if (miFicha) {
             misMedicamentos = miFicha.medicamentos || [];
-
             misSignos = await request(`/signos-vitales/ficha/${miFicha.id}`, { token });
-
             const todasEvoluciones = await request("/evoluciones", { token });
             misEvoluciones = todasEvoluciones.filter((e) => e.pacienteId === miFicha.id);
 
-            const todasIndicaciones = await request("/indicaciones", { token });
-            misIndicaciones = todasIndicaciones.filter((i) => i.ficha?.id === miFicha.id);
+            const todasIndicaciones = await request(
+              "/indicaciones",
+              { token }
+            );
+
+            misIndicaciones = todasIndicaciones.filter(
+              (i) => i.ficha?.id === miFicha.id
+            );
+
+            console.log(
+              "SIGNOS:",
+              JSON.stringify(misSignos, null, 2)
+            );
+
+            console.log(
+              "INDICACIONES:",
+              JSON.stringify(misIndicaciones, null, 2)
+            );
+
+            console.log(
+              "EVOLUCIONES:",
+              JSON.stringify(misEvoluciones, null, 2)
+            );
+
+            console.log(
+              "ID:",
+              data?.id
+            );
           }
         } catch (err) {
           console.error("Error al obtener detalles clínicos del paciente:", err);
@@ -107,6 +131,9 @@ const DashboardPacienteNormal = () => {
 
     obtenerUsuario();
 
+
+
+
   }, [navigate]);
 
   if (loading) {
@@ -142,7 +169,7 @@ const DashboardPacienteNormal = () => {
           <Badge bg="primary" className="status-badge">Paciente activo</Badge>
         </div>
 
-        
+
 
         <Row>
           {/* INFORMACIÓN PERSONAL */}

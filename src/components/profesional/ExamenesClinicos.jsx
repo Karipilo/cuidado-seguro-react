@@ -3,7 +3,7 @@ import { Card, Badge, Table, Modal, Button, Form } from "react-bootstrap";
 import { request } from "../../utils/api";
 import { getMemoryJSON } from "../../utils/memoryStore";
 
-const ExamenesClinicos = ({ paciente, onActualizarPaciente }) => {
+const ExamenesClinicos = ({ paciente, onActualizarPaciente, profesional }) => {
   console.log("EXAMENES PACIENTE:", paciente?.examenes);
 
   const [resultados, setResultados] = useState({});

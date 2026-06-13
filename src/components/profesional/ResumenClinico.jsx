@@ -10,7 +10,7 @@ import {
   Tab,
 } from "react-bootstrap";
 
-const ResumenClinico = ({ paciente, onGuardar }) => {
+const ResumenClinico = ({ paciente, onGuardar, profesional }) => {
   const [formulario, setFormulario] = useState({
     motivoConsulta: "",
     diagnostico: "",

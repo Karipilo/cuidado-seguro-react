@@ -129,9 +129,7 @@ const DashboardProfesional = () => {
 
       console.log("EXAMENES:", examenes);
 
-      const examenesPaciente = examenes.filter(
-        (e) => e.ficha?.id === encontrado.id,
-      );
+      const examenesPaciente = examenes.filter((e) => e.ficha === encontrado.id,);
 
       console.log("EXAMENES PACIENTE:", examenesPaciente);
       console.log(
@@ -146,7 +144,7 @@ const DashboardProfesional = () => {
       console.log("INDICACIONES:", indicaciones);
 
       const indicacionesPaciente = indicaciones.filter(
-        (i) => i.ficha?.id === encontrado.id,
+        (i) => i.id === encontrado.id,
       );
 
       console.log("INDICACIONES PACIENTE:", indicacionesPaciente);
@@ -255,7 +253,7 @@ const DashboardProfesional = () => {
         return;
       }
       console.log("EVOLUCION ENVIADA:", {
-        fecha: new Date().toLocaleString(),
+        fecha: new Date().toISOString().slice(0, 19),
         profesional: profesional?.nombreCompleto,
         descripcion: evolucion,
         observaciones: "",
@@ -308,7 +306,7 @@ const DashboardProfesional = () => {
         token: profesional?.accessToken,
         body: {
           fecha: new Date().toLocaleString(),
-          profesional: `${profesional?.userInfo?.nombreCompleto} (${profesional?.userInfo?.profesion})`,
+          profesional: `${profesional?.userInfo?.nombreCompleto}`,
           indicacion: indicacion,
           ficha: {
             id: paciente.id,
@@ -366,35 +364,38 @@ const DashboardProfesional = () => {
                           setPaciente={setPaciente}
                         />
                       }
-                      resumenComponent={<ResumenClinico paciente={paciente} />}
+                      resumenComponent={<ResumenClinico paciente={paciente} profesional={profesional?.userInfo?.nombreCompleto}/>}
                       antropometriaComponent={
                         <>
                           <FormularioAntropometria
                             paciente={paciente}
                             setPaciente={setPaciente}
+                            profesional={profesional?.userInfo?.nombreCompleto}
                           />
 
                           <div className="mt-4">
-                            <Antropometria paciente={paciente} />
+                            <Antropometria paciente={paciente} 
+                            profesional={profesional?.userInfo?.nombreCompleto}/>
                           </div>
 
                           <div className="mt-4">
-                            <HistorialAntropometria paciente={paciente} />
+                            <HistorialAntropometria paciente={paciente} profesional={profesional?.userInfo?.nombreCompleto}/>
                           </div>
                         </>
                       }
                       signosVitalesComponent={
                         <>
                           <div className="mt-4">
-                            <SignosVitales paciente={paciente} />
+                            <SignosVitales paciente={paciente} profesional={profesional?.userInfo?.nombreCompleto}/>
                           </div>
                           <FormularioSignosVitales
                             paciente={paciente}
                             setPaciente={setPaciente}
+                            profesional={profesional?.userInfo?.nombreCompleto}
                           />
 
                           <div className="mt-4">
-                            <HistorialSignosVitales paciente={paciente} />
+                            <HistorialSignosVitales paciente={paciente} profesional={profesional?.userInfo?.nombreCompleto}/>
                           </div>
                         </>
                       }
@@ -403,12 +404,14 @@ const DashboardProfesional = () => {
                           <FormularioMedicamentos
                             paciente={paciente}
                             setPaciente={setPaciente}
+                            profesional={profesional?.userInfo?.nombreCompleto}
                           />
 
                           <div className="mt-4">
                             <HistorialMedicamentos
                               paciente={paciente}
                               onActualizarPaciente={buscarPaciente}
+                              profesional={profesional?.userInfo?.nombreCompleto}
                             />
                           </div>
                         </>
@@ -445,6 +448,7 @@ const DashboardProfesional = () => {
                             <HistorialEvoluciones
                               paciente={paciente}
                               onActualizarPaciente={buscarPaciente}
+                              profesional={profesional?.userInfo?.nombreCompleto}
                             />
                           </div>
                         </>
@@ -454,12 +458,14 @@ const DashboardProfesional = () => {
                           <FormularioSolicitudExamenes
                             paciente={paciente}
                             onActualizarPaciente={buscarPaciente}
+                            profesional={profesional?.userInfo?.nombreCompleto}
                           />
 
                           <div className="mt-4">
                             <ExamenesClinicos
                               paciente={paciente}
                               onActualizarPaciente={buscarPaciente}
+                              profesional={profesional?.userInfo?.nombreCompleto}
                             />
                           </div>
                         </>
@@ -494,6 +500,7 @@ const DashboardProfesional = () => {
                             <HistorialIndicaciones
                               paciente={paciente}
                               onActualizarPaciente={buscarPaciente}
+                              profesional={profesional?.userInfo?.nombreCompleto}
                             />
                           </div>
                         </>
