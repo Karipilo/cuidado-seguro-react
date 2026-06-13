@@ -31,13 +31,23 @@ const FormularioMedicamentos = ({ paciente, setPaciente }) => {
       console.log("PACIENTE COMPLETO:", paciente);
       console.log("PACIENTE ID:", paciente?.id);
 
+      const nombreProf =
+        sesion?.userInfo?.nombreCompleto || sesion?.username || "Profesional";
+      const cargoProf = sesion?.userInfo?.profesion
+        ? ` (${sesion.userInfo.profesion})`
+        : "";
+      const profesionalFirma = `${nombreProf}${cargoProf}`;
+
       console.log("MEDICAMENTO A ENVIAR:", {
         nombre: formulario.nombre,
         dosis: formulario.dosis,
         frecuencia: formulario.frecuencia,
         diasTratamiento: Number(formulario.diasTratamiento) || null,
         observaciones: formulario.observaciones,
-        ficha: paciente.id,
+        profesional: profesionalFirma,
+        ficha: {
+          id: paciente.id,
+        },
       });
       const nuevoMedicamento = await request("/medicamentos", {
         method: "POST",
@@ -48,6 +58,7 @@ const FormularioMedicamentos = ({ paciente, setPaciente }) => {
           frecuencia: formulario.frecuencia,
           diasTratamiento: Number(formulario.diasTratamiento) || null,
           observaciones: formulario.observaciones,
+          profesional: profesionalFirma,
           ficha: paciente.id,
         },
       });
@@ -147,39 +158,6 @@ const FormularioMedicamentos = ({ paciente, setPaciente }) => {
         >
           Guardar medicamento
         </Button>
-        <hr className="my-4" />
-
-        <h5>Medicamentos prescritos</h5>
-
-        {paciente?.medicamentos?.length > 0 ? (
-          paciente.medicamentos.map((medicamento) => (
-            <Card key={medicamento.id} className="mt-3 border-0 shadow-sm">
-              <Card.Body>
-                <h6>{medicamento.nombre}</h6>
-
-                <p className="mb-1">
-                  <strong>Dosis:</strong> {medicamento.dosis}
-                </p>
-
-                <p className="mb-1">
-                  <strong>Frecuencia:</strong> {medicamento.frecuencia}
-                </p>
-
-                <p className="mb-1">
-                  <strong>Días:</strong> {medicamento.diasTratamiento}
-                </p>
-
-                {medicamento.observaciones && (
-                  <p className="mb-0">
-                    <strong>Observaciones:</strong> {medicamento.observaciones}
-                  </p>
-                )}
-              </Card.Body>
-            </Card>
-          ))
-        ) : (
-          <p className="text-muted mt-3">No existen medicamentos prescritos.</p>
-        )}
       </Card.Body>
     </Card>
   );

@@ -1,192 +1,218 @@
-import React from "react";
+import React, { useState } from "react";
 
 import {
-    Card,
-    Badge
+  Card,
+  Table,
+  Button,
+  Modal,
+  Form,
 } from "react-bootstrap";
 
+import { request } from "../../utils/api";
+import { getMemoryJSON } from "../../utils/memoryStore";
+
 const HistorialIndicaciones = ({
-    paciente
+  paciente,
+  onActualizarPaciente,
 }) => {
 
-    return (
+  const [mostrarModal, setMostrarModal] =
+    useState(false);
 
-        <Card className="dashboard-modern-card">
+  const [indicacionSeleccionada,
+    setIndicacionSeleccionada] =
+    useState(null);
 
-            <Card.Body>
+  const [textoIndicacion,
+    setTextoIndicacion] =
+    useState("");
 
-                <Card.Title
-                    className="dashboard-card-title"
-                >
+  const abrirModal = (indicacion) => {
 
-                    Indicaciones Médicas
+    setIndicacionSeleccionada(indicacion);
 
-                </Card.Title>
+    setTextoIndicacion(
+      indicacion.indicacion || ""
+    );
+
+    setMostrarModal(true);
+  };
+
+  const actualizarIndicacion = async () => {
+
+    try {
+
+      if (!indicacionSeleccionada) {
+        return;
+      }
+
+      const sesion =
+        getMemoryJSON("sesion");
+
+      await request(
+        `/indicaciones/${indicacionSeleccionada.id}`,
+        {
+          method: "PUT",
+          token: sesion?.accessToken,
+          body: {
+            ...indicacionSeleccionada,
+            indicacion: textoIndicacion,
+          },
+        }
+      );
+
+      setMostrarModal(false);
+
+      await onActualizarPaciente();
+
+      alert("Indicación actualizada");
+
+    } catch (error) {
+
+      console.error(error);
+
+      alert(
+        "Error al actualizar indicación"
+      );
+    }
+  };
+
+  return (
+    <Card className="dashboard-modern-card">
+
+      <Modal
+        show={mostrarModal}
+        onHide={() => setMostrarModal(false)}
+        centered
+      >
+
+        <Modal.Header closeButton>
+          <Modal.Title>
+            Editar Indicación
+          </Modal.Title>
+        </Modal.Header>
+
+        <Modal.Body>
+
+          <Form.Control
+            as="textarea"
+            rows={6}
+            value={textoIndicacion}
+            onChange={(e) =>
+              setTextoIndicacion(
+                e.target.value
+              )
+            }
+          />
+
+        </Modal.Body>
+
+        <Modal.Footer>
+
+          <Button
+            variant="secondary"
+            onClick={() =>
+              setMostrarModal(false)
+            }
+          >
+            Cancelar
+          </Button>
+
+          <Button
+            variant="success"
+            onClick={actualizarIndicacion}
+          >
+            Guardar
+          </Button>
+
+        </Modal.Footer>
+
+      </Modal>
+
+      <Card.Body>
+
+        <Card.Title className="dashboard-card-title">
+          Indicaciones Médicas
+        </Card.Title>
+
+        {
+          paciente?.indicaciones?.length > 0 ? (
+
+            <Table
+              responsive
+              hover
+              striped
+            >
+
+              <thead>
+                <tr>
+                  <th>Fecha</th>
+                  <th>Indicación</th>
+                  <th>Acciones</th>
+                </tr>
+              </thead>
+
+              <tbody>
 
                 {
-                    paciente?.indicaciones?.length > 0 ? (
+                  paciente.indicaciones
+                    .slice()
+                    .reverse()
+                    .map((indicacion) => (
 
-                        paciente.indicaciones
-                            .slice()
-                            .reverse()
-                            .map(
-                                (
-                                    indicacion,
-                                    index
-                                ) => (
+                      <tr key={indicacion.id}>
 
-                                    <div
-                                        key={index}
-                                        className="
-                                            border
-                                            rounded-4
-                                            p-3
-                                            mb-3
-                                        "
-                                    >
+                        <td>
+                          {indicacion.fecha}
+                        </td>
 
-                                        <div
-                                            className="
-                                                d-flex
-                                                justify-content-between
-                                                align-items-center
-                                                mb-2
-                                            "
-                                        >
+                        <td
+                          style={{
+                            whiteSpace:
+                              "pre-wrap",
+                          }}
+                        >
+                          {indicacion.indicacion}
+                        </td>
 
-                                            <div>
+                        <td>
 
-                                                <strong>
+                          <Button
+                            size="sm"
+                            variant="outline-primary"
+                            onClick={() =>
+                              abrirModal(
+                                indicacion
+                              )
+                            }
+                          >
+                            Editar
+                          </Button>
 
-                                                    {
-                                                        indicacion.profesional
-                                                    }
+                        </td>
 
-                                                </strong>
+                      </tr>
 
-                                                <p
-                                                    className="
-                                                        text-muted
-                                                        mb-0
-                                                    "
-                                                >
-
-                                                    {
-                                                        indicacion.fecha
-                                                    }
-
-                                                </p>
-
-                                            </div>
-
-                                            <Badge bg="success">
-
-                                                Indicaciones
-
-                                            </Badge>
-
-                                        </div>
-
-                                        <h6>
-
-                                            Medicamento
-
-                                        </h6>
-
-                                        <p>
-
-                                            {
-                                                indicacion.medicamento
-                                            }
-
-                                        </p>
-
-                                        <h6>
-
-                                            Dosis
-
-                                        </h6>
-
-                                        <p>
-
-                                            {
-                                                indicacion.dosis
-                                            }
-
-                                        </p>
-
-                                        <h6>
-
-                                            Frecuencia
-
-                                        </h6>
-
-                                        <p>
-
-                                            {
-                                                indicacion.frecuencia
-                                            }
-
-                                        </p>
-
-                                        <h6>
-
-                                            Duración
-
-                                        </h6>
-
-                                        <p>
-
-                                            {
-                                                indicacion.duracion
-                                            }
-
-                                        </p>
-
-                                        {
-                                            indicacion.observaciones && (
-
-                                                <>
-
-                                                    <h6>
-
-                                                        Observaciones
-
-                                                    </h6>
-
-                                                    <p>
-
-                                                        {
-                                                            indicacion.observaciones
-                                                        }
-
-                                                    </p>
-
-                                                </>
-
-                                            )
-                                        }
-
-                                    </div>
-
-                                )
-                            )
-
-                    ) : (
-
-                        <p>
-
-                            No existen indicaciones registradas.
-
-                        </p>
-
-                    )
+                    ))
                 }
 
-            </Card.Body>
+              </tbody>
 
-        </Card>
-    );
+            </Table>
+
+          ) : (
+
+            <p>
+              No existen indicaciones registradas.
+            </p>
+
+          )
+        }
+
+      </Card.Body>
+
+    </Card>
+  );
 };
 
 export default HistorialIndicaciones;

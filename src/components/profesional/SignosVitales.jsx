@@ -31,7 +31,11 @@ const SignosVitales = ({ paciente }) => {
         <div className="signo-info">
           <small>Frecuencia cardíaca</small>
 
-          <h3>{ultimoRegistro?.frecuencia || "--"}</h3>
+          <h3>
+            {ultimoRegistro?.frecuencia
+              ? `${ultimoRegistro.frecuencia} lpm`
+              : "--"}
+          </h3>
         </div>
       </div>
 
@@ -40,7 +44,11 @@ const SignosVitales = ({ paciente }) => {
 
         <div className="signo-info">
           <small>Temperatura</small>
-          <h3>{ultimoRegistro?.temperatura || "--"}</h3>
+          <h3>
+            {ultimoRegistro?.temperatura
+              ? `${ultimoRegistro.temperatura} °C`
+              : "--"}
+          </h3>
         </div>
       </div>
 
@@ -50,7 +58,11 @@ const SignosVitales = ({ paciente }) => {
         <div className="signo-info">
           <small>Saturación O₂</small>
 
-          <h3>{ultimoRegistro?.saturacion || "--"}</h3>
+          <h3>
+            {ultimoRegistro?.saturacion
+              ? `${ultimoRegistro.saturacion}%`
+              : "--"}
+          </h3>
         </div>
       </div>
     </div>

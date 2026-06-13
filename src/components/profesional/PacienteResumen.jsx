@@ -59,7 +59,13 @@ const PacienteResumen = ({ paciente }) => {
             <div className="paciente-info-card">
               <small className="text-muted">Alergias</small>
 
-              <h5>{paciente?.alergias || "Sin alergias"}</h5>
+              <h5
+                className={
+                  paciente?.alergias ? "text-danger fw-bold" : "text-success"
+                }
+              >
+                {paciente?.alergias || "Sin alergias"}
+              </h5>
             </div>
           </Col>
 
@@ -72,8 +78,6 @@ const PacienteResumen = ({ paciente }) => {
               </h5>
             </div>
           </Col>
-
-          
         </Row>
       </Card.Body>
     </Card>

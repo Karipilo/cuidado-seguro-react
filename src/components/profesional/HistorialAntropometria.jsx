@@ -1,173 +1,114 @@
 import React from "react";
 
-import {
-    Card,
-    Table,
-    Badge
-} from "react-bootstrap";
+import { Card, Table, Badge } from "react-bootstrap";
 
-const HistorialAntropometria = ({
-    paciente
-}) => {
+const HistorialAntropometria = ({ paciente }) => {
+  console.log("PACIENTE:", paciente);
+  console.log("ANTROPOMETRIA:", paciente?.antropometria);
 
-    const obtenerEstadoIMC = (imc) => {
+  const obtenerEstadoIMC = (imc) => {
+    if (imc < 18.5) {
+      return {
+        texto: "Bajo peso",
+        color: "warning",
+      };
+    }
 
-        if (imc < 18.5) {
+    if (imc < 25) {
+      return {
+        texto: "Normal",
+        color: "success",
+      };
+    }
 
-            return {
-                texto: "Bajo peso",
-                color: "warning"
-            };
-        }
+    if (imc < 30) {
+      return {
+        texto: "Sobrepeso",
+        color: "warning",
+      };
+    }
 
-        if (imc < 25) {
-
-            return {
-                texto: "Normal",
-                color: "success"
-            };
-        }
-
-        if (imc < 30) {
-
-            return {
-                texto: "Sobrepeso",
-                color: "warning"
-            };
-        }
-
-        return {
-            texto: "Obesidad",
-            color: "danger"
-        };
+    return {
+      texto: "Obesidad",
+      color: "danger",
     };
+  };
 
-    return (
+  const registros = [...(paciente?.antropometria || [])].sort(
+    (a, b) => new Date(b.fechaRegistro) - new Date(a.fechaRegistro),
+  );
 
-        <Card className="dashboard-modern-card">
+  return (
+    <Card className="dashboard-modern-card mt-4">
+      <Card.Body>
+        <Card.Title className="dashboard-card-title">
+          Historial Antropométrico
+        </Card.Title>
 
-            <Card.Body>
+        {registros.length > 0 ? (
+          <Table responsive hover striped>
+            <thead>
+              <tr>
+                <th>Fecha</th>
 
-                <Card.Title
-                    className="dashboard-card-title"
-                >
+                <th>Hora</th>
 
-                    Historial Antropométrico
+                <th>Peso</th>
 
-                </Card.Title>
+                <th>Altura</th>
 
-                {
-                    paciente?.antropometria?.length > 0 ? (
+                <th>IMC</th>
 
-                        <Table
-                            responsive
-                            hover
-                        >
+                <th>Estado</th>
+              </tr>
+            </thead>
 
-                            <thead>
+            <tbody>
+              {registros.map((registro, index) => {
+                const imc = (
+                  registro.peso /
+                  (registro.altura * registro.altura)
+                ).toFixed(1);
 
-                                <tr>
+                const estado = obtenerEstadoIMC(Number(imc));
 
-                                    <th>Fecha</th>
+                const fechaCompleta = new Date(registro.fechaRegistro);
 
-                                    <th>Peso</th>
+                const fecha = fechaCompleta.toLocaleDateString("es-CL");
 
-                                    <th>Altura</th>
+                const hora = fechaCompleta.toLocaleTimeString("es-CL", {
+                  hour: "2-digit",
+                  minute: "2-digit",
+                });
 
-                                    <th>IMC</th>
+                return (
+                  <tr key={index}>
+                    <td>{fecha}</td>
 
-                                    <th>Estado</th>
+                    <td>{hora}</td>
 
-                                </tr>
+                    <td>{registro.peso} kg</td>
 
-                            </thead>
+                    <td>{registro.altura} m</td>
 
-                            <tbody>
+                    <td>{imc}</td>
 
-                                {
-                                    paciente.antropometria.map(
-                                        (
-                                            registro,
-                                            index
-                                        ) => {
-
-                                            const imc =
-                                                (
-                                                    registro.peso /
-                                                    (
-                                                        registro.altura *
-                                                        registro.altura
-                                                    )
-                                                ).toFixed(1);
-
-                                            const estado =
-                                                obtenerEstadoIMC(imc);
-
-                                            return (
-
-                                                <tr key={index}>
-
-                                                    <td>
-
-                                                        {registro.fecha}
-
-                                                    </td>
-
-                                                    <td>
-
-                                                        {registro.peso} kg
-
-                                                    </td>
-
-                                                    <td>
-
-                                                        {registro.altura} m
-
-                                                    </td>
-
-                                                    <td>
-
-                                                        {imc}
-
-                                                    </td>
-
-                                                    <td>
-
-                                                        <Badge
-                                                            bg={estado.color}
-                                                        >
-
-                                                            {estado.texto}
-
-                                                        </Badge>
-
-                                                    </td>
-
-                                                </tr>
-                                            );
-                                        }
-                                    )
-                                }
-
-                            </tbody>
-
-                        </Table>
-
-                    ) : (
-
-                        <p>
-
-                            No existen registros antropométricos.
-
-                        </p>
-
-                    )
-                }
-
-            </Card.Body>
-
-        </Card>
-    );
+                    <td>
+                      <Badge bg={estado.color}>{estado.texto}</Badge>
+                    </td>
+                  </tr>
+                );
+              })}
+            </tbody>
+          </Table>
+        ) : (
+          <p className="text-muted mb-0">
+            No existen registros antropométricos.
+          </p>
+        )}
+      </Card.Body>
+    </Card>
+  );
 };
 
 export default HistorialAntropometria;

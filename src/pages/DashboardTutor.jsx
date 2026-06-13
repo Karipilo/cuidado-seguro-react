@@ -50,11 +50,65 @@ const DashboardTutor = () => {
             token,
           });
 
-          console.log("PACIENTE COMPLETO:", JSON.stringify(data, null, 2));
+          console.log("PACIENTE BASICO:", data);
 
-          setPacientes([data]);
+          const rutLimpio = String(rutPaciente || "").replace(/\./g, "").replace(/-/g, "").trim();
 
-          setPacienteActivo(data);
+          let misMedicamentos = [];
+          let misSignos = [];
+          let misEvoluciones = [];
+          let misIndicaciones = [];
+          let misExamenes = [];
+          let misAntropometrias = [];
+
+          try {
+            const fichas = await request("/fichas", { token });
+            const miFicha = fichas.find(
+              (f) => String(f.rutPaciente || "").replace(/\./g, "").replace(/-/g, "").trim() === rutLimpio
+            );
+
+            if (miFicha) {
+              misMedicamentos = miFicha.medicamentos || [];
+
+              misSignos = await request(`/signos-vitales/ficha/${miFicha.id}`, { token });
+
+              const todasEvoluciones = await request("/evoluciones", { token });
+              misEvoluciones = todasEvoluciones.filter((e) => e.pacienteId === miFicha.id);
+
+              const todasIndicaciones = await request("/indicaciones", { token });
+              misIndicaciones = todasIndicaciones.filter((i) => i.ficha?.id === miFicha.id);
+
+              const todosExamenes = await request("/examenes", { token });
+              misExamenes = todosExamenes.filter((e) => e.ficha?.id === miFicha.id);
+
+              try {
+                misAntropometrias = await request(`/antropometrias/${miFicha.id}`, { token });
+              } catch (e) {
+                console.error("Error fetching antropometrias:", e);
+              }
+            }
+          } catch (err) {
+            console.error("Error al obtener detalles clínicos del paciente:", err);
+          }
+
+          const pacienteCompleto = {
+            ...data,
+            numeroDocumento: data.rut,
+            nombres: data.nombre,
+            apellidos: data.apellido,
+            medicamentosRecetados: misMedicamentos,
+            signosVitales: misSignos,
+            evoluciones: misEvoluciones,
+            indicaciones: misIndicaciones,
+            examenes: misExamenes,
+            antropometria: misAntropometrias
+          };
+
+          console.log("PACIENTE COMPLETO INTEGRADO:", pacienteCompleto);
+
+          setPacientes([pacienteCompleto]);
+
+          setPacienteActivo(pacienteCompleto);
         } catch (error) {
           console.error("ERROR PACIENTE:", error);
         }
