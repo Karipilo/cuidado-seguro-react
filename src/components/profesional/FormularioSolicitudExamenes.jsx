@@ -3,7 +3,7 @@ import { Card, Form, Button, Row, Col } from "react-bootstrap";
 import { request } from "../../utils/api";
 import { getMemoryJSON } from "../../utils/memoryStore";
 
-const FormularioSolicitudExamenes = ({ paciente, onActualizarPaciente }) => {
+const FormularioSolicitudExamenes = ({ paciente, onActualizarPaciente, profesional }) => {
   const [seleccionados, setSeleccionados] = useState([]);
 
   const [observaciones, setObservaciones] = useState({
@@ -79,17 +79,15 @@ const FormularioSolicitudExamenes = ({ paciente, onActualizarPaciente }) => {
           body: {
             nombre: examen,
 
-            fecha: new Date().toLocaleString(),
+            fecha: new Date().toISOString().slice(0, 19),
 
             estado: "Solicitado",
 
-            profesional: `${sesion?.userInfo?.nombreCompleto} (${sesion?.userInfo?.profesion})`,
+            profesional: profesional,
 
             observacion: obtenerObservacion(examen),
-
-            ficha: {
-              id: paciente.id,
-            },
+            ficha: paciente.id,
+            
           },
         });
       }

@@ -14,6 +14,7 @@ import { getMemoryJSON } from "../../utils/memoryStore";
 const HistorialIndicaciones = ({
   paciente,
   onActualizarPaciente,
+  profesional,
 }) => {
 
   const [mostrarModal, setMostrarModal] =

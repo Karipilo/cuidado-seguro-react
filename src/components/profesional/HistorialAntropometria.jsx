@@ -2,7 +2,7 @@ import React from "react";
 
 import { Card, Table, Badge } from "react-bootstrap";
 
-const HistorialAntropometria = ({ paciente }) => {
+const HistorialAntropometria = ({ paciente, profesional }) => {
   console.log("PACIENTE:", paciente);
   console.log("ANTROPOMETRIA:", paciente?.antropometria);
 

@@ -3,7 +3,7 @@ import { Card, Row, Col, Form, Button } from "react-bootstrap";
 import { getMemoryJSON } from "../../utils/memoryStore";
 import { request } from "../../utils/api";
 
-const FormularioAntropometria = ({ paciente, setPaciente }) => {
+const FormularioAntropometria = ({ paciente, setPaciente, profesional }) => {
   const [formulario, setFormulario] = useState({
     peso: "",
     altura: "",

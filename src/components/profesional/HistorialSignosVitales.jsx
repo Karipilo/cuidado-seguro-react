@@ -2,7 +2,7 @@ import React from "react";
 
 import { Card, Table, Badge } from "react-bootstrap";
 
-const HistorialSignosVitales = ({ paciente }) => {
+const HistorialSignosVitales = ({ paciente, profesional }) => {
   const obtenerGrupoEtario = (edad) => {
     if (edad < 1) {
       return "recienNacido";

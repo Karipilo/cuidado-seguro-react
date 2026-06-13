@@ -4,7 +4,7 @@ import { Card, Table, Button, Modal, Form } from "react-bootstrap";
 
 import { request } from "../../utils/api";
 import { getMemoryJSON } from "../../utils/memoryStore";
-const HistorialEvoluciones = ({ paciente, onActualizarPaciente }) => {
+const HistorialEvoluciones = ({ paciente, onActualizarPaciente, profesional }) => {
   const [mostrarModal, setMostrarModal] = useState(false);
 
   const [evolucionSeleccionada, setEvolucionSeleccionada] = useState(null);

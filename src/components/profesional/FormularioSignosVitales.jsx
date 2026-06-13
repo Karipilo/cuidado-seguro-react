@@ -4,7 +4,7 @@ import { Button, Card, Col, Form, Row } from "react-bootstrap";
 import { getMemoryJSON } from "../../utils/memoryStore";
 import { request } from "../../utils/api";
 
-const FormularioSignosVitales = ({ paciente, setPaciente }) => {
+const FormularioSignosVitales = ({ paciente, setPaciente,profesional }) => {
   const [formulario, setFormulario] = useState({
     sistolica: "",
     diastolica: "",
@@ -63,8 +63,8 @@ const FormularioSignosVitales = ({ paciente, setPaciente }) => {
           frecuencia: Number(formulario.frecuencia),
           temperatura: Number(formulario.temperatura),
           saturacion: Number(formulario.saturacion),
-          profesional: `${sesion?.userInfo?.nombreCompleto} (${sesion?.userInfo?.profesion})`,
-          fecha: new Date().toLocaleString(),
+          profesional: profesional,
+          fecha: new Date().toISOString().slice(0, 19),
         },
       });
 

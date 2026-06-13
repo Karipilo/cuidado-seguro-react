@@ -220,11 +220,11 @@ const PanelClinico = () => {
       <Row>
         <Col lg={8}>
           <TabsClinicas
-            resumenComponent={<ResumenClinico paciente={pacienteActivo} />}
-            historialComponent={<ExamenesClinicos paciente={pacienteActivo} />}
-            signosVitalesComponent={<HistorialSignosVitales paciente={pacienteActivo} />}
-            evolucionComponent={<HistorialEvoluciones paciente={pacienteActivo} />}
-            indicacionesComponent={<HistorialIndicaciones paciente={pacienteActivo} />}
+            resumenComponent={<ResumenClinico paciente={pacienteActivo} profesional={profesional?.userInfo?.nombreCompleto}/>}
+            historialComponent={<ExamenesClinicos paciente={pacienteActivo} profesional={profesional?.userInfo?.nombreCompleto}/>}
+            signosVitalesComponent={<HistorialSignosVitales paciente={pacienteActivo} profesional={profesional?.userInfo?.nombreCompleto}/>}
+            evolucionComponent={<HistorialEvoluciones paciente={pacienteActivo} profesional={profesional?.userInfo?.nombreCompleto}/>}
+            indicacionesComponent={<HistorialIndicaciones paciente={pacienteActivo} profesional={profesional?.userInfo?.nombreCompleto}/>}
           />
         </Col>
 
