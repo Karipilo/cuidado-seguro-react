@@ -22,6 +22,12 @@ import ResumenClinico from "../components/profesional/ResumenClinico";
 import FormularioAntropometria from "../components/profesional/FormularioAntropometria";
 import FormularioSolicitudExamenes from "../components/profesional/FormularioSolicitudExamenes";
 import FormularioMedicamentos from "../components/profesional/FormularioMedicamentos";
+import HistorialAntropometria from "../components/profesional/HistorialAntropometria";
+import HistorialSignosVitales from "../components/profesional/HistorialSignosVitales";
+import AlertasSignosVitales from "../components/profesional/AlertasSignosVitales";
+import HistorialEvoluciones from "../components/profesional/HistorialEvoluciones";
+import HistorialIndicaciones from "../components/profesional/HistorialIndicaciones";
+import HistorialMedicamentos from "../components/profesional/HistorialMedicamentos";
 
 const DashboardProfesional = () => {
   const navigate = useNavigate();
@@ -128,6 +134,10 @@ const DashboardProfesional = () => {
       );
 
       console.log("EXAMENES PACIENTE:", examenesPaciente);
+      console.log(
+        "PRIMER EXAMEN:",
+        JSON.stringify(examenesPaciente[0], null, 2),
+      );
 
       const indicaciones = await request("/indicaciones", {
         token,
@@ -153,7 +163,10 @@ const DashboardProfesional = () => {
         (e) => e.pacienteId === encontrado.id,
       );
 
-      console.log("EVOLUCIONES PACIENTE:", evolucionesPaciente);
+      console.log(
+        "EVOLUCIONES PACIENTE:",
+        JSON.stringify(evolucionesPaciente, null, 2),
+      );
 
       /* =========================
        OBTENER MEDICAMENTOS
@@ -364,63 +377,83 @@ const DashboardProfesional = () => {
                           <div className="mt-4">
                             <Antropometria paciente={paciente} />
                           </div>
+
+                          <div className="mt-4">
+                            <HistorialAntropometria paciente={paciente} />
+                          </div>
                         </>
                       }
                       signosVitalesComponent={
                         <>
+                          <div className="mt-4">
+                            <SignosVitales paciente={paciente} />
+                          </div>
                           <FormularioSignosVitales
                             paciente={paciente}
                             setPaciente={setPaciente}
                           />
 
                           <div className="mt-4">
-                            <SignosVitales paciente={paciente} />
+                            <HistorialSignosVitales paciente={paciente} />
                           </div>
+                        </>
+                      }
+                      medicamentosComponent={
+                        <>
+                          <FormularioMedicamentos
+                            paciente={paciente}
+                            setPaciente={setPaciente}
+                          />
 
                           <div className="mt-4">
-                            <ExamenesClinicos
+                            <HistorialMedicamentos
                               paciente={paciente}
                               onActualizarPaciente={buscarPaciente}
                             />
                           </div>
                         </>
                       }
-                      medicamentosComponent={
-                        <FormularioMedicamentos
-                          paciente={paciente}
-                          setPaciente={setPaciente}
-                        />
-                      }
                       evolucionComponent={
-                        <Card id="evolucion" className="dashboard-modern-card">
-                          <Card.Body>
-                            <Card.Title className="dashboard-card-title">
-                              Registrar evolución clínica
-                            </Card.Title>
+                        <>
+                          {" "}
+                          <Card
+                            id="evolucion"
+                            className="dashboard-modern-card"
+                          >
+                            <Card.Body>
+                              <Card.Title className="dashboard-card-title">
+                                Registrar evolución clínica
+                              </Card.Title>
 
-                            <Form.Control
-                              as="textarea"
-                              className="dashboard-textarea"
-                              rows={5}
-                              placeholder="Escriba evolución clínica..."
-                              value={evolucion}
-                              onChange={(e) => setEvolucion(e.target.value)}
+                              <Form.Control
+                                as="textarea"
+                                className="dashboard-textarea"
+                                rows={5}
+                                placeholder="Escriba evolución clínica..."
+                                value={evolucion}
+                                onChange={(e) => setEvolucion(e.target.value)}
+                              />
+                              <Button
+                                className="mt-3 btn-dashboard-primary"
+                                onClick={guardarEvolucion}
+                              >
+                                Guardar evolución
+                              </Button>
+                            </Card.Body>
+                          </Card>
+                          <div className="mt-4">
+                            <HistorialEvoluciones
+                              paciente={paciente}
+                              onActualizarPaciente={buscarPaciente}
                             />
-
-                            <Button
-                              className="mt-3 btn-dashboard-primary"
-                              onClick={guardarEvolucion}
-                            >
-                              Guardar evolución
-                            </Button>
-                          </Card.Body>
-                        </Card>
+                          </div>
+                        </>
                       }
                       examenesClinicosComponent={
                         <>
                           <FormularioSolicitudExamenes
                             paciente={paciente}
-                            setPaciente={setPaciente}
+                            onActualizarPaciente={buscarPaciente}
                           />
 
                           <div className="mt-4">
@@ -432,29 +465,38 @@ const DashboardProfesional = () => {
                         </>
                       }
                       indicacionesComponent={
-                        <Card className="dashboard-modern-card">
-                          <Card.Body>
-                            <Card.Title className="dashboard-card-title">
-                              Indicaciones clínicas
-                            </Card.Title>
+                        <>
+                          <Card className="dashboard-modern-card">
+                            <Card.Body>
+                              <Card.Title className="dashboard-card-title">
+                                Indicaciones clínicas
+                              </Card.Title>
 
-                            <Form.Control
-                              as="textarea"
-                              rows={4}
-                              className="dashboard-textarea"
-                              placeholder="Escriba indicaciones..."
-                              value={indicacion}
-                              onChange={(e) => setIndicacion(e.target.value)}
+                              <Form.Control
+                                as="textarea"
+                                rows={4}
+                                className="dashboard-textarea"
+                                placeholder="Escriba indicaciones..."
+                                value={indicacion}
+                                onChange={(e) => setIndicacion(e.target.value)}
+                              />
+
+                              <Button
+                                className="mt-3 btn-dashboard-primary"
+                                onClick={guardarIndicacion}
+                              >
+                                Guardar indicación
+                              </Button>
+                            </Card.Body>
+                          </Card>
+
+                          <div className="mt-4">
+                            <HistorialIndicaciones
+                              paciente={paciente}
+                              onActualizarPaciente={buscarPaciente}
                             />
-
-                            <Button
-                              className="mt-3 btn-dashboard-primary"
-                              onClick={guardarIndicacion}
-                            >
-                              Guardar indicación
-                            </Button>
-                          </Card.Body>
-                        </Card>
+                          </div>
+                        </>
                       }
                     />
                   </Col>

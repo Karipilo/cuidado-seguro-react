@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import { Tabs, Tab } from "react-bootstrap";
 
 const TabsClinicas = ({
-  resumenComponent,
+  
   fichaClinicaComponent,
   antropometriaComponent,
   signosVitalesComponent,
@@ -20,9 +20,7 @@ const TabsClinicas = ({
       className="tabs-clinicas mb-4"
       id="tabs-clinicas"
     >
-      <Tab eventKey="resumen" title="Resumen">
-        <div className="mt-4">{resumenComponent}</div>
-      </Tab>
+      
 
       <Tab eventKey="ficha" title="Ficha Clínica">
         <div className="mt-4">{fichaClinicaComponent}</div>
