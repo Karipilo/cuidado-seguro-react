@@ -59,6 +59,7 @@ const DashboardPacienteNormal = () => {
 
       let signosVitales = [];
       let evolucionesPaciente = [];
+      let indicacionesPaciente = [];
 
       if (fichaPaciente?.id) {
         signosVitales = await request(
@@ -78,7 +79,23 @@ const DashboardPacienteNormal = () => {
           (e) => e.pacienteId === fichaPaciente.id
         );
         console.log("EVOLUCIONES PACIENTE:", evolucionesPaciente);
-      }
+
+        if (fichaPaciente?.id) {
+          const indicaciones = await request(
+            "/indicaciones",
+            { token }
+          );
+
+          console.log("INDICACIONES:", indicaciones);
+
+          indicacionesPaciente = indicaciones;
+
+          console.log(
+            "INDICACIONES PACIENTE:",
+            indicacionesPaciente
+          );
+        }
+      };
     }
 
         
@@ -101,10 +118,13 @@ const DashboardPacienteNormal = () => {
           seguroMedico: data?.prevision || "",
           signosVitales: signosVitales,
           evoluciones: evolucionesPaciente,
+          indicaciones: indicacionesPaciente,
         };
 
         setUser(usuarioCompleto);
         setPacienteActivo(usuarioCompleto);
+
+        console.log("USUARIO COMPLETO:", usuarioCompleto);
 
       } catch (error) {
         console.error("Error obteniendo usuario:", error);
