@@ -64,7 +64,7 @@ const FormularioSignosVitales = ({ paciente, setPaciente,profesional }) => {
           temperatura: Number(formulario.temperatura),
           saturacion: Number(formulario.saturacion),
           profesional: profesional,
-          fecha: new Date().toISOString().slice(0, 19),
+          
         },
       });
 

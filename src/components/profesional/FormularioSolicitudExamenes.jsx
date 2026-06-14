@@ -79,8 +79,6 @@ const FormularioSolicitudExamenes = ({ paciente, onActualizarPaciente, profesion
           body: {
             nombre: examen,
 
-            fecha: new Date().toISOString().slice(0, 19),
-
             estado: "Solicitado",
 
             profesional: profesional,

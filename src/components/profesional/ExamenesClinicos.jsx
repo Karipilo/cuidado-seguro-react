@@ -27,17 +27,28 @@ const ExamenesClinicos = ({ paciente, onActualizarPaciente, profesional }) => {
     try {
       const sesion = getMemoryJSON("sesion");
 
+      const body = {
+        id: examen.id,
+        nombre: examen.nombre,
+        fechaRegistro: examen.fechaRegistro,
+        estado: "Completado",
+        profesional: examen.profesional,
+        observacion: examen.observacion,
+        resultado: resultados[examen.id] || "",
+        ficha: paciente.id,
+      };
+
+      console.log("BODY GUARDAR:", body);
+      console.log("BODY GUARDAR JSON:", JSON.stringify(body, null, 2));
+
       await request(`/examenes/${examen.id}`, {
         method: "PUT",
         token: sesion?.accessToken,
-        body: {
-          ...examen,
-          estado: "Completado",
-          resultado: resultados[examen.id] || "",
-        },
+        body,
       });
 
       await onActualizarPaciente();
+
       alert("Resultado guardado");
     } catch (error) {
       console.error(error);
@@ -47,28 +58,37 @@ const ExamenesClinicos = ({ paciente, onActualizarPaciente, profesional }) => {
   };
 
   const actualizarResultado = async (examen) => {
-  try {
-    const sesion = getMemoryJSON("sesion");
+    try {
+      const sesion = getMemoryJSON("sesion");
 
-    await request(`/examenes/${examen.id}`, {
-      method: "PUT",
-      token: sesion?.accessToken,
-      body: {
-        ...examen,
-        resultado: resultados[examen.id],
-      },
-    });
+      const body = {
+        id: examen.id,
+        nombre: examen.nombre,
+        fechaRegistro: examen.fechaRegistro,
+        estado: examen.estado,
+        profesional: examen.profesional,
+        observacion: examen.observacion,
+        resultado: resultados[examen.id] || "",
+        ficha: paciente.id,
+      };
 
-    await onActualizarPaciente();
+      console.log("BODY ACTUALIZAR:", body);
 
-    alert("Resultado actualizado");
+      await request(`/examenes/${examen.id}`, {
+        method: "PUT",
+        token: sesion?.accessToken,
+        body,
+      });
 
-  } catch (error) {
-    console.error(error);
+      await onActualizarPaciente();
 
-    alert("Error al actualizar resultado");
-  }
-};
+      alert("Resultado actualizado");
+    } catch (error) {
+      console.error(error);
+
+      alert("Error al actualizar resultado");
+    }
+  };
 
   return (
     <Card className="dashboard-modern-card mb-4">
@@ -162,7 +182,13 @@ const ExamenesClinicos = ({ paciente, onActualizarPaciente, profesional }) => {
 
                     return (
                       <tr key={examen.id}>
-                        <td>{examen.fecha}</td>
+                        <td>
+                          {examen.fechaRegistro
+                            ? new Date(examen.fechaRegistro).toLocaleString(
+                                "es-CL",
+                              )
+                            : "--"}
+                        </td>
 
                         <td>{examen.nombre}</td>
 
