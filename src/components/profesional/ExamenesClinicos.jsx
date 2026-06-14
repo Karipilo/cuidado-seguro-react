@@ -31,10 +31,13 @@ const ExamenesClinicos = ({ paciente, onActualizarPaciente, profesional }) => {
         method: "PUT",
         token: sesion?.accessToken,
         body: {
-          ...examen,
-          estado: "Completado",
-          resultado: resultados[examen.id] || "",
-        },
+          nombreExamen: examen.nombreExamen,
+        tipoExamen: examen.tipoExamen,
+        fechaExamen: examen.fechaExamen,
+        estado: "Completado",
+        resultado: resultados[examen.id] || "",
+        fichaId: examen.ficha?.id || examen.fichaId,
+      },
       });
 
       await onActualizarPaciente();
@@ -54,18 +57,24 @@ const ExamenesClinicos = ({ paciente, onActualizarPaciente, profesional }) => {
       method: "PUT",
       token: sesion?.accessToken,
       body: {
-        ...examen,
-        resultado: resultados[examen.id],
-      },
+        nombreExamen: examen.nombreExamen,
+        tipoExamen: examen.tipoExamen,
+        fechaExamen: examen.fechaExamen,
+        estado: "Completado",
+        resultado: resultados[examen.id] || "",
+        fichaId: examen.ficha?.id || examen.fichaId,
+      }
     });
 
     await onActualizarPaciente();
 
     alert("Resultado actualizado");
+    console.log("RESULTADO ACTUALIZADO:", JSON.stringify(resultados[examen.id], null, 2));
 
   } catch (error) {
     console.error(error);
-
+    console.log(JSON.stringify(error, null, 2));
+    
     alert("Error al actualizar resultado");
   }
 };

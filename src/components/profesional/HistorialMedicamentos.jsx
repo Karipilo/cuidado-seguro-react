@@ -34,11 +34,28 @@ const HistorialMedicamentos = ({ paciente, onActualizarPaciente, profesional }) 
     try {
       const sesion = getMemoryJSON("sesion");
 
-      await request(`/medicamentos/${medicamentoSeleccionado.id}`, {
-        method: "PUT",
-        token: sesion?.accessToken,
-        body: formulario,
-      });
+      
+await request(`/medicamentos/${medicamentoSeleccionado.id}`, {
+  method: "PUT",
+  token: sesion?.accessToken,
+
+  body: {
+    nombre: formulario.nombre,
+    dosis: formulario.dosis,
+    frecuencia: formulario.frecuencia,
+
+    diasTratamiento:
+      Number(formulario.diasTratamiento) || null,
+
+    observaciones: formulario.observaciones,
+
+    profesional: profesional,
+
+    ficha: String(paciente.id),
+  },
+});
+
+
 
       setMostrarModal(false);
 

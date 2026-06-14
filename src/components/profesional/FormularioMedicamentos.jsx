@@ -52,20 +52,36 @@ const FormularioMedicamentos = ({ paciente, setPaciente, profesional }) => {
       const nuevoMedicamento = await request("/medicamentos", {
         method: "POST",
         token: sesion?.accessToken,
+
         body: {
           nombre: formulario.nombre,
           dosis: formulario.dosis,
           frecuencia: formulario.frecuencia,
-          diasTratamiento: Number(formulario.diasTratamiento) || null,
+
+          diasTratamiento:
+            Number(formulario.diasTratamiento) || null,
+
           observaciones: formulario.observaciones,
+
           profesional: profesionalFirma,
+
           ficha: paciente.id,
+
         },
       });
 
       setPaciente((prev) => ({
         ...prev,
-        medicamentos: [...(prev.medicamentos || []), nuevoMedicamento],
+
+        medicamentos: [
+          ...(prev.medicamentos || []),
+          nuevoMedicamento,
+        ],
+
+        medicamentosRecetados: [
+          ...(prev.medicamentosRecetados || []),
+          nuevoMedicamento,
+        ],
       }));
 
       alert("Medicamento guardado correctamente");
@@ -87,8 +103,8 @@ const FormularioMedicamentos = ({ paciente, setPaciente, profesional }) => {
 
       alert(
         error?.response?.data?.message ||
-          error?.message ||
-          "No se pudo guardar el medicamento",
+        error?.message ||
+        "No se pudo guardar el medicamento",
       );
     }
   };
