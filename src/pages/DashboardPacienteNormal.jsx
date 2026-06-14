@@ -68,25 +68,11 @@ const DashboardPacienteNormal = () => {
               (i) => i.ficha?.id === miFicha.id
             );
 
-            console.log(
-              "SIGNOS:",
-              JSON.stringify(misSignos, null, 2)
-            );
-
-            console.log(
-              "INDICACIONES:",
-              JSON.stringify(misIndicaciones, null, 2)
-            );
-
-            console.log(
-              "EVOLUCIONES:",
-              JSON.stringify(misEvoluciones, null, 2)
-            );
-
-            console.log(
-              "ID:",
-              data?.id
-            );
+            //console.log("SIGNOS:",JSON.stringify(misSignos, null, 2));
+            //console.log("INDICACIONES:",JSON.stringify(misIndicaciones, null, 2));
+            //console.log("EVOLUCIONES:",JSON.stringify(misEvoluciones, null, 2));
+            //console.log("ID:",data?.id);
+            console.log("FICHA:", JSON.stringify(miFicha, null, 2));
           }
         } catch (err) {
           console.error("Error al obtener detalles clínicos del paciente:", err);
