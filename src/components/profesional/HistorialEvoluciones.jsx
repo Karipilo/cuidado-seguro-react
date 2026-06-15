@@ -96,13 +96,18 @@ const HistorialEvoluciones = ({
               {paciente.evoluciones
                 .slice()
                 .reverse()
-                .map((evolucion) => (
+                .map((evolucion) => {
+                  console.log("EVOLUCION:", evolucion);
+
+                  return(
                   <tr key={evolucion.id}>
-                    {evolucion.fechaRegistro
-                      ? new Date(evolucion.fechaRegistro).toLocaleDateString(
-                          "es-CL",
-                        )
-                      : "-"}
+                    <td>
+                      {evolucion.fechaRegistro
+                        ? new Date(evolucion.fechaRegistro).toLocaleDateString(
+                            "es-CL",
+                          )
+                        : "-"}
+                    </td>
 
                     <td
                       style={{
@@ -122,7 +127,8 @@ const HistorialEvoluciones = ({
                       </Button>
                     </td>
                   </tr>
-                ))}
+                );
+})}
             </tbody>
           </Table>
         ) : (
