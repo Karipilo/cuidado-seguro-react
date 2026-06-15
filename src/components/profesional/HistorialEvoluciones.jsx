@@ -4,7 +4,11 @@ import { Card, Table, Button, Modal, Form } from "react-bootstrap";
 
 import { request } from "../../utils/api";
 import { getMemoryJSON } from "../../utils/memoryStore";
-const HistorialEvoluciones = ({ paciente, onActualizarPaciente, profesional }) => {
+const HistorialEvoluciones = ({
+  paciente,
+  onActualizarPaciente,
+  profesional,
+}) => {
   const [mostrarModal, setMostrarModal] = useState(false);
 
   const [evolucionSeleccionada, setEvolucionSeleccionada] = useState(null);
@@ -94,7 +98,11 @@ const HistorialEvoluciones = ({ paciente, onActualizarPaciente, profesional }) =
                 .reverse()
                 .map((evolucion) => (
                   <tr key={evolucion.id}>
-                    <td>{evolucion.fecha}</td>
+                    {evolucion.fechaRegistro
+                      ? new Date(evolucion.fechaRegistro).toLocaleDateString(
+                          "es-CL",
+                        )
+                      : "-"}
 
                     <td
                       style={{
