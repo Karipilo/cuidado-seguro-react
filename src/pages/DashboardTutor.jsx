@@ -5,11 +5,11 @@ import DashboardLayout from "../components/dashboard/DashboardLayout";
 import MessageSection from "../components/dashboard/MessageSection";
 import { getMemoryJSON } from "../utils/memoryStore";
 
-import ExamenesClinicos from "../components/profesional/ExamenesClinicos";
-import HistorialEvoluciones from "../components/profesional/HistorialEvoluciones";
-import HistorialIndicaciones from "../components/profesional/HistorialIndicaciones";
-import ResumenClinico from "../components/profesional/ResumenClinico";
-import SignosVitales from "../components/profesional/SignosVitales";
+import ExamenesClinicosTutor from "../components/tutor/ExamenesClinicosTutor";
+import HistorialEvolucionesTutor from "../components/tutor/HistorialEvolucionesTutor";
+import HistorialIndicacionesTutor from "../components/tutor/HistorialIndicacionesTutor";
+import ResumenClinicoTutor from "../components/tutor/ResumenClinicoTutor";
+import SignosVitalesTutor from "../components/tutor/SignosVitalesTutor";
 import "../styles/dashboard.css";
 import { request } from "../utils/api";
 
@@ -72,15 +72,43 @@ const DashboardTutor = () => {
 
               misSignos = await request(`/signos-vitales/ficha/${miFicha.id}`, { token });
 
+              //console.log("SIGNOS VITALES DEL PACIENTE:",JSON.stringify(misSignos, null, 2));
+              //console.log("FICHA DEL PACIENTE:", JSON.stringify(miFicha, null, 2));
               const todasEvoluciones = await request("/evoluciones", { token });
               misEvoluciones = todasEvoluciones.filter((e) => e.pacienteId === miFicha.id);
+
+
+              const ultimaEvolucion = misEvoluciones.reduce(
+                (max, actual) => (!max || actual.id > max.id ? actual : max),
+                null
+              );
+
+              misEvoluciones = ultimaEvolucion ? [ultimaEvolucion] : [];
+              //console.log("EVOLUCIONES DEL PACIENTE:", JSON.stringify(misEvoluciones, null, 2));
 
               const todasIndicaciones = await request("/indicaciones", { token });
               misIndicaciones = todasIndicaciones.filter((i) => i.ficha?.id === miFicha.id);
 
-              const todosExamenes = await request("/examenes", { token });
-              misExamenes = todosExamenes.filter((e) => e.ficha?.id === miFicha.id);
+              const ultimaIndicacion = misIndicaciones.reduce(
+                (max, actual) => (!max || actual.id > max.id ? actual : max),
+                null
+              );
 
+              misIndicaciones = ultimaIndicacion ? [ultimaIndicacion] : [];
+
+              const examenes = await request("/examenes", {
+                      token,
+                    });
+              misExamenes = examenes.filter((e) => e.ficha === miFicha.id);
+
+              const ultimaExamen = misExamenes.reduce(
+                (max, actual) => (!max || actual.id > max.id ? actual : max),
+                null
+              );
+
+              misExamenes = ultimaExamen ? [ultimaExamen] : [];
+
+              console.log("TODOS LOS EXAMENES:", JSON.stringify(misExamenes, null, 2));
               try {
                 misAntropometrias = await request(`/antropometrias/${miFicha.id}`, { token });
               } catch (e) {
@@ -202,7 +230,7 @@ const DashboardTutor = () => {
 
                       <p>
                         <strong>Teléfono:</strong>{" "}
-                        {p.telefono }
+                        {p.telefono}
                       </p>
 
                       <p>
@@ -212,18 +240,18 @@ const DashboardTutor = () => {
 
                       <p>
                         <strong>Fecha de nacimiento:</strong>{" "}
-                        {p.fechaNacimiento }
+                        {p.fechaNacimiento}
                       </p>
 
                       <p>
-                        <strong>Género:</strong> {p.genero }
+                        <strong>Género:</strong> {p.genero}
                       </p>
 
                       <p>
-                        <strong>Alergias:</strong> {p.alergias }
+                        <strong>Alergias:</strong> {p.alergias}
                       </p>
 
-        
+
                     </div>
                   </Card.Body>
                 </Card>
@@ -236,23 +264,24 @@ const DashboardTutor = () => {
 
         <Row>
           <Col lg={6} className="mb-4">
-            <HistorialEvoluciones paciente={pacienteActivo} />
+            <HistorialEvolucionesTutor paciente={pacienteActivo} />
           </Col>
 
           <Col lg={6} className="mb-4">
-            <HistorialIndicaciones paciente={pacienteActivo} />
+            <HistorialIndicacionesTutor paciente={pacienteActivo} />
           </Col>
         </Row>
 
         <Row>
           <Col lg={12} className="mb-4">
-            <SignosVitales paciente={pacienteActivo} />
+            <SignosVitalesTutor paciente={pacienteActivo} />
           </Col>
         </Row>
 
         <Row>
           <Col lg={12} className="mb-4">
-            <ExamenesClinicos paciente={pacienteActivo} />
+            
+            <ExamenesClinicosTutor paciente={pacienteActivo} />
           </Col>
         </Row>
       </Container>
