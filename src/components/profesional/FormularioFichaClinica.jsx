@@ -3,15 +3,31 @@ import { useState } from "react";
 
 const FormularioFichaClinica = ({ paciente }) => {
   const [profesionalSeleccionado, setProfesionalSeleccionado] = useState(null);
+  const limpiarProfesional = (nombre) => {
+    if (!nombre) return "";
+
+    return nombre
+      .replace(/\s*\(.*?\)\s*/g, "")
+      .trim()
+      .toUpperCase();
+  };
   const profesionales = new Set();
   const conteoProfesionales = {};
+  const nombresMostrar = {};
 
   const registrarProfesional = (nombre) => {
     if (!nombre) return;
 
-    profesionales.add(nombre);
+    const nombreLimpio = limpiarProfesional(nombre);
 
-    conteoProfesionales[nombre] = (conteoProfesionales[nombre] || 0) + 1;
+    profesionales.add(nombreLimpio);
+
+    conteoProfesionales[nombreLimpio] =
+      (conteoProfesionales[nombreLimpio] || 0) + 1;
+
+    if (!nombresMostrar[nombreLimpio] || nombre.includes("(")) {
+      nombresMostrar[nombreLimpio] = nombre;
+    }
   };
 
   paciente?.evoluciones?.forEach((item) =>
@@ -25,6 +41,9 @@ const FormularioFichaClinica = ({ paciente }) => {
   paciente?.examenes?.forEach((item) => registrarProfesional(item.profesional));
 
   paciente?.signosVitales?.forEach((item) =>
+    registrarProfesional(item.profesional),
+  );
+  paciente?.antropometria?.forEach((item) =>
     registrarProfesional(item.profesional),
   );
 
@@ -64,25 +83,74 @@ const FormularioFichaClinica = ({ paciente }) => {
     });
   });
 
+  paciente?.antropometria?.forEach((item) => {
+    actividades.push({
+      tipo: "Antropometría",
+      profesional: item.profesional,
+      fecha: item.fechaRegistro || item.fecha,
+      detalle: `Peso: ${item.peso} kg`,
+    });
+  });
+
   const ultimaActividad =
     actividades.length > 0 ? actividades[actividades.length - 1] : null;
-  const evolucionesProfesional = paciente?.evoluciones || [];
+  const evolucionesProfesional =
+    paciente?.evoluciones?.filter(
+      (item) =>
+        limpiarProfesional(item.profesional) ===
+        limpiarProfesional(profesionalSeleccionado),
+    ) || [];
 
   const indicacionesProfesional =
     paciente?.indicaciones?.filter(
-      (item) => item.profesional === profesionalSeleccionado,
+      (item) =>
+        limpiarProfesional(item.profesional) ===
+        limpiarProfesional(profesionalSeleccionado),
     ) || [];
 
   const examenesProfesional =
     paciente?.examenes?.filter(
-      (item) => item.profesional === profesionalSeleccionado,
+      (item) =>
+        limpiarProfesional(item.profesional) ===
+        limpiarProfesional(profesionalSeleccionado),
+    ) || [];
+
+  const signosVitalesProfesional =
+    paciente?.signosVitales?.filter(
+      (item) =>
+        limpiarProfesional(item.profesional) ===
+        limpiarProfesional(profesionalSeleccionado),
+    ) || [];
+
+  const antropometriaProfesional =
+    paciente?.antropometria?.filter(
+      (item) =>
+        limpiarProfesional(item.profesional) ===
+        limpiarProfesional(profesionalSeleccionado),
     ) || [];
 
   console.log("PROFESIONAL SELECCIONADO:", profesionalSeleccionado);
 
   console.log("EVOLUCIONES:", paciente?.evoluciones);
+  console.log("INDICACIONES:", indicacionesProfesional);
+  console.log("EXAMENES:", examenesProfesional);
 
   console.log("EVOLUCIONES FILTRADAS:", evolucionesProfesional);
+
+  const formatearFecha = (fecha) => {
+    if (!fecha) return "No disponible";
+
+    return new Date(fecha).toLocaleString("es-CL", {
+      day: "2-digit",
+      month: "2-digit",
+      year: "numeric",
+      hour: "2-digit",
+      minute: "2-digit",
+    });
+  };
+
+  console.log("PROFESIONALES SET:", [...profesionales]);
+  console.log("ANTROPOMETRIA:", paciente?.antropometria);
   return (
     <Card className="dashboard-modern-card">
       <Card.Body>
@@ -104,7 +172,7 @@ const FormularioFichaClinica = ({ paciente }) => {
 
                   <p className="mb-1">
                     <strong>Fecha:</strong>{" "}
-                    {ultimaActividad.fecha || "No disponible"}
+                    {formatearFecha(ultimaActividad.fecha)}
                   </p>
 
                   <p className="mb-0">
@@ -132,7 +200,7 @@ const FormularioFichaClinica = ({ paciente }) => {
                     className="w-100 text-start mb-2"
                     onClick={() => setProfesionalSeleccionado(profesional)}
                   >
-                    👨‍⚕️ {profesional}
+                    👨‍⚕️ {nombresMostrar[profesional]}
                     <span className="float-end">
                       {conteoProfesionales[profesional]} registros
                     </span>
@@ -151,15 +219,94 @@ const FormularioFichaClinica = ({ paciente }) => {
                 <hr />
 
                 <h6>🩺 Evoluciones</h6>
+
                 {evolucionesProfesional.map((item, index) => (
                   <div key={index} className="border rounded p-2 mb-2 bg-light">
-                    <small className="text-muted">{item.fecha}</small>
+                    <small className="text-muted">
+                      {formatearFecha(item.fechaRegistro || item.fecha)}
+                    </small>
 
                     <p className="mb-0">{item.descripcion}</p>
                   </div>
                 ))}
 
-                
+                <hr />
+
+                <h6>📋 Indicaciones</h6>
+
+                {indicacionesProfesional.map((item, index) => (
+                  <div key={index} className="border rounded p-2 mb-2 bg-light">
+                    <small className="text-muted">
+                      {formatearFecha(item.fechaRegistro || item.fecha)}
+                    </small>
+
+                    <p className="mb-0">{item.indicacion}</p>
+                  </div>
+                ))}
+
+                <hr />
+
+                <h6>🧪 Exámenes</h6>
+
+                {examenesProfesional.map((item, index) => (
+                  <div key={index} className="border rounded p-2 mb-2 bg-light">
+                    <small className="text-muted">
+                      {formatearFecha(item.fechaRegistro || item.fecha)}
+                    </small>
+
+                    <p className="mb-0">
+                      {item.nombre} - {item.estado}
+                    </p>
+                  </div>
+                ))}
+
+                <hr />
+
+                <h6>❤️ Signos Vitales</h6>
+
+                {signosVitalesProfesional.map((item, index) => (
+                  <div key={index} className="border rounded p-2 mb-2 bg-light">
+                    <small className="text-muted">
+                      {formatearFecha(item.fechaRegistro || item.fecha)}
+                    </small>
+
+                    <p className="mb-1">PA: {item.presion}</p>
+
+                    <p className="mb-1">FC: {item.frecuencia} lpm</p>
+
+                    <p className="mb-1">Temperatura: {item.temperatura} °C</p>
+
+                    <p className="mb-0">Saturación: {item.saturacion}%</p>
+                  </div>
+                ))}
+
+                <hr />
+
+                <h6>📏 Antropometría</h6>
+
+                {antropometriaProfesional.map((item, index) => {
+                  const imc =
+                    item.peso && item.altura
+                      ? (item.peso / (item.altura * item.altura)).toFixed(2)
+                      : "No disponible";
+
+                  return (
+                    <div
+                      key={index}
+                      className="border rounded p-2 mb-2 bg-light"
+                    >
+                      <small className="text-muted">
+                        {formatearFecha(item.fechaRegistro)}
+                      </small>
+
+                      <p className="mb-1">Peso: {item.peso} kg</p>
+
+                      <p className="mb-1">Altura: {item.altura} m</p>
+
+                      <p className="mb-0">IMC: {imc}</p>
+                    </div>
+                  );
+                })}
               </Card.Body>
             </Card>
           )}

@@ -56,21 +56,22 @@ const ResumenClinico = ({ paciente, onGuardar, profesional }) => {
   const formatearFecha = (fecha) => {
     if (!fecha) return "No disponible";
 
-    // Formato ISO de Spring Boot
-    if (fecha.includes("T")) {
-      return new Date(fecha).toLocaleString("es-CL");
-    }
+    const fechaLimpia = fecha.split(".")[0];
 
-    return fecha;
+    return new Date(fechaLimpia).toLocaleString("es-CL", {
+      day: "2-digit",
+      month: "2-digit",
+      year: "numeric",
+      hour: "2-digit",
+      minute: "2-digit",
+    });
   };
   const resumen = [];
 
   paciente?.signosVitales?.forEach((registro) => {
     resumen.push({
       tipo: "Signos Vitales",
-      fecha:
-        "Fecha y hora: " +
-        formatearFecha(registro.fechaRegistro || registro.fecha),
+      fecha: formatearFecha(registro.fechaRegistro || registro.fecha),
       profesional: registro.profesional,
       detalle: `PA: ${registro.presion}\nFC: ${registro.frecuencia}\nTemp: ${registro.temperatura}\nSat: ${registro.saturacion}`,
     });
@@ -88,9 +89,8 @@ const ResumenClinico = ({ paciente, onGuardar, profesional }) => {
 
     resumen.push({
       tipo: "Antropometría",
-      fecha:
-        "Fecha y hora: " +
-        formatearFecha(registro.fechaRegistro || registro.fecha),
+      fecha: formatearFecha(registro.fechaRegistro || registro.fecha),
+      profesional: registro.profesional,
       detalle: `Peso: ${registro.peso} kg
 Altura: ${registro.altura} m
 IMC: ${imc}`,
@@ -108,9 +108,7 @@ IMC: ${imc}`,
 
     resumen.push({
       tipo: "Evolución",
-      fecha:
-        "Fecha y hora: " +
-        formatearFecha(registro.fechaRegistro || registro.fecha),
+      fecha: formatearFecha(registro.fechaRegistro || registro.fecha),
       profesional: registro.profesional,
       detalle: registro.descripcion,
     });
@@ -119,19 +117,17 @@ IMC: ${imc}`,
   paciente?.indicaciones?.forEach((registro) => {
     resumen.push({
       tipo: "Indicación",
-      fecha:
-        "Fecha y hora: " +
-        formatearFecha(registro.fechaRegistro || registro.fecha),
+      fecha: formatearFecha(registro.fechaRegistro || registro.fecha),
       profesional: registro.profesional,
       detalle: registro.indicacion,
     });
   });
 
-  paciente?.medicamentos?.forEach((registro) => {
-    resumen.push({
-      tipo: "Medicamento",
-      fecha: "Tratamiento vigente",
-      detalle: `Medicamento: ${registro.nombre}
+  resumen.push({
+    tipo: "Medicamento",
+    fecha: formatearFecha(registro.fechaRegistro || registro.fecha),
+    profesional: registro.profesional,
+    detalle: `Medicamento: ${registro.nombre}
 
 Dosis: ${registro.dosis}
 
@@ -140,15 +136,12 @@ Frecuencia: ${registro.frecuencia}
 Duración: ${registro.diasTratamiento} días
 
 ${registro.observaciones || ""}`,
-    });
   });
 
   paciente?.examenes?.forEach((registro) => {
     resumen.push({
       tipo: "Examen",
-      fecha:
-        "Fecha y hora: " +
-        formatearFecha(registro.fechaRegistro || registro.fecha),
+      fecha: formatearFecha(registro.fechaRegistro || registro.fecha),
       profesional: registro.profesional,
       detalle: `${registro.nombre}
 
@@ -178,7 +171,7 @@ ${registro.observacion ? `Observación: ${registro.observacion}` : ""}`,
     medicamentos: resumen.filter((r) => r.tipo === "Medicamento").length,
   };
 
-  const resumenOrdenado = resumen.reverse();
+  const resumenOrdenado = [...resumen].reverse();
 
   const resumenFiltrado =
     tabActiva === "todas"
@@ -209,6 +202,43 @@ ${registro.observacion ? `Observación: ${registro.observacion}` : ""}`,
         });
 
   console.log("RESUMEN ORDENADO:", resumenOrdenado);
+  /* ======================================
+   PROFESIONALES PARTICIPANTES
+====================================== */
+
+  const profesionalesParticipantes = [
+    ...new Set(resumen.map((r) => r.profesional).filter(Boolean)),
+  ];
+
+  /* ======================================
+   ESTADÍSTICAS
+====================================== */
+
+  const estadisticas = {
+    evoluciones: paciente?.evoluciones?.length || 0,
+
+    indicaciones: paciente?.indicaciones?.length || 0,
+
+    examenes: paciente?.examenes?.length || 0,
+
+    medicamentos: paciente?.medicamentos?.length || 0,
+
+    antropometria: paciente?.antropometria?.length || 0,
+
+    signos: paciente?.signosVitales?.length || 0,
+  };
+
+  /* ======================================
+   ÚLTIMA ACTIVIDAD
+====================================== */
+
+  const ultimaActividad =
+    resumenOrdenado.length > 0 ? resumenOrdenado[0] : null;
+
+  console.error("ULTIMA ACTIVIDAD:", ultimaActividad);
+  console.log("RESUMEN FILTRADO:", resumenFiltrado);
+  console.log("RESUMEN ORDENADO:", resumenOrdenado);
+  console.log("ULTIMA ACTIVIDAD:", ultimaActividad);
   return (
     <Card className="dashboard-modern-card">
       <Card.Body
@@ -220,6 +250,83 @@ ${registro.observacion ? `Observación: ${registro.observacion}` : ""}`,
         <Card.Title className="dashboard-card-title">
           Resumen Clínico
         </Card.Title>
+
+        <Card className="mb-4 shadow-sm border-0">
+          <Card.Body>
+            <h4>Última Actividad Clínica</h4>
+
+            {ultimaActividad ? (
+              <>
+                <h5>{ultimaActividad.tipo}</h5>
+
+                <p>
+                  <strong>Profesional:</strong>{" "}
+                  {ultimaActividad.profesional || "No informado"}
+                </p>
+
+                <p>
+                  <strong>Fecha:</strong> {ultimaActividad.fecha}
+                </p>
+
+                <p>
+                  <strong>Detalle:</strong> {ultimaActividad.detalle}
+                </p>
+              </>
+            ) : (
+              <p>No existen registros clínicos.</p>
+            )}
+          </Card.Body>
+        </Card>
+
+        <Card className="mb-4 shadow-sm border-0">
+          <Card.Body>
+            <h4>Profesionales Participantes</h4>
+
+            {profesionalesParticipantes.length > 0 ? (
+              profesionalesParticipantes.map((prof, index) => {
+                const cantidad = resumen.filter(
+                  (r) => r.profesional === prof,
+                ).length;
+
+                return (
+                  <div
+                    key={index}
+                    className="d-flex justify-content-between border rounded p-2 mb-2"
+                  >
+                    <span>👨‍⚕️ {prof}</span>
+
+                    <span>{cantidad} registros</span>
+                  </div>
+                );
+              })
+            ) : (
+              <p>No existen profesionales registrados.</p>
+            )}
+          </Card.Body>
+        </Card>
+
+        <Card className="mb-4 shadow-sm border-0">
+          <Card.Body>
+            <h4>Resumen Estadístico</h4>
+
+            <p>
+              👨‍⚕️ Profesionales Participantes:{" "}
+              {profesionalesParticipantes.length}
+            </p>
+
+            <p>🩺 Evoluciones: {estadisticas.evoluciones}</p>
+
+            <p>📋 Indicaciones: {estadisticas.indicaciones}</p>
+
+            <p>🧪 Exámenes: {estadisticas.examenes}</p>
+
+            <p>💊 Medicamentos: {estadisticas.medicamentos}</p>
+
+            <p>📏 Antropometría: {estadisticas.antropometria}</p>
+
+            <p>❤️ Signos Vitales: {estadisticas.signos}</p>
+          </Card.Body>
+        </Card>
 
         <Tabs
           activeKey={tabActiva}

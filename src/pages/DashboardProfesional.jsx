@@ -92,7 +92,13 @@ const DashboardProfesional = () => {
         pacienteId: paciente?.id,
       });
       const evoluciones = await request("/evoluciones", { token });
-
+      console.log(
+        "PRIMERA EVOLUCION COMPLETA:",
+        JSON.stringify(evoluciones[0], null, 2),
+      );
+      evoluciones.forEach((e) =>
+        console.log("EVOLUCION API:", JSON.stringify(e, null, 2)),
+      );
       /* =========================
        OBTENER FICHAS CLÍNICAS
     ========================== */
@@ -129,7 +135,9 @@ const DashboardProfesional = () => {
 
       console.log("EXAMENES:", examenes);
 
-      const examenesPaciente = examenes.filter((e) => e.ficha === encontrado.id,);
+      const examenesPaciente = examenes.filter(
+        (e) => e.ficha === encontrado.id,
+      );
 
       console.log("EXAMENES PACIENTE:", examenesPaciente);
       console.log(
@@ -364,7 +372,12 @@ const DashboardProfesional = () => {
                           setPaciente={setPaciente}
                         />
                       }
-                      resumenComponent={<ResumenClinico paciente={paciente} profesional={profesional?.userInfo?.nombreCompleto}/>}
+                      resumenComponent={
+                        <ResumenClinico
+                          paciente={paciente}
+                          profesional={profesional?.userInfo?.nombreCompleto}
+                        />
+                      }
                       antropometriaComponent={
                         <>
                           <FormularioAntropometria
@@ -374,19 +387,33 @@ const DashboardProfesional = () => {
                           />
 
                           <div className="mt-4">
-                            <Antropometria paciente={paciente} 
-                            profesional={profesional?.userInfo?.nombreCompleto}/>
+                            <Antropometria
+                              paciente={paciente}
+                              profesional={
+                                profesional?.userInfo?.nombreCompleto
+                              }
+                            />
                           </div>
 
                           <div className="mt-4">
-                            <HistorialAntropometria paciente={paciente} profesional={profesional?.userInfo?.nombreCompleto}/>
+                            <HistorialAntropometria
+                              paciente={paciente}
+                              profesional={
+                                profesional?.userInfo?.nombreCompleto
+                              }
+                            />
                           </div>
                         </>
                       }
                       signosVitalesComponent={
                         <>
                           <div className="mt-4">
-                            <SignosVitales paciente={paciente} profesional={profesional?.userInfo?.nombreCompleto}/>
+                            <SignosVitales
+                              paciente={paciente}
+                              profesional={
+                                profesional?.userInfo?.nombreCompleto
+                              }
+                            />
                           </div>
                           <FormularioSignosVitales
                             paciente={paciente}
@@ -395,7 +422,12 @@ const DashboardProfesional = () => {
                           />
 
                           <div className="mt-4">
-                            <HistorialSignosVitales paciente={paciente} profesional={profesional?.userInfo?.nombreCompleto}/>
+                            <HistorialSignosVitales
+                              paciente={paciente}
+                              profesional={
+                                profesional?.userInfo?.nombreCompleto
+                              }
+                            />
                           </div>
                         </>
                       }
@@ -411,7 +443,9 @@ const DashboardProfesional = () => {
                             <HistorialMedicamentos
                               paciente={paciente}
                               onActualizarPaciente={buscarPaciente}
-                              profesional={profesional?.userInfo?.nombreCompleto}
+                              profesional={
+                                profesional?.userInfo?.nombreCompleto
+                              }
                             />
                           </div>
                         </>
@@ -448,7 +482,9 @@ const DashboardProfesional = () => {
                             <HistorialEvoluciones
                               paciente={paciente}
                               onActualizarPaciente={buscarPaciente}
-                              profesional={profesional?.userInfo?.nombreCompleto}
+                              profesional={
+                                profesional?.userInfo?.nombreCompleto
+                              }
                             />
                           </div>
                         </>
@@ -465,7 +501,9 @@ const DashboardProfesional = () => {
                             <ExamenesClinicos
                               paciente={paciente}
                               onActualizarPaciente={buscarPaciente}
-                              profesional={profesional?.userInfo?.nombreCompleto}
+                              profesional={
+                                profesional?.userInfo?.nombreCompleto
+                              }
                             />
                           </div>
                         </>
@@ -500,7 +538,9 @@ const DashboardProfesional = () => {
                             <HistorialIndicaciones
                               paciente={paciente}
                               onActualizarPaciente={buscarPaciente}
-                              profesional={profesional?.userInfo?.nombreCompleto}
+                              profesional={
+                                profesional?.userInfo?.nombreCompleto
+                              }
                             />
                           </div>
                         </>
