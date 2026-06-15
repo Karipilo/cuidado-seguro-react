@@ -42,6 +42,7 @@ const FormularioAntropometria = ({ paciente, setPaciente, profesional }) => {
           body: {
             peso,
             altura,
+            profesional,
           },
         },
       );

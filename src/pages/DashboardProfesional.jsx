@@ -144,7 +144,7 @@ const DashboardProfesional = () => {
       console.log("INDICACIONES:", indicaciones);
 
       const indicacionesPaciente = indicaciones.filter(
-        (i) => i.id === encontrado.id,
+        (i) => i.ficha?.id === encontrado.id,
       );
 
       console.log("INDICACIONES PACIENTE:", indicacionesPaciente);

@@ -68,22 +68,12 @@ const HistorialSignosVitales = ({ paciente, profesional }) => {
 
             <tbody>
               {registros.map((registro, index) => {
-                const fechaRegistro = registro.fechaRegistro;
-
-                let fecha = "--";
-                let hora = "--";
-
-                if (fechaRegistro) {
-                  const fechaObj = new Date(fechaRegistro);
-
-                  fecha = fechaObj.toLocaleDateString("es-CL");
-
-                  hora = fechaObj.toLocaleTimeString("es-CL", {
-                    hour: "2-digit",
-                    minute: "2-digit",
-                    second: "2-digit",
-                  });
-                }
+                const fechaCompleta = registro.fechaRegistro ? new Date(registro.fechaRegistro) : null;
+                const fecha = fechaCompleta ? fechaCompleta.toLocaleDateString("es-CL") : "--";
+                const hora = fechaCompleta ? fechaCompleta.toLocaleTimeString("es-CL", {
+                  hour: "2-digit",
+                  minute: "2-digit",
+                }) : "--";
 
                 const observaciones = [];
 

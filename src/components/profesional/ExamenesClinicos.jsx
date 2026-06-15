@@ -27,28 +27,20 @@ const ExamenesClinicos = ({ paciente, onActualizarPaciente, profesional }) => {
     try {
       const sesion = getMemoryJSON("sesion");
 
-      const body = {
-        id: examen.id,
-        nombre: examen.nombre,
-        fechaRegistro: examen.fechaRegistro,
-        estado: "Completado",
-        profesional: examen.profesional,
-        observacion: examen.observacion,
-        resultado: resultados[examen.id] || "",
-        ficha: paciente.id,
-      };
-
-      console.log("BODY GUARDAR:", body);
-      console.log("BODY GUARDAR JSON:", JSON.stringify(body, null, 2));
-
       await request(`/examenes/${examen.id}`, {
         method: "PUT",
         token: sesion?.accessToken,
-        body,
+        body: {
+          nombreExamen: examen.nombreExamen,
+          tipoExamen: examen.tipoExamen,
+          fechaExamen: examen.fechaExamen,
+          estado: "Completado",
+          resultado: resultados[examen.id] || "",
+          fichaId: examen.ficha?.id || examen.fichaId,
+        },
       });
 
       await onActualizarPaciente();
-
       alert("Resultado guardado");
     } catch (error) {
       console.error(error);
@@ -61,30 +53,29 @@ const ExamenesClinicos = ({ paciente, onActualizarPaciente, profesional }) => {
     try {
       const sesion = getMemoryJSON("sesion");
 
-      const body = {
-        id: examen.id,
-        nombre: examen.nombre,
-        fechaRegistro: examen.fechaRegistro,
-        estado: examen.estado,
-        profesional: examen.profesional,
-        observacion: examen.observacion,
-        resultado: resultados[examen.id] || "",
-        ficha: paciente.id,
-      };
-
-      console.log("BODY ACTUALIZAR:", body);
-
       await request(`/examenes/${examen.id}`, {
         method: "PUT",
         token: sesion?.accessToken,
-        body,
+        body: {
+          nombreExamen: examen.nombreExamen,
+          tipoExamen: examen.tipoExamen,
+          fechaExamen: examen.fechaExamen,
+          estado: "Completado",
+          resultado: resultados[examen.id] || "",
+          fichaId: examen.ficha?.id || examen.fichaId,
+        },
       });
 
       await onActualizarPaciente();
 
       alert("Resultado actualizado");
+      console.log(
+        "RESULTADO ACTUALIZADO:",
+        JSON.stringify(resultados[examen.id], null, 2),
+      );
     } catch (error) {
       console.error(error);
+      console.log(JSON.stringify(error, null, 2));
 
       alert("Error al actualizar resultado");
     }
@@ -184,10 +175,10 @@ const ExamenesClinicos = ({ paciente, onActualizarPaciente, profesional }) => {
                       <tr key={examen.id}>
                         <td>
                           {examen.fechaRegistro
-                            ? new Date(examen.fechaRegistro).toLocaleString(
+                            ? new Date(examen.fechaRegistro).toLocaleDateString(
                                 "es-CL",
                               )
-                            : "--"}
+                            : "-"}
                         </td>
 
                         <td>{examen.nombre}</td>
