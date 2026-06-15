@@ -168,7 +168,7 @@ const DashboardPacienteNormal = () => {
     "PACIENTE ACTIVO EVOLUCIONES:",
     pacienteActivo?.evoluciones
   );
-  
+
   return (
     <DashboardLayout usuario={user}>
       <Container fluid>
@@ -245,16 +245,6 @@ const DashboardPacienteNormal = () => {
             <SignosVitales paciente={pacienteActivo} />
           </Col>
         </Row>
-
-        <Row>
-          <Col lg={6} className="mb-4">
-            <HistorialEvoluciones paciente={pacienteActivo} />
-          </Col>
-          <Col lg={6} className="mb-4">
-            <HistorialIndicaciones paciente={pacienteActivo} />
-          </Col>
-        </Row>
-
         <Row>
           <Col lg={12} className="mb-4">
             <HistorialClinico
@@ -262,6 +252,14 @@ const DashboardPacienteNormal = () => {
             />
           </Col>
         </Row>
+        
+        <Row>
+          <Col lg={12} className="mb-4">
+            <HistorialIndicaciones paciente={pacienteActivo} />
+          </Col>
+        </Row>
+
+        
       </Container>
     </DashboardLayout>
   );

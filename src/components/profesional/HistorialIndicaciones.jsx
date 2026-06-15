@@ -9,6 +9,11 @@ const HistorialIndicaciones = ({
     paciente
 }) => {
 
+    console.log(
+        "Indicaciones Historial:",
+        paciente?.indicaciones
+    );
+    
     return (
 
         <Card className="dashboard-modern-card">
@@ -89,59 +94,17 @@ const HistorialIndicaciones = ({
 
                                         <h6>
 
-                                            Medicamento
+                                            Indicación
 
                                         </h6>
 
                                         <p>
-
                                             {
-                                                indicacion.medicamento
+                                                indicacion.indicacion
                                             }
-
                                         </p>
 
-                                        <h6>
 
-                                            Dosis
-
-                                        </h6>
-
-                                        <p>
-
-                                            {
-                                                indicacion.dosis
-                                            }
-
-                                        </p>
-
-                                        <h6>
-
-                                            Frecuencia
-
-                                        </h6>
-
-                                        <p>
-
-                                            {
-                                                indicacion.frecuencia
-                                            }
-
-                                        </p>
-
-                                        <h6>
-
-                                            Duración
-
-                                        </h6>
-
-                                        <p>
-
-                                            {
-                                                indicacion.duracion
-                                            }
-
-                                        </p>
 
                                         {
                                             indicacion.observaciones && (
