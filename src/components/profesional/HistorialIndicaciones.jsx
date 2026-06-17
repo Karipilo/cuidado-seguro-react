@@ -1,141 +1,155 @@
-import React, { useState } from "react";
+import React from "react";
 
-import { Card, Table, Button, Modal, Form } from "react-bootstrap";
-
-import { request } from "../../utils/api";
-import { getMemoryJSON } from "../../utils/memoryStore";
+import {
+    Card,
+    Badge
+} from "react-bootstrap";
 
 const HistorialIndicaciones = ({
-  paciente,
-  onActualizarPaciente,
-  profesional,
+    paciente
 }) => {
-  const [mostrarModal, setMostrarModal] = useState(false);
 
-  const [indicacionSeleccionada, setIndicacionSeleccionada] = useState(null);
+    console.log(
+        "Indicaciones Historial:",
+        paciente?.indicaciones
+    );
+    
+    return (
 
-  const [textoIndicacion, setTextoIndicacion] = useState("");
+        <Card className="dashboard-modern-card">
 
-  const abrirModal = (indicacion) => {
-    setIndicacionSeleccionada(indicacion);
+            <Card.Body>
 
-    setTextoIndicacion(indicacion.indicacion || "");
+                <Card.Title
+                    className="dashboard-card-title"
+                >
 
-    setMostrarModal(true);
-  };
+                    Indicaciones Médicas
 
-  const actualizarIndicacion = async () => {
-    try {
-      if (!indicacionSeleccionada) {
-        return;
-      }
+                </Card.Title>
 
-      const sesion = getMemoryJSON("sesion");
+                {
+                    paciente?.indicaciones?.length > 0 ? (
 
-      await request(`/indicaciones/${indicacionSeleccionada.id}`, {
-        method: "PUT",
-        token: sesion?.accessToken,
-        body: {
-          ...indicacionSeleccionada,
-          indicacion: textoIndicacion,
-        },
-      });
+                        paciente.indicaciones
+                            .slice()
+                            .reverse()
+                            .map(
+                                (
+                                    indicacion,
+                                    index
+                                ) => (
 
-      setMostrarModal(false);
+                                    <div
+                                        key={index}
+                                        className="
+                                            border
+                                            rounded-4
+                                            p-3
+                                            mb-3
+                                        "
+                                    >
 
-      await onActualizarPaciente();
+                                        <div
+                                            className="
+                                                d-flex
+                                                justify-content-between
+                                                align-items-center
+                                                mb-2
+                                            "
+                                        >
 
-      alert("Indicación actualizada");
-    } catch (error) {
-      console.error(error);
+                                            <div>
 
-      alert("Error al actualizar indicación");
-    }
-  };
+                                                <strong>
 
-  return (
-    <Card className="dashboard-modern-card">
-      <Modal show={mostrarModal} onHide={() => setMostrarModal(false)} centered>
-        <Modal.Header closeButton>
-          <Modal.Title>Editar Indicación</Modal.Title>
-        </Modal.Header>
+                                                    {
+                                                        indicacion.profesional?.replace("(undefined)", "")
+                                                    }
 
-        <Modal.Body>
-          <Form.Control
-            as="textarea"
-            rows={6}
-            value={textoIndicacion}
-            onChange={(e) => setTextoIndicacion(e.target.value)}
-          />
-        </Modal.Body>
+                                                </strong>
 
-        <Modal.Footer>
-          <Button variant="secondary" onClick={() => setMostrarModal(false)}>
-            Cancelar
-          </Button>
+                                                <p
+                                                    className="
+                                                        text-muted
+                                                        mb-0
+                                                    "
+                                                >
 
-          <Button variant="success" onClick={actualizarIndicacion}>
-            Guardar
-          </Button>
-        </Modal.Footer>
-      </Modal>
+                                                    {
+                                                        indicacion.fecha
+                                                    }
 
-      <Card.Body>
-        <Card.Title className="dashboard-card-title">
-          Indicaciones Médicas
-        </Card.Title>
+                                                </p>
 
-        {paciente?.indicaciones?.length > 0 ? (
-          <Table responsive hover striped>
-            <thead>
-              <tr>
-                <th>Fecha</th>
-                <th>Indicación</th>
-                <th>Acciones</th>
-              </tr>
-            </thead>
+                                            </div>
 
-            <tbody>
-              {paciente.indicaciones
-                .slice()
-                .reverse()
-                .map((indicacion) => (
-                  <tr key={indicacion.id}>
-                    <td>
-                      {indicacion.fechaRegistro
-                        ? new Date(indicacion.fechaRegistro).toLocaleDateString(
-                            "es-CL",
-                          )
-                        : "-"}
-                    </td>
+                                            <Badge bg="success">
 
-                    <td
-                      style={{
-                        whiteSpace: "pre-wrap",
-                      }}
-                    >
-                      {indicacion.indicacion}
-                    </td>
+                                                Indicaciones
 
-                    <td>
-                      <Button
-                        size="sm"
-                        variant="outline-primary"
-                        onClick={() => abrirModal(indicacion)}
-                      >
-                        Editar
-                      </Button>
-                    </td>
-                  </tr>
-                ))}
-            </tbody>
-          </Table>
-        ) : (
-          <p>No existen indicaciones registradas.</p>
-        )}
-      </Card.Body>
-    </Card>
-  );
+                                            </Badge>
+
+                                        </div>
+
+                                        <h6>
+
+                                            Indicación
+
+                                        </h6>
+
+                                        <p>
+                                            {
+                                                indicacion.indicacion
+                                            }
+                                        </p>
+
+
+
+                                        {
+                                            indicacion.observaciones && (
+
+                                                <>
+
+                                                    <h6>
+
+                                                        Observaciones
+
+                                                    </h6>
+
+                                                    <p>
+
+                                                        {
+                                                            indicacion.observaciones
+                                                        }
+
+                                                    </p>
+
+                                                </>
+
+                                            )
+                                        }
+
+                                    </div>
+
+                                )
+                            )
+
+                    ) : (
+
+                        <p>
+
+                            No existen indicaciones registradas.
+
+                        </p>
+
+                    )
+                }
+
+            </Card.Body>
+
+        </Card>
+    );
 };
 
 export default HistorialIndicaciones;
