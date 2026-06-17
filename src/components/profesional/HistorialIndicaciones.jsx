@@ -64,7 +64,7 @@ const HistorialIndicaciones = ({
                                                 <strong>
 
                                                     {
-                                                        indicacion.profesional
+                                                        indicacion.profesional?.replace("(undefined)", "")
                                                     }
 
                                                 </strong>
