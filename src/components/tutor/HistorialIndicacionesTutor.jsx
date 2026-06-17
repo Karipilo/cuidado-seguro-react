@@ -5,7 +5,7 @@ import { Card, Table, Button, Modal, Form } from "react-bootstrap";
 import { request } from "../../utils/api";
 import { getMemoryJSON } from "../../utils/memoryStore";
 
-const HistorialIndicaciones = ({
+const HistorialIndicacionesTutor = ({
   paciente,
   onActualizarPaciente,
   profesional,
@@ -91,7 +91,6 @@ const HistorialIndicaciones = ({
               <tr>
                 <th>Fecha</th>
                 <th>Indicación</th>
-                <th>Acciones</th>
               </tr>
             </thead>
 
@@ -117,15 +116,6 @@ const HistorialIndicaciones = ({
                       {indicacion.indicacion}
                     </td>
 
-                    <td>
-                      <Button
-                        size="sm"
-                        variant="outline-primary"
-                        onClick={() => abrirModal(indicacion)}
-                      >
-                        Editar
-                      </Button>
-                    </td>
                   </tr>
                 ))}
             </tbody>
@@ -138,4 +128,4 @@ const HistorialIndicaciones = ({
   );
 };
 
-export default HistorialIndicaciones;
+export default HistorialIndicacionesTutor;

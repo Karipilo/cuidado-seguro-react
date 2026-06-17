@@ -2,7 +2,7 @@ import React from "react";
 
 import { Card, Row, Col, Badge } from "react-bootstrap";
 
-const Antropometria = ({ paciente }) => {
+const Antropometria = ({ paciente, profesional }) => {
   console.log("PACIENTE ANTROPOMETRIA:", paciente?.antropometria);
   const ultimoRegistro =
     paciente?.antropometria?.[paciente.antropometria.length - 1];

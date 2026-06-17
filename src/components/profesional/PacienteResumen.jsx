@@ -59,7 +59,23 @@ const PacienteResumen = ({ paciente }) => {
             <div className="paciente-info-card">
               <small className="text-muted">Alergias</small>
 
-              <h5>{paciente?.alergias || "Sin alergias"}</h5>
+              <h5
+                className={
+                  paciente?.alergias ? "text-danger fw-bold" : "text-success"
+                }
+              >
+                {paciente?.alergias || "Sin alergias"}
+              </h5>
+            </div>
+          </Col>
+
+          <Col md={6}>
+            <div className="paciente-info-card">
+              <small className="text-muted">Medicamentos informados</small>
+
+              <h5>
+                {paciente?.medicamentosActuales || "No registra medicamentos"}
+              </h5>
             </div>
           </Col>
         </Row>

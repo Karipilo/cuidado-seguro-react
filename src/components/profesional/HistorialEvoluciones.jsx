@@ -1,13 +1,13 @@
-import React from "react";
+import React, { useState } from "react";
 
-import {
-    Card,
-    Badge
-} from "react-bootstrap";
+import { Card, Table, Button, Modal, Form } from "react-bootstrap";
 
+import { request } from "../../utils/api";
+import { getMemoryJSON } from "../../utils/memoryStore";
 const HistorialEvoluciones = ({
-    paciente,
-    modo
+  paciente,
+  onActualizarPaciente,
+  profesional,
 }) => {
 
     return (

@@ -4,7 +4,7 @@ import { Button, Card, Col, Form, Row } from "react-bootstrap";
 import { getMemoryJSON } from "../../utils/memoryStore";
 import { request } from "../../utils/api";
 
-const FormularioSignosVitales = ({ paciente, setPaciente }) => {
+const FormularioSignosVitales = ({ paciente, setPaciente,profesional }) => {
   const [formulario, setFormulario] = useState({
     sistolica: "",
     diastolica: "",
@@ -21,17 +21,34 @@ const FormularioSignosVitales = ({ paciente, setPaciente }) => {
   };
 
   const guardarSignos = async () => {
-    try {
-      if (
-        !formulario.sistolica ||
-        !formulario.diastolica ||
-        !formulario.frecuencia ||
-        !formulario.temperatura ||
-        !formulario.saturacion
-      ) {
-        alert("Complete todos los campos");
-        return;
-      }
+  try {
+
+    if (
+      !formulario.sistolica ||
+      !formulario.diastolica ||
+      !formulario.frecuencia ||
+      !formulario.temperatura ||
+      !formulario.saturacion
+    ) {
+
+      alert("Complete todos los campos");
+      return;
+
+    }
+
+    if (
+      isNaN(formulario.sistolica) ||
+      isNaN(formulario.diastolica) ||
+      isNaN(formulario.frecuencia) ||
+      isNaN(formulario.temperatura) ||
+      isNaN(formulario.saturacion)
+    ) {
+
+      alert("Solo se permiten números");
+      return;
+
+    }
+      
 
       const sesion = getMemoryJSON("sesion");
 
@@ -47,8 +64,8 @@ const FormularioSignosVitales = ({ paciente, setPaciente }) => {
           frecuencia: Number(formulario.frecuencia),
           temperatura: Number(formulario.temperatura),
           saturacion: Number(formulario.saturacion),
-          profesional: `${sesion?.userInfo?.nombreCompleto} (${sesion?.userInfo?.tipoProfesion})`,
-          fecha: new Date().toLocaleString(),
+          profesional: profesional,
+          
         },
       });
 
@@ -91,6 +108,9 @@ const FormularioSignosVitales = ({ paciente, setPaciente }) => {
 
               <div className="d-flex gap-2">
                 <Form.Control
+                  type="number"
+                  min="0"
+                  max="300"
                   name="sistolica"
                   placeholder="Sistólica"
                   value={formulario.sistolica}
@@ -98,6 +118,9 @@ const FormularioSignosVitales = ({ paciente, setPaciente }) => {
                 />
 
                 <Form.Control
+                  type="number"
+                  min="0"
+                  max="300"
                   name="diastolica"
                   placeholder="Diastólica"
                   value={formulario.diastolica}
@@ -113,6 +136,9 @@ const FormularioSignosVitales = ({ paciente, setPaciente }) => {
             </Form.Label>
 
             <Form.Control
+              type="number"
+              min="0"
+              max="300"
               name="frecuencia"
               placeholder="lpm"
               value={formulario.frecuencia}
@@ -124,6 +150,10 @@ const FormularioSignosVitales = ({ paciente, setPaciente }) => {
             <Form.Label className="fw-semibold mb-2">Temperatura</Form.Label>
 
             <Form.Control
+              type="number"
+              step="0.1"
+              min="0"
+              max="50"
               name="temperatura"
               placeholder="°C"
               value={formulario.temperatura}
@@ -137,6 +167,9 @@ const FormularioSignosVitales = ({ paciente, setPaciente }) => {
             </Form.Label>
 
             <Form.Control
+              type="number"
+              min="0"
+              max="100"
               name="saturacion"
               placeholder="%"
               value={formulario.saturacion}

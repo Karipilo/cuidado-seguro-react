@@ -9,7 +9,7 @@ import {
   DropletHalf,
 } from "react-bootstrap-icons";
 
-const SignosVitales = ({ paciente, profesional }) => {
+const SignosVitalesTutor = ({ paciente, profesional }) => {
   const ultimoRegistro =
     paciente?.signosVitales?.[paciente.signosVitales.length - 1];
 
@@ -69,4 +69,4 @@ const SignosVitales = ({ paciente, profesional }) => {
   );
 };
 
-export default SignosVitales;
+export default SignosVitalesTutor;

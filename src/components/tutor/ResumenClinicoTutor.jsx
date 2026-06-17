@@ -10,7 +10,7 @@ import {
   Tab,
 } from "react-bootstrap";
 
-const ResumenClinico = ({ paciente, onGuardar, profesional }) => {
+const ResumenClinicoTutor = ({ paciente, onGuardar, profesional }) => {
   const [formulario, setFormulario] = useState({
     motivoConsulta: "",
     diagnostico: "",
@@ -397,4 +397,4 @@ ${registro.observacion ? `Observación: ${registro.observacion}` : ""}`,
   );
 };
 
-export default ResumenClinico;
+export default ResumenClinicoTutor;

@@ -3,7 +3,7 @@ import { Card, Row, Col, Form, Button } from "react-bootstrap";
 import { getMemoryJSON } from "../../utils/memoryStore";
 import { request } from "../../utils/api";
 
-const FormularioAntropometria = ({ paciente, setPaciente }) => {
+const FormularioAntropometria = ({ paciente, setPaciente, profesional }) => {
   const [formulario, setFormulario] = useState({
     peso: "",
     altura: "",
@@ -22,6 +22,10 @@ const FormularioAntropometria = ({ paciente, setPaciente }) => {
         alert("Complete todos los campos");
         return;
       }
+      if (isNaN(formulario.peso) || isNaN(formulario.altura)) {
+        alert("Solo se permiten números");
+        return;
+      }
 
       const peso = Number(formulario.peso);
       const altura = Number(formulario.altura);
@@ -38,35 +42,26 @@ const FormularioAntropometria = ({ paciente, setPaciente }) => {
           body: {
             peso,
             altura,
+            profesional,
           },
-        }
+        },
       );
 
-      console.log(
-        "ANTROPOMETRIA GUARDADA:",
-        nuevaAntropometria
-      );
+      console.log("ANTROPOMETRIA GUARDADA:", nuevaAntropometria);
 
       setPaciente((prev) => ({
         ...prev,
-        antropometria: [
-          ...(prev.antropometria || []),
-          nuevaAntropometria,
-        ],
+        antropometria: [...(prev.antropometria || []), nuevaAntropometria],
       }));
 
-      alert("Antropometría guardada en BD");
+      alert("Antropometría guardada exitosamente");
 
       setFormulario({
         peso: "",
         altura: "",
       });
-
     } catch (error) {
-      console.error(
-        "ERROR GUARDANDO ANTROPOMETRIA:",
-        error
-      );
+      console.error("ERROR GUARDANDO ANTROPOMETRIA:", error);
 
       alert("No se pudo guardar la antropometría");
     }
@@ -84,6 +79,10 @@ const FormularioAntropometria = ({ paciente, setPaciente }) => {
             <Form.Label>Peso (kg)</Form.Label>
 
             <Form.Control
+              type="number"
+              min="1"
+              max="500"
+              step="0.001"
               name="peso"
               value={formulario.peso}
               onChange={handleChange}
@@ -95,6 +94,10 @@ const FormularioAntropometria = ({ paciente, setPaciente }) => {
             <Form.Label>Altura (m)</Form.Label>
 
             <Form.Control
+              type="number"
+              min="0.1"
+              max="3"
+              step="0.01"
               name="altura"
               value={formulario.altura}
               onChange={handleChange}

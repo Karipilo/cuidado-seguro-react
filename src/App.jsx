@@ -40,16 +40,19 @@ import "./styles/nosotros.css";
  * Configura las rutas y la estructura general
  */
 
+import { ToastProvider } from "./context/ToastContext";
+
 function App() {
 
   return (
 
-    <Router>
+    <ToastProvider>
+      <Router>
 
-      <div className="App">
+        <div className="App">
 
-        
-          <Navbar />
+          
+            <Navbar />
         
 
         <main>
@@ -123,7 +126,8 @@ function App() {
 
       </div>
 
-    </Router>
+      </Router>
+    </ToastProvider>
   );
 }
 

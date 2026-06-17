@@ -59,8 +59,7 @@ const FormularioIndicaciones = ({
             ...formulario,
 
             profesional:
-                sesion?.username ||
-                "Profesional",
+                sesion?.username ,
 
             fecha:
                 new Date().toLocaleString()

@@ -150,7 +150,6 @@ const ExamenesClinicos = ({ paciente, onActualizarPaciente, profesional }) => {
 
                   <th>Resultado</th>
 
-                  <th>Acciones</th>
                 </tr>
               </thead>
 
@@ -197,25 +196,6 @@ const ExamenesClinicos = ({ paciente, onActualizarPaciente, profesional }) => {
                           )}
                         </td>
 
-                        <td>
-                          {examen.resultado ? (
-                            <Button
-                              size="sm"
-                              variant="outline-primary"
-                              onClick={() => abrirModal(examen)}
-                            >
-                              Editar
-                            </Button>
-                          ) : (
-                            <Button
-                              size="sm"
-                              variant="success"
-                              onClick={() => abrirModal(examen)}
-                            >
-                              Ingresar
-                            </Button>
-                          )}
-                        </td>
                       </tr>
                     );
                   })}

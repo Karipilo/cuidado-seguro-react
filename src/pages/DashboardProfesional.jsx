@@ -21,7 +21,13 @@ import { request } from "../utils/api";
 import ResumenClinico from "../components/profesional/ResumenClinico";
 import FormularioAntropometria from "../components/profesional/FormularioAntropometria";
 import FormularioSolicitudExamenes from "../components/profesional/FormularioSolicitudExamenes";
-import PanelIndicadores from "../components/profesional/PanelIndicadores";
+import FormularioMedicamentos from "../components/profesional/FormularioMedicamentos";
+import HistorialAntropometria from "../components/profesional/HistorialAntropometria";
+import HistorialSignosVitales from "../components/profesional/HistorialSignosVitales";
+import AlertasSignosVitales from "../components/profesional/AlertasSignosVitales";
+import HistorialEvoluciones from "../components/profesional/HistorialEvoluciones";
+import HistorialIndicaciones from "../components/profesional/HistorialIndicaciones";
+import HistorialMedicamentos from "../components/profesional/HistorialMedicamentos";
 
 const DashboardProfesional = () => {
   const navigate = useNavigate();
@@ -120,7 +126,13 @@ const DashboardProfesional = () => {
         pacienteId: paciente?.id,
       });
       const evoluciones = await request("/evoluciones", { token });
-
+      console.log(
+        "PRIMERA EVOLUCION COMPLETA:",
+        JSON.stringify(evoluciones[0], null, 2),
+      );
+      evoluciones.forEach((e) =>
+        console.log("EVOLUCION API:", JSON.stringify(e, null, 2)),
+      );
       /* =========================
        OBTENER FICHAS CLÍNICAS
     ========================== */
@@ -158,10 +170,14 @@ const DashboardProfesional = () => {
       console.log("EXAMENES:", examenes);
 
       const examenesPaciente = examenes.filter(
-        (e) => e.ficha?.id === encontrado.id,
+        (e) => e.ficha === encontrado.id,
       );
 
       console.log("EXAMENES PACIENTE:", examenesPaciente);
+      console.log(
+        "PRIMER EXAMEN:",
+        JSON.stringify(examenesPaciente[0], null, 2),
+      );
 
       const indicaciones = await request("/indicaciones", {
         token,
@@ -187,15 +203,39 @@ const DashboardProfesional = () => {
         (e) => e.pacienteId === encontrado.id,
       );
 
-      console.log("EVOLUCIONES PACIENTE:", evolucionesPaciente);
+      console.log(
+        "EVOLUCIONES PACIENTE:",
+        JSON.stringify(evolucionesPaciente, null, 2),
+      );
 
       /* =========================
        OBTENER MEDICAMENTOS
     ========================== */
 
-      const medicamentos = await request("/medicamentos", { token });
+      let medicamentos = [];
+
+      try {
+        medicamentos = await request("/medicamentos", { token });
+
+        console.log("MEDICAMENTOS DESDE API:", medicamentos);
+      } catch (error) {
+        console.error("ERROR OBTENIENDO MEDICAMENTOS:", error);
+
+        if (error?.response) {
+          console.log("STATUS:", error.response.status);
+          console.log("DATA:", error.response.data);
+        }
+      }
 
       console.log("MEDICAMENTOS:", medicamentos);
+      console.log("MEDICAMENTOS JSON:", JSON.stringify(medicamentos, null, 2));
+
+      medicamentos.forEach((m) => {
+        console.log("MEDICAMENTO COMPLETO:", JSON.stringify(m, null, 2));
+      });
+      console.log("PACIENTE ENCONTRADO:", encontrado);
+
+      console.log("ID PACIENTE:", encontrado.id);
 
       /* =========================
        FILTRAR POR ficha_id
@@ -204,6 +244,9 @@ const DashboardProfesional = () => {
       const medicamentosPaciente = medicamentos.filter(
         (m) => m.ficha?.id === encontrado.id,
       );
+      console.log("MEDICAMENTOS DESDE API:", medicamentos);
+      console.log("MEDICAMENTOS FILTRADOS:", medicamentosPaciente);
+      console.log("ID FICHA ENCONTRADO:", encontrado.id);
 
       console.log("MEDICAMENTOS PACIENTE:", medicamentosPaciente);
 
@@ -212,8 +255,8 @@ const DashboardProfesional = () => {
     ========================== */
 
       const medicamentosTexto =
-        medicamentosPaciente.length > 0
-          ? medicamentosPaciente.map((m) => m.nombre).join(", ")
+        encontrado.medicamentos?.length > 0
+          ? encontrado.medicamentos.map((m) => m.nombre).join(", ")
           : "Sin medicamentos registrados";
 
       /* =========================
@@ -230,6 +273,7 @@ const DashboardProfesional = () => {
         diagnostico: encontrado.diagnostico,
         observaciones: encontrado.observaciones,
         medicamentosActuales: medicamentosTexto,
+        medicamentos: encontrado.medicamentos || [],
         antropometria: antropometrias,
         signosVitales: signosVitales,
         evoluciones: evolucionesPaciente,
@@ -251,7 +295,7 @@ const DashboardProfesional = () => {
         return;
       }
       console.log("EVOLUCION ENVIADA:", {
-        fecha: new Date().toLocaleString(),
+        fecha: new Date().toISOString().slice(0, 19),
         profesional: profesional?.nombreCompleto,
         descripcion: evolucion,
         observaciones: "",
@@ -304,7 +348,7 @@ const DashboardProfesional = () => {
         token: profesional?.accessToken,
         body: {
           fecha: new Date().toLocaleString(),
-          profesional: `${profesional?.userInfo?.nombreCompleto} (${profesional?.userInfo?.profesion})`,
+          profesional: `${profesional?.userInfo?.nombreCompleto}`,
           indicacion: indicacion,
           ficha: {
             id: paciente.id,
@@ -368,102 +412,178 @@ const DashboardProfesional = () => {
                           setPaciente={setPaciente}
                         />
                       }
-                      resumenComponent={<ResumenClinico paciente={paciente} />}
+                      resumenComponent={
+                        <ResumenClinico
+                          paciente={paciente}
+                          profesional={profesional?.userInfo?.nombreCompleto}
+                        />
+                      }
                       antropometriaComponent={
                         <>
                           <FormularioAntropometria
                             paciente={paciente}
                             setPaciente={setPaciente}
+                            profesional={profesional?.userInfo?.nombreCompleto}
                           />
 
                           <div className="mt-4">
-                            <Antropometria paciente={paciente} />
+                            <Antropometria
+                              paciente={paciente}
+                              profesional={
+                                profesional?.userInfo?.nombreCompleto
+                              }
+                            />
+                          </div>
+
+                          <div className="mt-4">
+                            <HistorialAntropometria
+                              paciente={paciente}
+                              profesional={
+                                profesional?.userInfo?.nombreCompleto
+                              }
+                            />
                           </div>
                         </>
                       }
                       signosVitalesComponent={
                         <>
+                          <div className="mt-4">
+                            <SignosVitales
+                              paciente={paciente}
+                              profesional={
+                                profesional?.userInfo?.nombreCompleto
+                              }
+                            />
+                          </div>
                           <FormularioSignosVitales
                             paciente={paciente}
                             setPaciente={setPaciente}
+                            profesional={profesional?.userInfo?.nombreCompleto}
                           />
 
                           <div className="mt-4">
-                            <SignosVitales paciente={paciente} />
+                            <HistorialSignosVitales
+                              paciente={paciente}
+                              profesional={
+                                profesional?.userInfo?.nombreCompleto
+                              }
+                            />
                           </div>
+                        </>
+                      }
+                      medicamentosComponent={
+                        <>
+                          <FormularioMedicamentos
+                            paciente={paciente}
+                            setPaciente={setPaciente}
+                            profesional={profesional?.userInfo?.nombreCompleto}
+                          />
 
                           <div className="mt-4">
-                            <ExamenesClinicos
+                            <HistorialMedicamentos
                               paciente={paciente}
                               onActualizarPaciente={buscarPaciente}
+                              profesional={
+                                profesional?.userInfo?.nombreCompleto
+                              }
                             />
                           </div>
                         </>
                       }
                       evolucionComponent={
-                        <Card id="evolucion" className="dashboard-modern-card">
-                          <Card.Body>
-                            <Card.Title className="dashboard-card-title">
-                              Registrar evolución clínica
-                            </Card.Title>
+                        <>
+                          {" "}
+                          <Card
+                            id="evolucion"
+                            className="dashboard-modern-card"
+                          >
+                            <Card.Body>
+                              <Card.Title className="dashboard-card-title">
+                                Registrar evolución clínica
+                              </Card.Title>
 
-                            <Form.Control
-                              as="textarea"
-                              className="dashboard-textarea"
-                              rows={5}
-                              placeholder="Escriba evolución clínica..."
-                              value={evolucion}
-                              onChange={(e) => setEvolucion(e.target.value)}
+                              <Form.Control
+                                as="textarea"
+                                className="dashboard-textarea"
+                                rows={5}
+                                placeholder="Escriba evolución clínica..."
+                                value={evolucion}
+                                onChange={(e) => setEvolucion(e.target.value)}
+                              />
+                              <Button
+                                className="mt-3 btn-dashboard-primary"
+                                onClick={guardarEvolucion}
+                              >
+                                Guardar evolución
+                              </Button>
+                            </Card.Body>
+                          </Card>
+                          <div className="mt-4">
+                            <HistorialEvoluciones
+                              paciente={paciente}
+                              onActualizarPaciente={buscarPaciente}
+                              profesional={
+                                profesional?.userInfo?.nombreCompleto
+                              }
                             />
-
-                            <Button
-                              className="mt-3 btn-dashboard-primary"
-                              onClick={guardarEvolucion}
-                            >
-                              Guardar evolución
-                            </Button>
-                          </Card.Body>
-                        </Card>
+                          </div>
+                        </>
                       }
                       examenesClinicosComponent={
                         <>
                           <FormularioSolicitudExamenes
                             paciente={paciente}
-                            setPaciente={setPaciente}
+                            onActualizarPaciente={buscarPaciente}
+                            profesional={profesional?.userInfo?.nombreCompleto}
                           />
 
                           <div className="mt-4">
                             <ExamenesClinicos
                               paciente={paciente}
                               onActualizarPaciente={buscarPaciente}
+                              profesional={
+                                profesional?.userInfo?.nombreCompleto
+                              }
                             />
                           </div>
                         </>
                       }
                       indicacionesComponent={
-                        <Card className="dashboard-modern-card">
-                          <Card.Body>
-                            <Card.Title className="dashboard-card-title">
-                              Indicaciones clínicas
-                            </Card.Title>
+                        <>
+                          <Card className="dashboard-modern-card">
+                            <Card.Body>
+                              <Card.Title className="dashboard-card-title">
+                                Indicaciones clínicas
+                              </Card.Title>
 
-                            <Form.Control
-                              as="textarea"
-                              rows={4}
-                              className="dashboard-textarea"
-                              placeholder="Escriba indicaciones..."
-                              value={indicacion}
-                              onChange={(e) => setIndicacion(e.target.value)}
+                              <Form.Control
+                                as="textarea"
+                                rows={4}
+                                className="dashboard-textarea"
+                                placeholder="Escriba indicaciones..."
+                                value={indicacion}
+                                onChange={(e) => setIndicacion(e.target.value)}
+                              />
+
+                              <Button
+                                className="mt-3 btn-dashboard-primary"
+                                onClick={guardarIndicacion}
+                              >
+                                Guardar indicación
+                              </Button>
+                            </Card.Body>
+                          </Card>
+
+                          <div className="mt-4">
+                            <HistorialIndicaciones
+                              paciente={paciente}
+                              onActualizarPaciente={buscarPaciente}
+                              profesional={
+                                profesional?.userInfo?.nombreCompleto
+                              }
                             />
-
-                            <Button
-                              className="mt-3 btn-dashboard-primary"
-                              onClick={guardarIndicacion}
-                            >
-                              Guardar indicación
-                            </Button>
-                          </Card.Body>
-                        </Card>
+                          </div>
+                        </>
                       }
                     />
                   </Col>

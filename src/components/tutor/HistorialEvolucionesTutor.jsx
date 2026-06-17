@@ -4,68 +4,63 @@ import { Card, Table, Button, Modal, Form } from "react-bootstrap";
 
 import { request } from "../../utils/api";
 import { getMemoryJSON } from "../../utils/memoryStore";
-
-const HistorialIndicaciones = ({
+const HistorialEvolucionesTutor = ({
   paciente,
   onActualizarPaciente,
   profesional,
 }) => {
   const [mostrarModal, setMostrarModal] = useState(false);
 
-  const [indicacionSeleccionada, setIndicacionSeleccionada] = useState(null);
+  const [evolucionSeleccionada, setEvolucionSeleccionada] = useState(null);
 
-  const [textoIndicacion, setTextoIndicacion] = useState("");
+  const [descripcion, setDescripcion] = useState("");
 
-  const abrirModal = (indicacion) => {
-    setIndicacionSeleccionada(indicacion);
+  const abrirModal = (evolucion) => {
+    setEvolucionSeleccionada(evolucion);
 
-    setTextoIndicacion(indicacion.indicacion || "");
+    setDescripcion(evolucion.descripcion || "");
 
     setMostrarModal(true);
   };
 
-  const actualizarIndicacion = async () => {
+  const actualizarEvolucion = async () => {
     try {
-      if (!indicacionSeleccionada) {
+      if (!evolucionSeleccionada) {
         return;
       }
 
       const sesion = getMemoryJSON("sesion");
 
-      await request(`/indicaciones/${indicacionSeleccionada.id}`, {
+      await request(`/evoluciones/${evolucionSeleccionada.id}`, {
         method: "PUT",
         token: sesion?.accessToken,
         body: {
-          ...indicacionSeleccionada,
-          indicacion: textoIndicacion,
+          ...evolucionSeleccionada,
+          descripcion,
         },
       });
-
       setMostrarModal(false);
-
       await onActualizarPaciente();
-
-      alert("Indicación actualizada");
+      alert("Evolución actualizada");
     } catch (error) {
       console.error(error);
 
-      alert("Error al actualizar indicación");
+      alert("Error al actualizar evolución");
     }
   };
-
   return (
     <Card className="dashboard-modern-card">
       <Modal show={mostrarModal} onHide={() => setMostrarModal(false)} centered>
         <Modal.Header closeButton>
-          <Modal.Title>Editar Indicación</Modal.Title>
+          <Modal.Title>Editar Evolución</Modal.Title>
         </Modal.Header>
 
         <Modal.Body>
           <Form.Control
             as="textarea"
             rows={6}
-            value={textoIndicacion}
-            onChange={(e) => setTextoIndicacion(e.target.value)}
+            value={descripcion}
+            onChange={(e) => setDescripcion(e.target.value)}
           />
         </Modal.Body>
 
@@ -74,7 +69,7 @@ const HistorialIndicaciones = ({
             Cancelar
           </Button>
 
-          <Button variant="success" onClick={actualizarIndicacion}>
+          <Button variant="success" onClick={actualizarEvolucion}>
             Guardar
           </Button>
         </Modal.Footer>
@@ -82,28 +77,32 @@ const HistorialIndicaciones = ({
 
       <Card.Body>
         <Card.Title className="dashboard-card-title">
-          Indicaciones Médicas
+          Evoluciones Clínicas
         </Card.Title>
 
-        {paciente?.indicaciones?.length > 0 ? (
+        {paciente?.evoluciones?.length > 0 ? (
           <Table responsive hover striped>
             <thead>
               <tr>
                 <th>Fecha</th>
-                <th>Indicación</th>
-                <th>Acciones</th>
+
+                <th>Evolución</th>
+
               </tr>
             </thead>
 
             <tbody>
-              {paciente.indicaciones
+              {paciente.evoluciones
                 .slice()
                 .reverse()
-                .map((indicacion) => (
-                  <tr key={indicacion.id}>
+                .map((evolucion) => {
+                  console.log("EVOLUCION:", evolucion);
+
+                  return(
+                  <tr key={evolucion.id}>
                     <td>
-                      {indicacion.fechaRegistro
-                        ? new Date(indicacion.fechaRegistro).toLocaleDateString(
+                      {evolucion.fechaRegistro
+                        ? new Date(evolucion.fechaRegistro).toLocaleDateString(
                             "es-CL",
                           )
                         : "-"}
@@ -114,28 +113,20 @@ const HistorialIndicaciones = ({
                         whiteSpace: "pre-wrap",
                       }}
                     >
-                      {indicacion.indicacion}
+                      {evolucion.descripcion}
                     </td>
 
-                    <td>
-                      <Button
-                        size="sm"
-                        variant="outline-primary"
-                        onClick={() => abrirModal(indicacion)}
-                      >
-                        Editar
-                      </Button>
-                    </td>
                   </tr>
-                ))}
+                );
+})}
             </tbody>
           </Table>
         ) : (
-          <p>No existen indicaciones registradas.</p>
+          <p>No existen evoluciones registradas.</p>
         )}
       </Card.Body>
     </Card>
   );
 };
 
-export default HistorialIndicaciones;
+export default HistorialEvolucionesTutor;
