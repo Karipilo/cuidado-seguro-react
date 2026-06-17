@@ -1,8 +1,7 @@
 node_modules
-coverage
 dist
 .git
-.gitignore
 .vscode
 Dockerfile
+docker-compose.yml
 README.md
