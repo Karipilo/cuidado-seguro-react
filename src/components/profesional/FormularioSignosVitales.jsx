@@ -51,10 +51,11 @@ const FormularioSignosVitales = ({ paciente, setPaciente,profesional }) => {
       
 
       const sesion = getMemoryJSON("sesion");
-      console.log("SESION COMPLETA:", sesion);
 
-      console.log("PACIENTE:", paciente);
       console.log("SESION COMPLETA:", sesion);
+      console.log("PACIENTE:", paciente);
+      console.log("USER INFO:", sesion?.userInfo);
+      console.log("PROFESION:", sesion?.userInfo?.profesion);
       const nuevosSignos = await request(`/signos-vitales/${paciente.id}`, {
         method: "POST",
         token: sesion?.accessToken,

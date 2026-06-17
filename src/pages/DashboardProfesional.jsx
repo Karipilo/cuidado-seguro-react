@@ -42,6 +42,13 @@ const DashboardProfesional = () => {
 
   const [indicacion, setIndicacion] = useState("");
 
+  const [estadisticas, setEstadisticas] = useState({
+    pacientes: 0,
+    fichas: 0,
+    evoluciones: 0,
+    examenes: 0,
+  });
+
   const evoluciones = getMemoryJSON("evoluciones", []);
 
   const ultimoRegistro = paciente?.antropometria?.length
@@ -61,7 +68,34 @@ const DashboardProfesional = () => {
     }
 
     setProfesional(sesion);
+
+    cargarIndicadores(sesion.accessToken);
+
   }, [navigate]);
+
+  //Indicadores generales
+
+  const cargarIndicadores = async (token) => {
+    try {
+
+      const fichas = await request("/fichas", { token });
+
+      const evoluciones = await request("/evoluciones", { token });
+
+      const examenes = await request("/examenes", { token });
+
+      setEstadisticas({
+        pacientes: fichas.length,
+        fichas: fichas.length,
+        evoluciones: evoluciones.length,
+        examenes: examenes.length,
+      });
+
+    } catch (error) {
+
+      console.error("Error cargando indicadores:", error);
+    }
+  };
 
   /* BUSCAR PACIENTE */
 
@@ -348,7 +382,13 @@ const DashboardProfesional = () => {
           setRutBusqueda={setRutBusqueda}
           buscarPaciente={buscarPaciente}
         />
-
+        <PanelIndicadores
+          pacientes={estadisticas.pacientes}
+          fichas={estadisticas.fichas}
+          evoluciones={estadisticas.evoluciones}
+          examenes={estadisticas.examenes}
+        />
+        
         <Row className="justify-content-center">
           <Col lg={12}>
             {paciente && (

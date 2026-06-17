@@ -9,134 +9,145 @@ const HistorialEvoluciones = ({
   onActualizarPaciente,
   profesional,
 }) => {
-  const [mostrarModal, setMostrarModal] = useState(false);
 
-  const [evolucionSeleccionada, setEvolucionSeleccionada] = useState(null);
+    return (
 
-  const [descripcion, setDescripcion] = useState("");
+        <Card className="dashboard-modern-card">
 
-  const abrirModal = (evolucion) => {
-    setEvolucionSeleccionada(evolucion);
+            <Card.Body>
 
-    setDescripcion(evolucion.descripcion || "");
+                <Card.Title
+                    className="dashboard-card-title"
+                >
 
-    setMostrarModal(true);
-  };
+                    Evoluciones Clínicas
 
-  const actualizarEvolucion = async () => {
-    try {
-      if (!evolucionSeleccionada) {
-        return;
-      }
+                </Card.Title>
 
-      const sesion = getMemoryJSON("sesion");
+                {
+                    paciente?.evoluciones?.length > 0 ? (
 
-      await request(`/evoluciones/${evolucionSeleccionada.id}`, {
-        method: "PUT",
-        token: sesion?.accessToken,
-        body: {
-          ...evolucionSeleccionada,
-          descripcion,
-        },
-      });
-      setMostrarModal(false);
-      await onActualizarPaciente();
-      alert("Evolución actualizada");
-    } catch (error) {
-      console.error(error);
+                        paciente.evoluciones
+                            .slice()
+                            .reverse()
+                            .map(
+                                (
+                                    evolucion,
+                                    index
+                                ) => (
 
-      alert("Error al actualizar evolución");
-    }
-  };
-  return (
-    <Card className="dashboard-modern-card">
-      <Modal show={mostrarModal} onHide={() => setMostrarModal(false)} centered>
-        <Modal.Header closeButton>
-          <Modal.Title>Editar Evolución</Modal.Title>
-        </Modal.Header>
+                                    <div
+                                        key={index}
+                                        className="
+                                            border
+                                            rounded-4
+                                            p-3
+                                            mb-3
+                                        "
+                                    >
 
-        <Modal.Body>
-          <Form.Control
-            as="textarea"
-            rows={6}
-            value={descripcion}
-            onChange={(e) => setDescripcion(e.target.value)}
-          />
-        </Modal.Body>
+                                        <div
+                                            className="
+                                                d-flex
+                                                justify-content-between
+                                                align-items-center
+                                                mb-2
+                                            "
+                                        >
 
-        <Modal.Footer>
-          <Button variant="secondary" onClick={() => setMostrarModal(false)}>
-            Cancelar
-          </Button>
+                                            <div>
 
-          <Button variant="success" onClick={actualizarEvolucion}>
-            Guardar
-          </Button>
-        </Modal.Footer>
-      </Modal>
+                                                <strong>
 
-      <Card.Body>
-        <Card.Title className="dashboard-card-title">
-          Evoluciones Clínicas
-        </Card.Title>
+                                                    {
+                                                        evolucion.profesional
+                                                    }
 
-        {paciente?.evoluciones?.length > 0 ? (
-          <Table responsive hover striped>
-            <thead>
-              <tr>
-                <th>Fecha</th>
+                                                </strong>
 
-                <th>Evolución</th>
+                                                <p
+                                                    className="
+                                                        text-muted
+                                                        mb-0
+                                                    "
+                                                >
 
-                <th>Acciones</th>
-              </tr>
-            </thead>
+                                                    {
+                                                        evolucion.fecha
+                                                    }
 
-            <tbody>
-              {paciente.evoluciones
-                .slice()
-                .reverse()
-                .map((evolucion) => {
-                  console.log("EVOLUCION:", evolucion);
+                                                </p>
 
-                  return(
-                  <tr key={evolucion.id}>
-                    <td>
-                      {evolucion.fechaRegistro
-                        ? new Date(evolucion.fechaRegistro).toLocaleDateString(
-                            "es-CL",
-                          )
-                        : "-"}
-                    </td>
+                                            </div>
 
-                    <td
-                      style={{
-                        whiteSpace: "pre-wrap",
-                      }}
-                    >
-                      {evolucion.descripcion}
-                    </td>
+                                            <Badge bg="primary">
 
-                    <td>
-                      <Button
-                        size="sm"
-                        variant="outline-primary"
-                        onClick={() => abrirModal(evolucion)}
-                      >
-                        Editar
-                      </Button>
-                    </td>
-                  </tr>
-                );
-})}
-            </tbody>
-          </Table>
-        ) : (
-          <p>No existen evoluciones registradas.</p>
-        )}
-      </Card.Body>
-    </Card>
-  );
+                                                {
+                                                    evolucion.estado
+                                                }
+
+                                            </Badge>
+
+                                        </div>
+
+                                        <h6>
+
+                                            Evolución
+
+                                        </h6>
+
+                                        <p>
+
+                                            {
+                                                evolucion.descripcion
+                                            }
+
+                                        </p>
+
+                                        {
+                                            evolucion.observaciones && (
+
+                                                <>
+
+                                                    <h6>
+
+                                                        Observaciones
+
+                                                    </h6>
+
+                                                    <p>
+
+                                                        {
+                                                            evolucion.observaciones
+                                                        }
+
+                                                    </p>
+
+                                                </>
+
+                                            )
+                                        }
+
+                                    </div>
+
+                                )
+                            )
+
+                    ) : (
+
+                        <p>
+
+                            No existen evoluciones registradas.
+
+                        </p>
+
+                    )
+                }
+
+            </Card.Body>
+
+        </Card>
+    );
 };
 
 export default HistorialEvoluciones;

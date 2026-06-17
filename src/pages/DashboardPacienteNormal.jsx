@@ -39,45 +39,66 @@ const DashboardPacienteNormal = () => {
 
         console.log("DATA:", data);
 
+        //Agregar persona
         const persona = data?.usuario?.persona || {};
-        const rutLimpio = String(persona?.numeroDocumento || "").replace(/\./g, "").replace(/-/g, "").trim();
 
-        let misMedicamentos = [];
-        let misSignos = [];
-        let misEvoluciones = [];
-        let misIndicaciones = [];
+        //Agregar logs para revisar la estructura de los datos obtenidos
+        const fichas = await request("/fichas", { token });
 
-        try {
-          const fichas = await request("/fichas", { token });
-          const miFicha = fichas.find(
-            (f) => String(f.rutPaciente || "").replace(/\./g, "").replace(/-/g, "").trim() === rutLimpio
+        console.log("FICHAS:", fichas);
+
+        const fichaPaciente = fichas.find(
+          (f) => 
+            String(f.rutPaciente).trim() ===
+            String(persona?.numeroDocumento || "")
+              .replace(/\./g, "")
+              .trim()
+      );
+
+      console.log("FICHA PACIENTE:", fichaPaciente);
+
+      let signosVitales = [];
+      let evolucionesPaciente = [];
+      let indicacionesPaciente = [];
+
+      if (fichaPaciente?.id) {
+        signosVitales = await request(
+          `/signos-vitales/ficha/${fichaPaciente.id}`,
+          { token }
+        );
+
+        console.log("SIGNOS VITALES:", signosVitales);
+      
+      if (fichaPaciente?.id) {
+        const evoluciones = await request(
+          "/evoluciones",
+          { token }
+        );
+
+        evolucionesPaciente = evoluciones. filter(
+          (e) => e.pacienteId === fichaPaciente.id
+        );
+        console.log("EVOLUCIONES PACIENTE:", evolucionesPaciente);
+
+        if (fichaPaciente?.id) {
+          const indicaciones = await request(
+            "/indicaciones",
+            { token }
           );
 
-          if (miFicha) {
-            misMedicamentos = miFicha.medicamentos || [];
-            misSignos = await request(`/signos-vitales/ficha/${miFicha.id}`, { token });
-            const todasEvoluciones = await request("/evoluciones", { token });
-            misEvoluciones = todasEvoluciones.filter((e) => e.pacienteId === miFicha.id);
+          console.log("INDICACIONES:", indicaciones);
 
-            const todasIndicaciones = await request(
-              "/indicaciones",
-              { token }
-            );
+          indicacionesPaciente = indicaciones;
 
-            misIndicaciones = todasIndicaciones.filter(
-              (i) => i.ficha?.id === miFicha.id
-            );
-
-            //console.log("SIGNOS:",JSON.stringify(misSignos, null, 2));
-            //console.log("INDICACIONES:",JSON.stringify(misIndicaciones, null, 2));
-            //console.log("EVOLUCIONES:",JSON.stringify(misEvoluciones, null, 2));
-            //console.log("ID:",data?.id);
-            console.log("FICHA:", JSON.stringify(miFicha, null, 2));
-          }
-        } catch (err) {
-          console.error("Error al obtener detalles clínicos del paciente:", err);
+          console.log(
+            "INDICACIONES PACIENTE:",
+            indicacionesPaciente
+          );
         }
+      };
+    }
 
+        
         const usuarioCompleto = {
           nombres: persona?.nombres || "",
           apellidos: persona?.apellidos || "",
@@ -95,14 +116,15 @@ const DashboardPacienteNormal = () => {
           contactoEmergencia: data?.contactoEmergencia || "",
           telefonoEmergencia: data?.telefonoEmergencia || "",
           seguroMedico: data?.prevision || "",
-          medicamentosRecetados: misMedicamentos,
-          signosVitales: misSignos,
-          evoluciones: misEvoluciones,
-          indicaciones: misIndicaciones
+          signosVitales: signosVitales,
+          evoluciones: evolucionesPaciente,
+          indicaciones: indicacionesPaciente,
         };
 
         setUser(usuarioCompleto);
         setPacienteActivo(usuarioCompleto);
+
+        console.log("USUARIO COMPLETO:", usuarioCompleto);
 
       } catch (error) {
         console.error("Error obteniendo usuario:", error);
@@ -116,9 +138,6 @@ const DashboardPacienteNormal = () => {
     };
 
     obtenerUsuario();
-
-
-
 
   }, [navigate]);
 
@@ -139,6 +158,17 @@ const DashboardPacienteNormal = () => {
     );
   }
 
+  // Revisar qué datos llegan desde el backend
+  console.log(
+    "PACIENTE ACTIVO:",
+    pacienteActivo
+  );
+
+  console.log(
+    "PACIENTE ACTIVO EVOLUCIONES:",
+    pacienteActivo?.evoluciones
+  );
+
   return (
     <DashboardLayout usuario={user}>
       <Container fluid>
@@ -155,7 +185,7 @@ const DashboardPacienteNormal = () => {
           <Badge bg="primary" className="status-badge">Paciente activo</Badge>
         </div>
 
-
+        
 
         <Row>
           {/* INFORMACIÓN PERSONAL */}
@@ -209,68 +239,27 @@ const DashboardPacienteNormal = () => {
           </Col>
         </Row>
 
-        {/* MEDICAMENTOS RECETADOS POR EL PROFESIONAL */}
-        <Row>
-          <Col lg={12} className="mb-4">
-            <Card className="dashboard-modern-card">
-              <Card.Body>
-                <Card.Title className="dashboard-card-title">Medicamentos recetados por el profesional</Card.Title>
-                {user?.medicamentosRecetados?.length > 0 ? (
-                  <div className="table-responsive">
-                    <table className="table table-hover">
-                      <thead>
-                        <tr>
-                          <th>Medicamento</th>
-                          <th>Dosis</th>
-                          <th>Frecuencia</th>
-                          <th>Duración</th>
-                          <th>Profesional</th>
-                          <th>Observaciones</th>
-                        </tr>
-                      </thead>
-                      <tbody>
-                        {user.medicamentosRecetados.map((med, index) => (
-                          <tr key={index}>
-                            <td><strong>{med.nombre}</strong></td>
-                            <td>{med.dosis}</td>
-                            <td>{med.frecuencia}</td>
-                            <td>{med.diasTratamiento} días</td>
-                            <td>{med.profesional || "No registrado"}</td>
-                            <td>{med.observaciones || "Sin observaciones"}</td>
-                          </tr>
-                        ))}
-                      </tbody>
-                    </table>
-                  </div>
-                ) : (
-                  <p className="text-muted mb-0">No tienes medicamentos recetados por profesionales.</p>
-                )}
-              </Card.Body>
-            </Card>
-          </Col>
-        </Row>
-
         {/* SIGNOS VITALES */}
         <Row>
           <Col lg={12} className="mb-4">
             <SignosVitales paciente={pacienteActivo} />
           </Col>
         </Row>
-
         <Row>
-          <Col lg={6} className="mb-4">
-            <HistorialEvoluciones paciente={pacienteActivo} />
+          <Col lg={12} className="mb-4">
+            <HistorialClinico
+              evoluciones={pacienteActivo?.evoluciones} 
+            />
           </Col>
-          <Col lg={6} className="mb-4">
+        </Row>
+        
+        <Row>
+          <Col lg={12} className="mb-4">
             <HistorialIndicaciones paciente={pacienteActivo} />
           </Col>
         </Row>
 
-        <Row>
-          <Col lg={12} className="mb-4">
-            <HistorialClinico />
-          </Col>
-        </Row>
+        
       </Container>
     </DashboardLayout>
   );

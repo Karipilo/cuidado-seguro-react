@@ -6,6 +6,11 @@ const HistorialClinico = ({
     evoluciones = []
 }) => {
 
+    console.log(
+        "HISTORIAL CLÍNICO - EVOLUCIONES:",
+        evoluciones
+    );
+
     return (
 
         <Card className="dashboard-modern-card">
@@ -16,78 +21,83 @@ const HistorialClinico = ({
                     className="dashboard-card-title"
                 >
 
-                    Últimos registros clínicos
+                    Resumen clínico reciente
 
                 </Card.Title>
 
-                {evoluciones?.length === 0 ? (
+                {
+                    evoluciones?.length === 0 ? (
 
-                    <p className="mb-0">
+                        <p className="mb-0 text-muted">
 
-                        No existen evoluciones registradas
+                            No existen registros clínicos disponibles
 
-                    </p>
+                        </p>
 
-                ) : (
+                    ) : (
 
-                    <div className="timeline-clinica">
+                        <div className="timeline-clinica">
 
-                        {evoluciones?.map((ev, index) => (
+                            {
+                                evoluciones.map((ev, index) => (
 
-                            <div
-                                key={index}
-                                className="timeline-item"
-                            >
+                                    <div
+                                        key={ev.id || index}
+                                        className="timeline-item"
+                                    >
 
-                                <div className="timeline-dot">
+                                        <div className="timeline-dot">
 
-                                    <Activity />
-
-                                </div>
-
-                                <div className="timeline-content">
-
-                                    <div className="timeline-header">
-
-                                        <div>
-
-                                            <h6 className="mb-1">
-
-                                                {ev.profesional}
-
-                                            </h6>
-
-                                            <small className="text-muted">
-
-                                                {ev.profesion}
-
-                                            </small>
+                                            <Activity />
 
                                         </div>
 
-                                        <small className="text-muted">
+                                        <div className="timeline-content">
 
-                                            {ev.fecha}
+                                            <h6 className="mb-2">
 
-                                        </small>
+                                                Evolución clínica
+
+                                            </h6>
+
+                                            <p className="text-muted mb-2">
+
+                                                {ev.fecha}
+
+                                            </p>
+
+                                            <p className="mb-0">
+
+                                                {ev.descripcion}
+
+                                            </p>
+
+                                            {
+                                                ev.observaciones && (
+
+                                                    <p className="mt-2 text-muted">
+
+                                                        <strong>
+                                                            Observaciones:
+                                                        </strong>{" "}
+                                                        {ev.observaciones}
+
+                                                    </p>
+
+                                                )
+                                            }
+
+                                        </div>
 
                                     </div>
 
-                                    <p className="mb-0 mt-3">
+                                ))
+                            }
 
-                                        {ev.texto}
+                        </div>
 
-                                    </p>
-
-                                </div>
-
-                            </div>
-
-                        ))}
-
-                    </div>
-
-                )}
+                    )
+                }
 
             </Card.Body>
 
