@@ -174,6 +174,22 @@ const FormularioMedicamentos = ({ paciente, setPaciente, profesional }) => {
         >
           Guardar medicamento
         </Button>
+
+        <hr className="mt-4" />
+        <h6>Medicamentos Prescritos</h6>
+        {paciente?.medicamentos?.length > 0 ? (
+          paciente.medicamentos.map((med, index) => (
+            <div key={med.id ?? index} className="border rounded p-2 mb-2">
+              <strong>{med.nombre}</strong>
+              <p className="mb-0">{med.dosis} — {med.frecuencia}</p>
+              {med.diasTratamiento && (
+                <p className="mb-0 text-muted">Duración: {med.diasTratamiento} días</p>
+              )}
+            </div>
+          ))
+        ) : (
+          <p>No existen medicamentos prescritos.</p>
+        )}
       </Card.Body>
     </Card>
   );

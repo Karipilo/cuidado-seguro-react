@@ -16,7 +16,7 @@ describe("ResumenClinico", () => {
     render(<ResumenClinico paciente={{}} />);
 
     expect(
-      screen.getByText("No existen registros clínicos.")
+      screen.getAllByText("No existen registros clínicos.")[0]
     ).toBeInTheDocument();
   });
 
@@ -35,7 +35,7 @@ describe("ResumenClinico", () => {
     render(<ResumenClinico paciente={paciente} />);
 
     expect(
-      screen.getByText(/Paracetamol/i)
+      screen.getAllByText(/Paracetamol/i)[0]
     ).toBeInTheDocument();
   });
 
@@ -56,7 +56,7 @@ describe("ResumenClinico", () => {
     render(<ResumenClinico paciente={paciente} />);
 
     expect(
-      screen.getByText(/120\/80/i)
+      screen.getAllByText(/120\/80/i)[0]
     ).toBeInTheDocument();
   });
 
@@ -85,11 +85,11 @@ describe("ResumenClinico", () => {
     render(<ResumenClinico paciente={paciente} />);
 
     fireEvent.click(
-      screen.getByText(/Medicamentos/i)
+      screen.getByRole("tab", { name: /Medicamentos/i })
     );
 
     expect(
-      screen.getByText(/Paracetamol/i)
+      screen.getAllByText(/Paracetamol/i)[0]
     ).toBeInTheDocument();
   });
 
@@ -107,7 +107,7 @@ describe("ResumenClinico", () => {
     render(<ResumenClinico paciente={paciente} />);
 
     expect(
-      screen.getByText(/Paciente estable/i)
+      screen.getAllByText(/Paciente estable/i)[0]
     ).toBeInTheDocument();
   });
 
@@ -126,7 +126,7 @@ describe("ResumenClinico", () => {
     render(<ResumenClinico paciente={paciente} />);
 
     expect(
-      screen.getByText(/Hemograma/i)
+      screen.getAllByText(/Hemograma/i)[0]
     ).toBeInTheDocument();
   });
 
@@ -144,7 +144,7 @@ describe("ResumenClinico", () => {
     render(<ResumenClinico paciente={paciente} />);
 
     expect(
-      screen.getByText(/Peso: 80 kg/i)
+      screen.getAllByText(/Peso: 80 kg/i)[0]
     ).toBeInTheDocument();
   });
 
@@ -162,7 +162,7 @@ describe("ResumenClinico", () => {
     render(<ResumenClinico paciente={paciente} />);
 
     expect(
-      screen.getByText(/Reposo por 7 días/i)
+      screen.getAllByText(/Reposo por 7 días/i)[0]
     ).toBeInTheDocument();
   });
 });
