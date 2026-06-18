@@ -123,11 +123,12 @@ IMC: ${imc}`,
     });
   });
 
-  resumen.push({
-    tipo: "Medicamento",
-    fecha: formatearFecha(registro.fechaRegistro || registro.fecha),
-    profesional: registro.profesional,
-    detalle: `Medicamento: ${registro.nombre}
+  paciente?.medicamentos?.forEach((registro) => {
+    resumen.push({
+      tipo: "Medicamento",
+      fecha: formatearFecha(registro.fechaRegistro || registro.fecha),
+      profesional: registro.profesional,
+      detalle: `Medicamento: ${registro.nombre}
 
 Dosis: ${registro.dosis}
 
@@ -136,6 +137,7 @@ Frecuencia: ${registro.frecuencia}
 Duración: ${registro.diasTratamiento} días
 
 ${registro.observaciones || ""}`,
+    });
   });
 
   paciente?.examenes?.forEach((registro) => {
