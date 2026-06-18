@@ -1,7 +1,9 @@
-node_modules
-dist
+node_modules/
+dist/
+coverage/
 .git
-.vscode
-Dockerfile
-docker-compose.yml
-README.md
+.gitignore
+*.md
+*.log
+.vscode/
+.idea/
