@@ -46,7 +46,7 @@ jobs:
       - name: Build de producción
         run: npm run build
         env:
-          VITE_BFF_URL: http://34.203.222.130:8090/bff
+          VITE_BFF_URL: http://34.239.93.8:8090/bff
 
   # ── 2. Build y Push imagen Docker ──────────────────────────────────────────
   docker-build-push:
@@ -82,7 +82,7 @@ jobs:
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
           build-args: |
-            VITE_BFF_URL=http://34.203.222.130:8090/bff
+            VITE_BFF_URL: http://34.239.93.8:8090/bff
           cache-from: type=registry,ref=${{ secrets.DOCKERHUB_USERNAME }}/${{ env.IMAGE_NAME }}:latest
           cache-to: type=inline
 
