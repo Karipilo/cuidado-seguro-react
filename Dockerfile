@@ -4,7 +4,7 @@ FROM node:20-alpine AS build
 WORKDIR /app
 
 # Argumento para la URL del BFF (se embebe en el build de Vite)
-ARG VITE_BFF_URL=ARG VITE_BFF_URL=http://34.239.93.8:8090/bff
+ARG VITE_BFF_URL=ARG VITE_BFF_URL=http://44.202.163.14:8090/bff
 ENV VITE_BFF_URL=$VITE_BFF_URL
 
 COPY package*.json ./
