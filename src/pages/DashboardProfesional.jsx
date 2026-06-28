@@ -28,7 +28,7 @@ import AlertasSignosVitales from "../components/profesional/AlertasSignosVitales
 import HistorialEvoluciones from "../components/profesional/HistorialEvoluciones";
 import HistorialIndicaciones from "../components/profesional/HistorialIndicaciones";
 import HistorialMedicamentos from "../components/profesional/HistorialMedicamentos";
-
+import PanelIndicadores from "../components/profesional/PanelIndicadores";
 const DashboardProfesional = () => {
   const navigate = useNavigate();
 
