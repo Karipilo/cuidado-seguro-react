@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 
-import { Card, Table, Button, Modal, Form } from "react-bootstrap";
+import { Card, Table, Button, Modal, Form, Badge } from "react-bootstrap";
 
 import { request } from "../../utils/api";
 import { getMemoryJSON } from "../../utils/memoryStore";
