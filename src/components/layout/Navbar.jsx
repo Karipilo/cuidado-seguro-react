@@ -81,13 +81,7 @@ const NavbarComponent = () => {
               active={location.pathname === "/contacto"}
               className="nav-link-custom"
             >
-              Contacto
-            </Nav.Link>
-            <Nav.Link
-              onClick={() => navigate("/nosotros")}
-              active={location.pathname === "/nosotros"}
-              className="nav-link-custom"
-            >
+            
               Nosotros
             </Nav.Link>
           </Nav>
