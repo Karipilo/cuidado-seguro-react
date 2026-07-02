@@ -41,18 +41,21 @@ const HeaderProfesional = ({
         <div className="header-search-container">
           <Form.Control
             type="text"
-            placeholder="Ingrese RUT del paciente..."
+            placeholder="12345678-9"
             value={rutBusqueda}
-            onChange={(e) => setRutBusqueda(e.target.value)}
+            onChange={(e) => setRutBusqueda(e.target.value.replace(/\./g, ""))}
+            maxLength={10}
             className="header-search-input"
           />
+
+          <Form.Text className="text-light mt-1">
+            Ingrese el RUT sin puntos y con guion. Ejemplo: 12345678-9
+          </Form.Text>
 
           <Button className="header-search-button" onClick={buscarPaciente}>
             Buscar
           </Button>
         </div>
-
-        
       </div>
     </div>
   );
