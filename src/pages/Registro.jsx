@@ -386,7 +386,11 @@ const Registro = () => {
                 name="numeroDocumento"
                 value={formData.numeroDocumento}
                 onChange={handleChange}
+                maxLength={10}
               />
+              <Form.Text className="text-muted">
+                Ingrese el RUT sin puntos y con guion. Ejemplo: 12345678-9
+              </Form.Text>
             </Form.Group>
 
             <Form.Group className="mb-3">

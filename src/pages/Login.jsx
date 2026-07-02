@@ -1,13 +1,11 @@
 import { useState } from "react";
 import { Button, Card, Form } from "react-bootstrap";
 import { useNavigate } from "react-router-dom";
-import Formulario from "../components/ui/Formulario";
 import "../styles/auth.css";
 import { setMemoryJSON } from "../utils/memoryStore";
 import { request } from "../utils/api";
 
 const Login = () => {
-
   const navigate = useNavigate();
 
   const [username, setUsername] = useState("");
@@ -40,10 +38,20 @@ const Login = () => {
         navigate("/", { replace: true });
       }
     } catch (err) {
-      setError(
-        err.message ||
-          "No fue posible conectar con el servidor. Verifique CORS o que el Gateway esté activo."
-      );
+      console.error(err);
+
+      if (err.message === "Failed to fetch") {
+        setError(
+          "No fue posible conectar con el servidor. Intente nuevamente más tarde.",
+        );
+      } else if (
+        err.message?.includes("401") ||
+        err.message?.toLowerCase().includes("credenciales")
+      ) {
+        setError("Usuario o contraseña incorrectos.");
+      } else {
+        setError("Ocurrió un error inesperado. Intente nuevamente.");
+      }
     } finally {
       setCargando(false);
     }
@@ -51,7 +59,6 @@ const Login = () => {
 
   return (
     <div className="auth-container">
-
       <div className="formulario-card">
         <h3>Iniciar Sesión</h3>
         <p className="subtitle">Ingrese sus credenciales para continuar</p>
@@ -63,7 +70,6 @@ const Login = () => {
         )}
 
         <Form onSubmit={handleLogin}>
-
           <Form.Group className="mb-3">
             <Form.Label>Usuario</Form.Label>
             <Form.Control
@@ -98,13 +104,19 @@ const Login = () => {
           >
             {cargando ? "Ingresando..." : "Iniciar Sesión"}
           </Button>
-
         </Form>
 
-        <p className="text-center mt-3 mb-0" style={{ fontSize: "0.875rem", color: "var(--text-secondary)" }}>
-          ¿No tiene una cuenta?{' '}
+        <p
+          className="text-center mt-3 mb-0"
+          style={{ fontSize: "0.875rem", color: "var(--text-secondary)" }}
+        >
+          ¿No tiene una cuenta?{" "}
           <span
-            style={{ color: "var(--primary)", fontWeight: 600, cursor: "pointer" }}
+            style={{
+              color: "var(--primary)",
+              fontWeight: 600,
+              cursor: "pointer",
+            }}
             onClick={() => navigate("/registro")}
             onKeyDown={(e) => e.key === "Enter" && navigate("/registro")}
             tabIndex={0}
@@ -113,9 +125,7 @@ const Login = () => {
             Regístrese aquí
           </span>
         </p>
-
       </div>
-
     </div>
   );
 };
