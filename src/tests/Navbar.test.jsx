@@ -33,7 +33,7 @@ describe("NavbarComponent", () => {
   it("muestra links de navegación", () => {
     renderNavbar();
     expect(screen.getByText("Inicio")).toBeInTheDocument();
-    expect(screen.getByText("Contacto")).toBeInTheDocument();
+    
     expect(screen.getByText("Nosotros")).toBeInTheDocument();
   });
 

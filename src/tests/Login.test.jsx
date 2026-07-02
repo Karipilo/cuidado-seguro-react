@@ -76,7 +76,9 @@ describe("Login", () => {
     fireEvent.change(screen.getByPlaceholderText("Ingrese su contraseña"), { target: { value: "bad" } });
     fireEvent.click(screen.getByRole("button", { name: /Iniciar Sesión/i }));
     await waitFor(() =>
-      expect(screen.getByText("Credenciales incorrectas")).toBeInTheDocument()
+      expect(
+    screen.getByText("Usuario o contraseña incorrectos.")
+).toBeInTheDocument()
     );
   });
 

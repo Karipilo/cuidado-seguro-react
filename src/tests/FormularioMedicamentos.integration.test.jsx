@@ -90,7 +90,7 @@ describe("Integración FormularioMedicamentos", () => {
     ).toHaveTextContent("1");
 
     expect(window.alert).toHaveBeenCalledWith(
-      "Medicamento guardado exitosamente"
+      "Medicamento guardado correctamente"
     );
   });
 });

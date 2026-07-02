@@ -84,7 +84,7 @@ const FormularioMedicamentos = ({ paciente, setPaciente, profesional }) => {
         ],
       }));
 
-      alert("Medicamento guardado correctamente");
+      alert("Medicamento guardado exitosamente");
 
       setFormulario({
         nombre: "",
