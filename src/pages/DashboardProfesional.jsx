@@ -328,7 +328,7 @@ const DashboardProfesional = () => {
 
       await buscarPaciente();
 
-      alert("Evolución guardada en BD");
+      alert("Evolución guardada exitosamente");
 
       setEvolucion("");
     } catch (error) {
@@ -358,7 +358,7 @@ const DashboardProfesional = () => {
 
       await buscarPaciente();
 
-      alert("Indicación guardada en BD");
+      alert("Indicación guardada exitosamente");
 
       setIndicacion("");
     } catch (error) {

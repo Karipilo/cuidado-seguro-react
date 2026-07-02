@@ -149,7 +149,7 @@ describe("FormularioSignosVitales", () => {
     expect(setPacienteMock).toHaveBeenCalled();
 
     expect(window.alert).toHaveBeenCalledWith(
-      "Signos vitales guardados en BD"
+      "Signos vitales guardados exitosamente"
     );
   });
 

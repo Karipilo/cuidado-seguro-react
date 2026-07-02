@@ -73,7 +73,7 @@ const Registro = () => {
   };
 
   const validarPassword = (password) => {
-    const regex = /^(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&#]).{6,}$/;
+    const regex = /^(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&#]).{6,20}$/;
     return regex.test(password);
   };
 
@@ -160,7 +160,7 @@ const Registro = () => {
 
     if (!validarPassword(formData.password)) {
       alert(
-        "La contraseña debe tener mínimo 6 caracteres, una mayúscula, un número y un símbolo",
+        "La contraseña debe tener mínimo 6 y 20 caracteres, una mayúscula, un número y un carácter especial",
       );
       return;
     }
@@ -234,7 +234,7 @@ const Registro = () => {
       usuarioFinal.numeroDocumento = usuarioFinal.numeroDocumento
         .replace(/\./g, "")
         .trim();
-        
+
       const data = await request("/auth/register", {
         method: "POST",
         body: usuarioFinal,
@@ -283,8 +283,17 @@ const Registro = () => {
               <Form.Control
                 name="username"
                 value={formData.username}
-                onChange={handleChange}
+                onChange={(e) =>
+                  setFormData({
+                    ...formData,
+                    username: e.target.value.replace(/\s/g, ""),
+                  })
+                }
               />
+
+              <Form.Text className="text-muted">
+                El nombre de usuario no puede contener espacios.
+              </Form.Text>
             </Form.Group>
 
             <Form.Group className="mb-3">
@@ -322,7 +331,15 @@ const Registro = () => {
                 name="password"
                 value={formData.password}
                 onChange={handleChange}
+                minLength={6}
+                maxLength={20}
+                required
               />
+
+              <Form.Text className="text-muted">
+                Debe tener entre 6 y 20 caracteres, al menos una letra
+                mayúscula, un número y un carácter especial.
+              </Form.Text>
             </Form.Group>
 
             <div className="d-flex justify-content-end mt-4">
@@ -470,6 +487,11 @@ const Registro = () => {
                 value={formData.direccion}
                 onChange={handleChange}
               />
+
+              <Form.Text className="text-muted">
+                Ingrese la dirección completa (calle, número y ciudad, o block,
+                departamento y ciudad).
+              </Form.Text>
             </Form.Group>
 
             <div className="d-flex justify-content-between mt-4">
@@ -682,10 +704,35 @@ const Registro = () => {
                   <Form.Label>Número de licencia</Form.Label>
 
                   <Form.Control
+                    type="text"
                     name="numeroLicencia"
                     value={formData.numeroLicencia}
-                    onChange={handleChange}
+                    onChange={(e) =>
+                      setFormData({
+                        ...formData,
+                        numeroLicencia: e.target.value.replace(
+                          /[^a-zA-Z0-9]/g,
+                          "",
+                        ),
+                      })
+                    }
+                    minLength={6}
+                    maxLength={20}
+                    required
                   />
+
+                  <Form.Text className="text-muted">
+                    Ingrese un número de licencia de 6 a 20 caracteres.
+                  </Form.Text>
+
+                  {formData.numeroLicencia.length > 0 &&
+                    (formData.numeroLicencia.length < 6 ||
+                      formData.numeroLicencia.length > 20) && (
+                      <div className="text-danger mt-1">
+                        El número de licencia debe tener entre 6 y 20
+                        caracteres.
+                      </div>
+                    )}
                 </Form.Group>
 
                 <Form.Group className="mb-3">
@@ -889,6 +936,17 @@ const Registro = () => {
                       !formData.horasSemanales)
                   ) {
                     alert("Complete todos los datos del profesional");
+                    return;
+                  }
+
+                  if (
+                    formData.tipoUsuario === "PROFESIONAL" &&
+                    (formData.numeroLicencia.length < 6 ||
+                      formData.numeroLicencia.length > 20)
+                  ) {
+                    alert(
+                      "El número de licencia debe tener entre 6 y 20 caracteres.",
+                    );
                     return;
                   }
 

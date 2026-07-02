@@ -76,7 +76,7 @@ const FormularioSignosVitales = ({ paciente, setPaciente,profesional }) => {
         signosVitales: [...(prev.signosVitales || []), nuevosSignos],
       }));
 
-      alert("Signos vitales guardados en BD");
+      alert("Signos vitales guardados exitosamente");
 
       setFormulario({
         sistolica: "",
