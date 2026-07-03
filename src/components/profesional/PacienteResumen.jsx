@@ -55,22 +55,7 @@ const PacienteResumen = ({ paciente }) => {
             </div>
           </Col>
 
-          <Col md={6}>
-            <div className="paciente-info-card">
-              <small className="text-muted">Grupo sanguíneo</small>
-
-              <h5>{paciente?.grupoSanguineo || "No registrado"}</h5>
-            </div>
-          </Col>
-
-          <Col md={6}>
-            <div className="paciente-info-card">
-              <small className="text-muted">Factor RH</small>
-
-              <h5>{paciente?.factorRh || "No registrado"}</h5>
-            </div>
-          </Col>
-
+          
           <Col md={12}>
             <div className="paciente-info-card">
               <small className="text-muted">Alergias</small>

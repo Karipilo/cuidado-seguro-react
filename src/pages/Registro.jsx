@@ -331,13 +331,13 @@ const Registro = () => {
                 name="password"
                 value={formData.password}
                 onChange={handleChange}
-                minLength={6}
+                minLength={10}
                 maxLength={20}
                 required
               />
 
               <Form.Text className="text-muted">
-                Debe tener entre 6 y 20 caracteres, al menos una letra
+                Debe tener entre 10 y 20 caracteres, al menos una letra
                 mayúscula, un número y un carácter especial.
               </Form.Text>
             </Form.Group>
