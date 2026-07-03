@@ -160,7 +160,7 @@ const Registro = () => {
 
     if (!validarPassword(formData.password)) {
       alert(
-        "La contraseña debe tener mínimo 6 y 20 caracteres, una mayúscula, un número y un carácter especial",
+        "La contraseña debe tener mínimo 12 y 20 caracteres, una mayúscula, un número y un carácter especial",
       );
       return;
     }
