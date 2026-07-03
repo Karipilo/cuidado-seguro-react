@@ -48,10 +48,6 @@ const HeaderProfesional = ({
             className="header-search-input"
           />
 
-          <Form.Text className="text-light mt-1">
-            Ingrese el RUT sin puntos y con guion. Ejemplo: 12345678-9
-          </Form.Text>
-
           <Button className="header-search-button" onClick={buscarPaciente}>
             Buscar
           </Button>
