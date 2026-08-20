@@ -19,7 +19,7 @@ import ResumenClinico from "../components/profesional/ResumenClinico";
 import SignosVitales from "../components/profesional/SignosVitales";
 import TabsClinicas from "../components/profesional/TabsClinicas";
 import { getMemoryJSON, setMemoryJSON, getMemoryItem } from "../utils/memoryStore";
-import { request, BFF_URL } from "../utils/api.js";
+import { request } from "../utils/api.js";
 
 const PanelClinico = () => {
 

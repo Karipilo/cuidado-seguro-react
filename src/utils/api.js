@@ -1,11 +1,11 @@
 /**
  * Centralizado de configuración de API.
- * Lee desde variable de entorno VITE_BFF_URL en .env
- * Valor por defecto: 
+ * El frontend solo conoce el dominio de AWS API Gateway (VITE_API_BASE_URL),
+ * que enruta hacia el BFF. Nunca las URLs del BFF ni de los microservicios.
  */
 
-const BFF_URL =
-  import.meta.env?.VITE_BFF_URL || "http://localhost:8090/bff";
+const API_BASE_URL =
+  import.meta.env?.VITE_API_BASE_URL || "http://localhost:8090/bff";
 
 function extractCleanMessage(text) {
   if (!text) return "";
@@ -63,7 +63,7 @@ export async function request(
     config.body = JSON.stringify(body);
   }
 
-  const res = await fetch(`${BFF_URL}${endpoint}`, config);
+  const res = await fetch(`${API_BASE_URL}${endpoint}`, config);
 
   if (!res.ok) {
     let msg = "";
@@ -79,4 +79,4 @@ export async function request(
   return res.json();
 }
 
-export { BFF_URL };
+export { API_BASE_URL };

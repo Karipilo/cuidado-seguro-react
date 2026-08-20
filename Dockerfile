@@ -3,9 +3,11 @@ FROM node:20-alpine AS build
 
 WORKDIR /app
 
-# Argumento para la URL del BFF (se embebe en el build de Vite)
-ARG VITE_BFF_URL=ARG VITE_BFF_URL=http://bff-1009660170.us-east-1.elb.amazonaws.com:8090/bff
-ENV VITE_BFF_URL=$VITE_BFF_URL
+# Dominio publico de AWS API Gateway (se embebe en el build de Vite).
+# Debe entregarse en build time; no hay valor por defecto para no filtrar
+# la URL privada del BFF en la imagen.
+ARG VITE_API_BASE_URL
+ENV VITE_API_BASE_URL=$VITE_API_BASE_URL
 
 COPY package*.json ./
 RUN npm ci
