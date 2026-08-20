@@ -172,13 +172,15 @@ La aplicación utiliza React Router DOM para gestionar navegación dinámica.
 
 # Integración con Backend
 
-El frontend se comunica con:
+El frontend se comunica **unicamente** con AWS API Gateway, definido en la
+variable `VITE_API_BASE_URL`. AWS API Gateway enruta hacia el BFF, y el BFF es
+el unico que conoce los microservicios internos.
 
-* API Gateway
-* Backend For Frontend (BFF)
-* Microservicio de Autenticación
-* Microservicio de Pacientes
-* Microservicio de Datos Médicos
+```text
+Frontend React -> AWS API Gateway -> BFF -> (Auth | Pacientes | Datos Medicos)
+```
+
+El frontend no conoce la URL del BFF ni la de los microservicios.
 
 ---
 
@@ -246,8 +248,7 @@ Antes de ejecutar el proyecto se requiere:
 | Puerto | Descripción           |
 | ------ | --------------------- |
 | 5173   | Frontend React + Vite |
-| 8080   | API Gateway           |
-| 8090   | Backend For Frontend  |
+| 8090   | BFF (solo desarrollo local) |
 
 ---
 
@@ -288,7 +289,7 @@ Separación completa entre frontend y backend.
 
 ## Integración con Microservicios
 
-Comunicación mediante API Gateway y BFF.
+Comunicación mediante AWS API Gateway y BFF.
 
 ---
 
